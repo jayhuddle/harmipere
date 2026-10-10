@@ -239,7 +239,7 @@ header{padding-top:calc(16px + env(safe-area-inset-top))}
 :root{--status:#e4e1fb}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--status:#13122a}}
 :root[data-theme="dark"]{--status:#13122a}
-body:after{content:'';position:absolute;top:0;left:0;right:0;height:140px;z-index:-1;pointer-events:none;background:linear-gradient(var(--status) 0%,var(--status) 15%,transparent 100%)}
+body:after{content:'';position:absolute;top:0;left:0;right:0;height:180px;z-index:-1;pointer-events:none;background:linear-gradient(var(--status) 0,var(--status) 24px,color-mix(in srgb,var(--status) 55%,transparent) 90px,transparent 180px)}
 </style>
 </head>
 <body>
