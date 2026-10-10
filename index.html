@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com/gsi/style; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://script.google.com https://script.googleusercontent.com https://accounts.google.com/gsi/; frame-src https://accounts.google.com/gsi/; manifest-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
-<meta name="theme-color" content="#5b54e8">
+<meta name="theme-color" content="#eceefa" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0d0f1e" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Härmipere">
@@ -675,6 +676,9 @@ $('download').onclick=()=>{
 };
 if(window.google?.script?.run)loadOverview();
 </script>
-<script>if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});</script>
+<script>if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+(function(){const root=document.documentElement,metas=[...document.querySelectorAll('meta[name="theme-color"]')],colors={light:'#eceefa',dark:'#0d0f1e'};
+ function sync(){const mode=root.dataset.theme;metas.forEach((meta,index)=>meta.setAttribute('content',colors[mode]||(index?colors.dark:colors.light)));}
+ sync();new MutationObserver(sync).observe(root,{attributes:true,attributeFilter:['data-theme']});})();</script>
 </body>
 </html>
