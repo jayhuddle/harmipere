@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com/gsi/style; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://script.google.com https://script.googleusercontent.com https://accounts.google.com/gsi/; frame-src https://accounts.google.com/gsi/; manifest-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
-<meta name="theme-color" content="#eceefa" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0d0f1e" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#e4e1fb" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#13122a" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Härmipere">
@@ -235,6 +235,11 @@ section>.month-divider:first-of-type,h2+div>.month-divider:first-child{margin-to
 #googleButton{display:flex;justify-content:center;min-height:44px}
 .logout-link{background:none;border:0;box-shadow:none;padding:4px 8px;color:var(--muted);text-decoration:underline;font-size:12px}
 header{padding-top:calc(16px + env(safe-area-inset-top))}
+/* Olekuriba on ühevärviline: lehe ülaserv algab sama tooniga ja sulandub taustalaikudeks. */
+:root{--status:#e4e1fb}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--status:#13122a}}
+:root[data-theme="dark"]{--status:#13122a}
+body:after{content:'';position:absolute;top:0;left:0;right:0;height:140px;z-index:-1;pointer-events:none;background:linear-gradient(var(--status) 0%,var(--status) 15%,transparent 100%)}
 </style>
 </head>
 <body>
@@ -677,7 +682,7 @@ $('download').onclick=()=>{
 if(window.google?.script?.run)loadOverview();
 </script>
 <script>if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
-(function(){const root=document.documentElement,metas=[...document.querySelectorAll('meta[name="theme-color"]')],colors={light:'#eceefa',dark:'#0d0f1e'};
+(function(){const root=document.documentElement,metas=[...document.querySelectorAll('meta[name="theme-color"]')],colors={light:'#e4e1fb',dark:'#13122a'};
  function sync(){const mode=root.dataset.theme;metas.forEach((meta,index)=>meta.setAttribute('content',colors[mode]||(index?colors.dark:colors.light)));}
  sync();new MutationObserver(sync).observe(root,{attributes:true,attributeFilter:['data-theme']});})();</script>
 </body>
