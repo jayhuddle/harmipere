@@ -684,11 +684,28 @@ $('download').onclick=()=>{
 };
 if(window.google?.script?.run)loadOverview();
 </script>
+<script>
+window.pereSharing=new URLSearchParams(location.search).has('share');
+if(window.pereSharing)(async()=>{
+ try{
+  history.replaceState(null,'',location.pathname);showView('input');
+  const cache=await caches.open('pere-share'),metaResponse=await cache.match('share/meta');
+  if(!metaResponse){status('Jagatud sisu ei leitud. Proovi uuesti jagada.',true);return;}
+  const meta=await metaResponse.json(),files=[];
+  for(const item of meta.files||[]){const response=await cache.match(item.key);if(response)files.push(new File([await response.blob()],item.name||'jagatud-fail',{type:item.type||''}));}
+  await caches.delete('pere-share');
+  if(meta.text){$('text').value=($('text').value.trim()?$('text').value+'\n\n':'')+meta.text;resetResult();}
+  if(files.length){await addFiles(files);if(!images.length)return;}
+  if(!files.length&&!meta.text){status('Jagatud sisu oli tühi.',true);return;}
+  status((meta.skipped?'Lisatud esimesed 3 faili. ':'')+'Jagatud sisu on lisatud. Vali vajadusel „Kelle kohta?” ja vajuta „Töötle infot”.');
+ }catch(_){status('Jagatud sisu lisamine ebaõnnestus. Lisa see käsitsi.',true);}
+})();
+</script>
 <script>if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 (function(){const root=document.documentElement,metas=[...document.querySelectorAll('meta[name="theme-color"]')],colors={light:'#e4e1fb',dark:'#13122a'};
  function sync(){const mode=root.dataset.theme;metas.forEach((meta,index)=>meta.setAttribute('content',colors[mode]||(index?colors.dark:colors.light)));}
  sync();new MutationObserver(sync).observe(root,{attributes:true,attributeFilter:['data-theme']});})();
-window.pereApplyStart=view=>{if(view==='overview'&&!$('inputView').hidden&&!busy&&!loadingImages&&!$('text').value.trim()&&!images.length&&!result)showView('overview');};
+window.pereApplyStart=view=>{if(window.pereSharing)return;if(view==='overview'&&!$('inputView').hidden&&!busy&&!loadingImages&&!$('text').value.trim()&&!images.length&&!result)showView('overview');};
 (function(){let view=null;try{view=localStorage.getItem('pere-start-view');}catch(_){}
  if(view)pereApplyStart(view);
  else if(pereHasSession())google.script.run.withSuccessHandler(profile=>{const start=profile&&profile.startView||'input';try{localStorage.setItem('pere-start-view',start);}catch(_){}pereApplyStart(start);}).pereProfile();})();</script>
