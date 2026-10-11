@@ -479,7 +479,7 @@ function shortDay(date){return date?['P','E','T','K','N','R','L'][new Date(date+
 function addDays(date,days){const d=new Date(date+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+days);return d.toISOString().slice(0,10);}
 function clockMinutes(time){const m=/^(\d{1,2}):(\d{2})/.exec(time||'');return m?Number(m[1])*60+Number(m[2]):null;}
 function placeKey(value){return String(value||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim();}
-function updateRefine(){const node=$('refineSummary');if(!node)return;const p=$('person'),who=p.value==='__other__'?($('personOther').value.trim()||'muu'):p.value?shortPerson(p.value):'kelle kohta';const d=$('sourceDate').value;node.textContent='· '+who+' · '+(!d||d===tallinnToday()?'kp':shortDate(d));renderPersonPicker();}
+function updateRefine(){const node=$('refineSummary');if(!node)return;const p=$('person'),who=p.value==='__other__'?($('personOther').value.trim()||'muu'):p.value?shortPerson(p.value):'kelle kohta';const d=$('sourceDate').value;node.textContent='· '+who+' · '+(!d||d===tallinnToday()?'teate kp':shortDate(d));renderPersonPicker();}
 function renderPersonPicker(){const box=$('personPicker'),select=$('person');if(!box)return;box.replaceChildren();
  [...select.options].forEach(option=>{const chip=document.createElement('button');chip.type='button';
   const color=option.value&&option.value!=='__other__'?({'Otto Johan':'otto','Eia-Liisa':'eia','Elle-Riin':'elle','Kogu pere':'pere'}[option.value]||'other'):'all';
