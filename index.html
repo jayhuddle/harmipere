@@ -264,7 +264,9 @@ section>.month-divider:first-of-type,h2+div>.month-divider:first-child{margin-to
 .chip-eia[aria-pressed="true"]{color:#422c00}.chip-eia[aria-pressed="true"]:before{background:#422c00}
 .week-section{margin:0 0 26px}
 .week-section h2{font-size:20px;margin:0 0 2px}
-@media(min-width:741px){#savedWeek{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:24px}#savedWeek>.month-divider,#savedWeek>.empty{grid-column:1/-1}}
+@media(min-width:741px){#savedWeek{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:24px;align-items:start}#savedWeek>.empty{grid-column:1/-1}.week-col-label{display:none}}
+.week-col-label{font-size:12px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);margin:14px 4px 4px}
+.week-col .empty{margin:8px 4px}
 .related-link{display:block;width:100%;text-align:left;border:0;box-shadow:none;font:inherit;font-size:14px;padding:10px 12px;margin:7px 0;cursor:pointer;border-radius:12px;color:var(--ink);background:color-mix(in srgb,var(--accent) 8%,transparent)}
 @media (hover:hover){.related-link:hover:not(:disabled){background:color-mix(in srgb,var(--accent) 15%,transparent);box-shadow:none}}
 .saved-card.flash{animation:pere-flash 1.8s ease}
@@ -619,7 +621,7 @@ function renderOverview(){
   const card=document.createElement('article');card.className='saved-card saved-event-card';overviewEventCards.set(item.key,card);
   const heading=document.createElement('div');heading.className='saved-event-heading';
   savedText(heading,'h3',item.title);savedPersonTag(heading,item.person);card.append(heading);
-  savedText(card,'p',shortDay(item.date)+(item.time?' · '+item.time+(item.endTime?'–'+item.endTime:''):' · kogu päev'),'saved-deadline');
+  savedText(card,'p',(item.date===today?'Täna · ':item.date===tomorrow?'Homme · ':'')+shortDay(item.date)+(item.time?' · '+item.time+(item.endTime?'–'+item.endTime:''):' · kogu päev'),'saved-deadline');
   if(item.location)savedText(card,'p',item.location,'saved-meta');
   if(conflicts.has(item.key))savedText(card,'p','⚠ Kattub: '+conflicts.get(item.key).join('; '),'saved-conflict');
   const cancel=document.createElement('button');cancel.type='button';cancel.className='cancel-event';cancel.title='Tühista sündmus';cancel.setAttribute('aria-label','Tühista sündmus: '+item.title);
@@ -647,18 +649,15 @@ function renderOverview(){
   savedNotes(card,item);
   const last=card.lastElementChild||card.children[card.children.length-1],footer=document.createElement('div'),content=document.createElement('div');footer.className='saved-event-footer';content.append(last);footer.append(content,control);card.append(footer);parent.append(card);
  }
- // See nädal: üle tähtaja ülal, siis päevade kaupa; päeva sees ajaga üritused, siis ülesanded.
- const dayOf=item=>isTask(item)?item.deadline:item.date;
- const weekKey=item=>(isTask(item)&&item.deadline<today?'0':'1')+dayOf(item)+(isTask(item)?'~':(item.time||''));
- const week=items.filter(inWeek).sort((a,b)=>weekKey(a).localeCompare(weekKey(b)));
- $('savedWeek').replaceChildren();$('weekCount').textContent='('+week.length+')';
- let weekGroup=null;
- week.forEach(item=>{
-  const day=dayOf(item),group=isTask(item)&&day<today?'Üle tähtaja':day===today?'Täna · '+shortDay(day):day===tomorrow?'Homme · '+shortDay(day):shortDay(day);
-  if(group!==weekGroup){monthDivider($('savedWeek'),group);weekGroup=group;}
-  if(isTask(item))taskCard(item,$('savedWeek'));else eventCard(item,$('savedWeek'));
+ // See nädal: ülesanded vasakul (üle tähtaja ees), üritused paremal; mobiilis üksteise all väikese pealkirjaga.
+ const weekTasks=items.filter(item=>isTask(item)&&inWeek(item)).sort((a,b)=>a.deadline.localeCompare(b.deadline));
+ const weekEvents=items.filter(item=>item.kind==='event'&&inWeek(item)).sort((a,b)=>(a.date+' '+a.time).localeCompare(b.date+' '+b.time));
+ $('savedWeek').replaceChildren();$('weekCount').textContent='('+(weekTasks.length+weekEvents.length)+')';
+ if(!weekTasks.length&&!weekEvents.length)savedText($('savedWeek'),'p','Järgmise 7 päeva jooksul pole midagi kirjas.','empty');
+ else [[weekTasks,'Ülesanded','Sel nädalal ülesandeid pole.',taskCard],[weekEvents,'Üritused','Sel nädalal üritusi pole.',eventCard]].forEach(([list,label,empty,draw])=>{
+  const column=document.createElement('div');column.className='week-col';savedText(column,'div',label,'week-col-label');
+  list.forEach(item=>draw(item,column));if(!list.length)savedText(column,'p',empty,'empty');$('savedWeek').append(column);
  });
- if(!week.length)savedText($('savedWeek'),'p','Järgmise 7 päeva jooksul pole midagi kirjas.','empty');
  // Hilisemad avatud ülesanded kuude kaupa; tehtud ülesanded eraldi linnukese all (viimased 3 tähtaja järgi).
  const tasks=items.filter(item=>isTask(item)&&!inWeek(item)&&item.status!=='Tehtud')
   .sort((a,b)=>(a.deadline||'9999').localeCompare(b.deadline||'9999'));
