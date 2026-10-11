@@ -233,14 +233,14 @@ section>.month-divider:first-of-type,h2+div>.month-divider:first-child{margin-to
 .refine[open]>summary:after{transform:rotate(90deg)}
 .refine-summary{font-weight:400;color:var(--muted)}
 .refine>.row{margin:4px 16px 16px}
-/* Pildista: arvutis peidus, puuteekraanil esimene ja suurem */
+/* Pildista: arvutis peidus; puuteekraanil vasakul, sama stiil mis "Lisa pildid / PDF" */
 @media (pointer:fine){#camera{display:none}}
 @media (pointer:coarse){
- .image-actions{flex-direction:column;align-items:stretch}
- #camera{order:-1;min-height:58px;font-size:17px;justify-content:center;color:#fff;border-color:transparent;
-  background:linear-gradient(135deg,var(--accent),var(--accent-2));box-shadow:0 6px 20px color-mix(in srgb,var(--accent) 35%,transparent)}
- #camera svg{width:24px;height:24px}
- #pick{justify-content:center}
+ .image-actions{flex-wrap:nowrap;gap:10px}
+ .image-actions button{flex:1;justify-content:center;min-height:52px;padding:10px 12px;white-space:nowrap}
+ #camera{order:-1}
+ #camera svg{width:22px;height:22px}
+}
 }
 /* Pärast salvestamist: lühike kinnitus */
 .item-saved{padding:16px 18px}
@@ -303,6 +303,10 @@ section>.month-divider:first-of-type,h2+div>.month-divider:first-child{margin-to
 .edit-danger strong{color:var(--danger)}
 .edit-danger button{padding:8px 12px}
 .edit-danger .cancel-confirm{background:var(--danger);border-color:transparent;color:#fff}
+/* Kelle kohta chip'id sisestuses */
+#personPicker{margin-top:2px}
+#personPicker .chip{min-height:38px}
+#personPicker .chip:disabled{opacity:.5}
 </style>
 <style>
 .login-overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:24px;background:color-mix(in srgb,var(--bg) 55%,transparent);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
@@ -336,9 +340,10 @@ body:after{content:'';position:absolute;top:0;left:0;right:0;height:180px;z-inde
 <section class="panel" aria-label="Lisa pereinfo">
 <label for="text">Teade, kutse või sinu enda märkus</label>
 <textarea id="text" maxlength="20000" placeholder="Kleebi siia tekst või kuvatõmmis…&#10;&#10;Näiteks: Palun tellige jalgpallivorm 20.10.2026 hiljemalt. Hind 35 eurot."></textarea>
-<details id="refine" class="refine"><summary><span class="refine-title">Täpsusta</span> <span id="refineSummary" class="refine-summary"></span></summary><div class="row"><div><label for="person">Kelle kohta?</label><select id="person"><option value="">Tuvasta sisust</option><option value="Eia-Liisa">Eia</option><option value="Otto Johan">Otto</option><option value="Elle-Riin">Elle</option><option value="Kogu pere">Pere</option><option value="__other__">Muu – sisesta</option></select><input id="personOther" type="text" maxlength="80" placeholder="Sisesta nimi" aria-label="Muu nimi" hidden></div>
-<div><label for="sourceDate">Algse sõnumi kuupäev</label><input type="date" id="sourceDate"><p class="hint">Vaikimisi täna. Vanema teate puhul vali sõnumi kuupäev.</p></div></div></details>
+
 <div id="drop" class="drop"><div class="image-actions"><button id="pick" type="button">+ Lisa pildid / PDF</button><button id="camera" type="button" title="Pildista kutset"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 6h4l2-3h4l2 3h4a1 1 0 0 1 1 1v13H3V7a1 1 0 0 1 1-1Z"/><circle cx="12" cy="13" r="4"/></svg>Pildista</button></div><input id="files" type="file" accept="image/png,image/jpeg,image/webp,application/pdf" multiple hidden><input id="cameraFile" type="file" accept="image/*" capture="environment" hidden><p class="hint">Või lohista siia / kleebi Ctrl+V.<br>Kuni 3 faili · PNG, JPG, WebP, PDF · kuni 4 MB fail, kokku 8 MB</p><div id="images" class="images"></div></div>
+<details id="refine" class="refine"><summary><span class="refine-title">Täpsusta</span> <span id="refineSummary" class="refine-summary"></span></summary><div class="row"><div><label for="person">Kelle kohta?</label><div id="personPicker" class="person-chips" role="group" aria-label="Kelle kohta"></div><select id="person" hidden><option value="">Tuvasta sisust</option><option value="Eia-Liisa">Eia</option><option value="Otto Johan">Otto</option><option value="Elle-Riin">Elle</option><option value="Kogu pere">Pere</option><option value="__other__">Muu – sisesta</option></select><input id="personOther" type="text" maxlength="80" placeholder="Sisesta nimi" aria-label="Muu nimi" hidden></div>
+<div><label for="sourceDate">Algse sõnumi kuupäev</label><input type="date" id="sourceDate"><p class="hint">Vaikimisi täna. Vanema teate puhul vali sõnumi kuupäev.</p></div></div></details>
 <div class="actions"><button id="analyze" class="primary" type="button">Töötle infot →</button><button id="example" type="button">Proovi näidet</button></div>
 <p class="hint">Töötlemisel saadetakse lisatud tekst ja pildid Gemini API-le.</p>
 <p class="hint">Vaata tulemus üle ja salvesta iga kirje eraldi. Algne fail jääb salvestamisel Drive’i alles.</p>
@@ -432,7 +437,13 @@ function shortDay(date){return date?['P','E','T','K','N','R','L'][new Date(date+
 function addDays(date,days){const d=new Date(date+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+days);return d.toISOString().slice(0,10);}
 function clockMinutes(time){const m=/^(\d{1,2}):(\d{2})/.exec(time||'');return m?Number(m[1])*60+Number(m[2]):null;}
 function placeKey(value){return String(value||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim();}
-function updateRefine(){const node=$('refineSummary');if(!node)return;const p=$('person'),who=p.value==='__other__'?($('personOther').value.trim()||'muu'):p.value?shortPerson(p.value):'tuvasta sisust';const d=$('sourceDate').value;node.textContent='· '+who+' · '+(!d||d===tallinnToday()?'täna':shortDate(d));}
+function updateRefine(){const node=$('refineSummary');if(!node)return;const p=$('person'),who=p.value==='__other__'?($('personOther').value.trim()||'muu'):p.value?shortPerson(p.value):'kelle kohta';const d=$('sourceDate').value;node.textContent='· '+who+' · '+(!d||d===tallinnToday()?'kp':shortDate(d));renderPersonPicker();}
+function renderPersonPicker(){const box=$('personPicker'),select=$('person');if(!box)return;box.replaceChildren();
+ [...select.options].forEach(option=>{const chip=document.createElement('button');chip.type='button';
+  const color=option.value&&option.value!=='__other__'?({'Otto Johan':'otto','Eia-Liisa':'eia','Elle-Riin':'elle','Kogu pere':'pere'}[option.value]||'other'):'all';
+  chip.className='chip chip-'+color;chip.textContent=option.value===''?'Tuvasta':option.value==='__other__'?'Muu':option.textContent;
+  chip.setAttribute('aria-pressed',String(select.value===option.value));chip.disabled=busy;
+  chip.onclick=()=>{if(select.value===option.value)return;select.value=option.value;select.onchange();updateRefine();};box.append(chip);});}
 function readCache(key){try{const value=JSON.parse(localStorage.getItem(key)||'null');return value&&Array.isArray(value.items)?value:null;}catch(_){return null;}}
 function writeCache(key,data){try{localStorage.setItem(key,JSON.stringify(data));}catch(_){}}
 function tallinnToday(){return new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Tallinn'}).format(new Date());}
