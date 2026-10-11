@@ -344,7 +344,7 @@ body:after{content:'';position:absolute;top:0;left:0;right:0;height:180px;z-inde
 <div id="drop" class="drop"><div class="image-actions"><button id="pick" type="button">+ Lisa pildid / PDF</button><button id="camera" type="button" title="Pildista kutset"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 6h4l2-3h4l2 3h4a1 1 0 0 1 1 1v13H3V7a1 1 0 0 1 1-1Z"/><circle cx="12" cy="13" r="4"/></svg>Pildista</button></div><input id="files" type="file" accept="image/png,image/jpeg,image/webp,application/pdf" multiple hidden><input id="cameraFile" type="file" accept="image/*" capture="environment" hidden><p class="hint">Või lohista siia / kleebi Ctrl+V.<br>Kuni 3 faili · PNG, JPG, WebP, PDF · kuni 4 MB fail, kokku 8 MB</p><div id="images" class="images"></div></div>
 <details id="refine" class="refine"><summary><span class="refine-title">Täpsusta</span> <span id="refineSummary" class="refine-summary"></span></summary><div class="row"><div><label for="person">Kelle kohta?</label><div id="personPicker" class="person-chips" role="group" aria-label="Kelle kohta"></div><select id="person" hidden><option value="">Tuvasta sisust</option><option value="Eia-Liisa">Eia</option><option value="Otto Johan">Otto</option><option value="Elle-Riin">Elle</option><option value="Kogu pere">Pere</option><option value="__other__">Muu – sisesta</option></select><input id="personOther" type="text" maxlength="80" placeholder="Sisesta nimi" aria-label="Muu nimi" hidden></div>
 <div><label for="sourceDate">Algse sõnumi kuupäev</label><input type="date" id="sourceDate"><p class="hint">Vaikimisi täna. Vanema teate puhul vali sõnumi kuupäev.</p></div></div></details>
-<div class="actions"><button id="analyze" class="primary" type="button">Töötle infot →</button><button id="example" type="button">Proovi näidet</button></div>
+<div class="actions"><button id="analyze" class="primary" type="button">Töötle infot →</button></div>
 <p class="hint">Töötlemisel saadetakse lisatud tekst ja pildid Gemini API-le.</p>
 <p class="hint">Vaata tulemus üle ja salvesta iga kirje eraldi. Algne fail jääb salvestamisel Drive’i alles.</p>
 <p id="status" class="status" role="status" aria-live="polite"></p>
@@ -765,7 +765,7 @@ function renderOverview(){
 }
 function status(text, error=false){updateRefine();$('status').textContent=text;$('status').classList.toggle('error',error);}
 function resetResult(){result=null;sourceSnapshot=null;$('results').hidden=true;$('cards').replaceChildren();}
-function setBusy(value){busy=value;['analyze','example','pick','camera','cameraFile','text','person','personOther','sourceDate','files'].forEach(id=>$(id).disabled=value);$('analyze').textContent=value?'Töötlen…':'Töötle infot →';renderImages();}
+function setBusy(value){busy=value;['analyze','pick','camera','cameraFile','text','person','personOther','sourceDate','files'].forEach(id=>$(id).disabled=value);$('analyze').textContent=value?'Töötlen…':'Töötle infot →';renderImages();}
 function sourcePerson(){return $('person').value==='__other__' ? $('personOther').value.trim() : $('person').value;}
 $('person').onchange=()=>{$('personOther').hidden=$('person').value!=='__other__';$('personOther').value='';resetResult();if(!$('personOther').hidden)$('personOther').focus();};
 $('personOther').oninput=resetResult;
@@ -797,7 +797,6 @@ document.addEventListener('paste',e=>{if(busy||loadingImages||$('inputView').hid
 ['dragenter','dragover'].forEach(event=>$('drop').addEventListener(event,e=>{e.preventDefault();$('drop').classList.add('over');}));
 $('drop').ondragleave=()=>$('drop').classList.remove('over');$('drop').ondrop=e=>{e.preventDefault();$('drop').classList.remove('over');addFiles(e.dataTransfer.files);};
 ['text','sourceDate'].forEach(id=>$(id).addEventListener('input',resetResult));
-$('example').onclick=()=>{images=[];renderImages();$('person').value='Otto Johan';$('personOther').hidden=true;$('personOther').value='';$('sourceDate').value='';$('text').value='Palun tellige Otto Johanile FC Flora jalgpallivorm hiljemalt 20.10.2026.\nLastevanemate kohtumine toimub 22.10.2026 kell 18.00 Kalamaja väljakul. Palun kinnitage osalemine 19.10.2026.';resetResult();status('Näidistekst lisatud. Vajuta „Töötle infot”.');};
 $('analyze').onclick=()=>{
  if(busy||loadingImages)return;
  if(!$('text').value.trim()&&!images.length){status('Lisa tekst, pilt või PDF.',true);$('text').focus();return;}
