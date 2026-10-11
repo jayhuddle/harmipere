@@ -284,6 +284,19 @@ section>.month-divider:first-of-type,h2+div>.month-divider:first-child{margin-to
 .show-done{display:flex;align-items:center;gap:9px;margin:14px 4px 6px;font-size:14px;font-weight:550;color:var(--muted);cursor:pointer}
 .show-done input{width:auto;margin:0}
 #doneTasks .saved-card{margin:8px 0}
+/* Muutmise pliiats: samas reas olemasoleva nupuga, kaardi suurus ei muutu */
+.task-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px}
+.task-footer .complete-button{margin-top:0}
+.card-tools{display:flex;align-items:center;gap:2px;flex:0 0 auto}
+.edit-item{flex:0 0 auto;border:0;background:transparent;box-shadow:none;color:var(--soft);padding:6px;min-width:32px;min-height:32px;border-radius:10px;display:inline-flex;align-items:center;justify-content:center}
+.edit-item svg{width:18px;height:18px}
+@media (hover:hover){.edit-item:hover:not(:disabled){color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,transparent);box-shadow:none}}
+.saved-card.editing{border-color:color-mix(in srgb,var(--accent) 45%,transparent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 18%,transparent),var(--shadow)}
+.saved-card.editing .row{margin:12px 0}
+.saved-card.editing .field{margin-top:12px}
+.edit-actions{margin-top:14px;gap:8px}
+.edit-actions button{padding:9px 14px}
+@media(max-width:740px){.saved-card.editing .row:has(input[type="date"],input[type="time"]){grid-template-columns:1fr 1fr;gap:12px}.saved-card.editing .row input[type="date"],.saved-card.editing .row input[type="time"]{padding:10px 8px;min-width:0}}
 </style>
 <style>
 .login-overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:24px;background:color-mix(in srgb,var(--bg) 55%,transparent);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
@@ -503,7 +516,7 @@ function loadOverview(){
    const option=document.createElement('option');option.value=person;option.textContent=shortPerson(person);$('overviewPerson').append(option);
   });
   $('overviewPerson').value=[...$('overviewPerson').options].some(option=>option.value===selected)?selected:'';
-  renderOverview();overviewStatus(data.limited?'Kuvatud on viimased 1000 salvestatud kirjet.':'');
+  renderOverview();overviewStatus(overviewNotice||(data.limited?'Kuvatud on viimased 1000 salvestatud kirjet.':''));overviewNotice='';
  }).withFailureHandler(error=>{overviewLoading=false;$('refreshOverview').disabled=false;overviewStatus((error.message||'Pereinfo laadimine ebaõnnestus.')+(savedOverview?' Kuvatud on viimati laaditud andmed.':''),true);}).pereListSaved();
 }
 function shortPerson(person){return {'Eia-Liisa':'Eia','Otto Johan':'Otto','Elle-Riin':'Elle','Kogu pere':'Pere'}[person]||person;}
@@ -536,7 +549,44 @@ document.addEventListener('click',event=>{if(activeCancelMenu&&!activeCancelMenu
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&activeCancelMenu){event.preventDefault();activeCancelMenu.close(true);}});
 // Pere ülevaade (asendab Index-enne-klaasi.html renderOverview funktsiooni; build-glass-index.cjs paneb selle sisse).
 // "See nädal" (täna + 6 päeva, üle tähtaja ülesanded ülal), allpool kuude kaupa ülejäänu ilma kordusteta.
-let overviewEventCards=new Map(),pendingUndo=null;
+let overviewEventCards=new Map(),pendingUndo=null,overviewEditing=null,overviewNotice='';
+// Muutmine: pliiats avab kaardi sees vormi; ülesandel ka "+1 päev / +1 nädal". Server muudab tabelit ja üritusel ka kalendrit.
+const pencilIcon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4Z"/><path d="m13.5 6.5 4 4"/></svg>';
+function editButton(item){
+ const button=document.createElement('button');button.type='button';button.className='edit-item';button.title='Muuda';button.setAttribute('aria-label','Muuda: '+item.title);button.innerHTML=pencilIcon;
+ button.onclick=()=>{overviewEditing={key:item.key,error:'',draft:{title:item.title,person:canonicalPerson(item.person),date:item.date||'',time:item.time||'',
+  end_time:item.endTime||'',location:item.location||'',deadline:item.deadline||'',notes:item.notes||''}};renderOverview();};
+ return button;
+}
+function editorCard(item,card){
+ const edit=overviewEditing,draft=edit.draft,isEvent=item.kind==='event';
+ card.className='saved-card editing';
+ savedText(card,'div',isEvent?'Muuda üritust':item.kind==='invoice'?'Muuda arvet':'Muuda ülesannet','kind');
+ card.append(field(draft,'title','Nimetus'));
+ const row=(...cells)=>{const line=document.createElement('div');line.className='row';line.append(...cells);card.append(line);};
+ if(isEvent){row(field(draft,'person','Kelle kohta?','text',-1),field(draft,'date','Kuupäev','date'));row(field(draft,'time','Algusaeg','time'),field(draft,'end_time','Lõppaeg','time'));card.append(field(draft,'location','Koht'));}
+ else row(field(draft,'person','Kelle kohta?','text',-1),field(draft,'deadline','Tähtaeg','date'));
+ card.append(field(draft,'notes','Märkused','textarea'));
+ if(edit.error)savedText(card,'p',edit.error,'status error');
+ const actions=document.createElement('div'),buttons=[];actions.className='actions edit-actions';
+ const make=(text,className,onclick)=>{const button=document.createElement('button');button.type='button';button.textContent=text;if(className)button.className=className;button.onclick=onclick;buttons.push(button);actions.append(button);return button;};
+ const submit=()=>{
+  const fail=message=>{edit.error=message;renderOverview();};
+  if(!draft.title.trim())return fail('Lisa nimetus.');
+  if(!draft.person||draft.person==='__other__')return fail('Vali, kelle kohta.');
+  if(isEvent){if(!draft.date)return fail('Lisa kuupäev.');if(!!draft.time!==!!draft.end_time)return fail('Lisa nii algus- kui lõppaeg või jäta mõlemad tühjaks (kogupäevane).');
+   if(draft.time&&draft.end_time<=draft.time)return fail('Lõppaeg peab olema algusest hilisem.');}
+  const changes={title:draft.title.trim(),person:draft.person.trim(),notes:draft.notes};
+  if(isEvent)Object.assign(changes,{date:draft.date,time:draft.time,endTime:draft.end_time,location:draft.location});else changes.deadline=draft.deadline;
+  buttons.forEach(button=>button.disabled=true);
+  google.script.run.withSuccessHandler(response=>{Object.assign(item,response.item);overviewEditing=null;renderOverview();overviewStatus('Muudatus salvestatud.');overviewNotice='Muudatus salvestatud.';loadOverview();})
+   .withFailureHandler(error=>fail(error.message||'Muutmine ebaõnnestus.')).pereUpdateSaved({key:item.key,changes});
+ };
+ make('Salvesta','primary',submit);
+ if(!isEvent)[['+1 päev',1],['+1 nädal',7]].forEach(([text,days])=>make(text,'',()=>{draft.deadline=addDays(draft.deadline||savedOverview.today,days);submit();}));
+ make('Loobu','',()=>{overviewEditing=null;renderOverview();});
+ card.append(actions);
+}
 // Kattuvad üritused: sama inimene (Pere = iga laps) või eri inimesed eri/teadmata kohas. Lõputa = 1 h; kogupäevased ei loe.
 function eventConflicts(events){
  const result=new Map();
@@ -594,7 +644,11 @@ function renderOverview(){
  const inWeek=item=>isTask(item)?item.status!=='Tehtud'&&!!item.deadline&&item.deadline<=weekEnd:item.kind==='event'&&item.date>=today&&item.date<=weekEnd;
  const conflicts=eventConflicts(savedOverview.items.filter(item=>item.kind==='event'&&item.date>=today));
  overviewEventCards=new Map();
+ if(overviewEditing&&!savedOverview.items.some(item=>item.key===overviewEditing.key))overviewEditing=null;
+ const editing=(item,parent)=>{if(!overviewEditing||overviewEditing.key!==item.key)return false;const card=document.createElement('article');editorCard(item,card);
+  if(item.kind==='event')overviewEventCards.set(item.key,card);parent.append(card);return true;};
  function taskCard(item,parent){
+  if(editing(item,parent))return;
   const due=item.status!=='Tehtud'&&item.deadline?(item.deadline<today?'due-overdue':item.deadline===today?'due-today':item.deadline===tomorrow?'due-soon':''):'';
   const card=document.createElement('article');card.className='saved-card'+(item.status==='Tehtud'?' done':'')+(due?' '+due:'');
   const heading=document.createElement('div');heading.className='saved-event-heading';
@@ -615,9 +669,11 @@ function renderOverview(){
     google.script.run.withSuccessHandler(response=>{item.status=response.status;renderOverview();})
      .withFailureHandler(error=>{item.status='Avatud';renderOverview();overviewStatus(error.message||'Ülesande muutmine ebaõnnestus.',true);}).pereSetTaskDone({key:item.key,done:true});
    },()=>{item.status='Avatud';renderOverview();});
-  };card.append(complete);parent.append(card);
+  };
+  const footer=document.createElement('div');footer.className='task-footer';footer.append(complete,editButton(item));card.append(footer);parent.append(card);
  }
  function eventCard(item,parent){
+  if(editing(item,parent))return;
   const card=document.createElement('article');card.className='saved-card saved-event-card';overviewEventCards.set(item.key,card);
   const heading=document.createElement('div');heading.className='saved-event-heading';
   savedText(heading,'h3',item.title);savedPersonTag(heading,item.person);card.append(heading);
@@ -647,7 +703,8 @@ function renderOverview(){
   };
   actions.append(keep,confirm);popover.append(actions);control.append(cancel,popover);
   savedNotes(card,item);
-  const last=card.lastElementChild||card.children[card.children.length-1],footer=document.createElement('div'),content=document.createElement('div');footer.className='saved-event-footer';content.append(last);footer.append(content,control);card.append(footer);parent.append(card);
+  const last=card.lastElementChild||card.children[card.children.length-1],footer=document.createElement('div'),content=document.createElement('div');footer.className='saved-event-footer';content.append(last);
+  const tools=document.createElement('div');tools.className='card-tools';tools.append(editButton(item),control);footer.append(content,tools);card.append(footer);parent.append(card);
  }
  // See nädal: ülesanded vasakul (üle tähtaja ees), üritused paremal; mobiilis üksteise all väikese pealkirjaga.
  const weekTasks=items.filter(item=>isTask(item)&&inWeek(item)).sort((a,b)=>a.deadline.localeCompare(b.deadline));
