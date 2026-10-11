@@ -297,6 +297,12 @@ section>.month-divider:first-of-type,h2+div>.month-divider:first-child{margin-to
 .edit-actions{margin-top:14px;gap:8px}
 .edit-actions button{padding:9px 14px}
 @media(max-width:740px){.saved-card.editing .row:has(input[type="date"],input[type="time"]){grid-template-columns:1fr 1fr;gap:12px}.saved-card.editing .row input[type="date"],.saved-card.editing .row input[type="time"]{padding:10px 8px;min-width:0}}
+/* Ürituse tühistamine muutmisvormi all */
+.edit-danger{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px;padding-top:12px;border-top:1px dashed var(--line);font-size:14px}
+.danger-link{background:none;border:0;box-shadow:none;padding:4px 0;color:var(--danger);font-weight:650;text-decoration:underline}
+.edit-danger strong{color:var(--danger)}
+.edit-danger button{padding:8px 12px}
+.edit-danger .cancel-confirm{background:var(--danger);border-color:transparent;color:#fff}
 </style>
 <style>
 .login-overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:24px;background:color-mix(in srgb,var(--bg) 55%,transparent);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
@@ -586,6 +592,30 @@ function editorCard(item,card){
  if(!isEvent)[['+1 päev',1],['+1 nädal',7]].forEach(([text,days])=>make(text,'',()=>{draft.deadline=addDays(draft.deadline||savedOverview.today,days);submit();}));
  make('Loobu','',()=>{overviewEditing=null;renderOverview();});
  card.append(actions);
+ // Tühistamine/kustutamine on vormi all: kinnitus samas kohas, siis 5 s "Võta tagasi".
+ {
+  const danger=document.createElement('div');danger.className='edit-danger';
+  const ask=document.createElement('button');ask.type='button';ask.className='danger-link';ask.textContent=isEvent?'Tühista üritus':item.kind==='invoice'?'Kustuta arve':'Kustuta ülesanne';buttons.push(ask);
+  ask.onclick=()=>{
+   danger.replaceChildren();savedText(danger,'strong',ask.textContent+'?');
+   const keep=document.createElement('button');keep.type='button';keep.textContent='Jäta alles';keep.onclick=()=>{danger.replaceChildren(ask);};
+   const confirm=document.createElement('button');confirm.type='button';confirm.className='cancel-confirm';confirm.textContent=isEvent?'Tühista':'Kustuta';
+   confirm.onclick=()=>{overviewEditing=null;removeWithUndo(item);};
+   danger.append(keep,confirm);keep.focus();
+  };
+  danger.append(ask);card.append(danger);
+ }
+}
+function removeWithUndo(item){
+ const isEvent=item.kind==='event';
+ const list=savedOverview.items,index=list.indexOf(item);if(index<0){renderOverview();return;}
+ const restore=()=>{if(!savedOverview.items.includes(item))savedOverview.items.splice(Math.min(index,savedOverview.items.length),0,item);renderOverview();};
+ list.splice(index,1);renderOverview();overviewStatus('');
+ showUndo('„'+item.title+'” '+(isEvent?'tühistatud':'kustutatud')+'.',()=>{
+  const runner=google.script.run.withSuccessHandler(()=>{overviewNotice=isEvent?'Sündmus tühistatud.':'Kustutatud.';loadOverview();})
+   .withFailureHandler(error=>{restore();overviewStatus(error.message||(isEvent?'Tühistamine':'Kustutamine')+' ebaõnnestus.',true);});
+  if(isEvent)runner.pereCancelEvent({key:item.key});else runner.pereRemoveTask({key:item.key});
+ },()=>{restore();overviewStatus((isEvent?'Tühistamine':'Kustutamine')+' võeti tagasi.');});
 }
 // Kattuvad üritused: sama inimene (Pere = iga laps) või eri inimesed eri/teadmata kohas. Lõputa = 1 h; kogupäevased ei loe.
 function eventConflicts(events){
@@ -680,31 +710,9 @@ function renderOverview(){
   savedText(card,'p',(item.date===today?'Täna · ':item.date===tomorrow?'Homme · ':'')+shortDay(item.date)+(item.time?' · '+item.time+(item.endTime?'–'+item.endTime:''):' · kogu päev'),'saved-deadline');
   if(item.location)savedText(card,'p',item.location,'saved-meta');
   if(conflicts.has(item.key))savedText(card,'p','⚠ Kattub: '+conflicts.get(item.key).join('; '),'saved-conflict');
-  const cancel=document.createElement('button');cancel.type='button';cancel.className='cancel-event';cancel.title='Tühista sündmus';cancel.setAttribute('aria-label','Tühista sündmus: '+item.title);
-  cancel.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7"/></svg>';
-  const control=document.createElement('div');control.className='cancel-control';
-  const popover=document.createElement('div');popover.className='cancel-popover';popover.hidden=true;popover.setAttribute('role','dialog');popover.setAttribute('aria-label','Tühista sündmus?');
-  savedText(popover,'strong','Tühista sündmus?');
-  const actions=document.createElement('div');actions.className='cancel-actions';
-  const keep=document.createElement('button');keep.type='button';keep.textContent='Jäta alles';
-  const confirm=document.createElement('button');confirm.type='button';confirm.textContent='Tühista';confirm.className='cancel-confirm';
-  const close=(restoreFocus=false)=>{popover.hidden=true;cancel.setAttribute('aria-expanded','false');if(activeCancelMenu?.control===control)activeCancelMenu=null;if(restoreFocus)cancel.focus();};
-  keep.onclick=()=>close(true);
-  cancel.setAttribute('aria-haspopup','dialog');cancel.setAttribute('aria-expanded','false');
-  cancel.onclick=()=>{if(!popover.hidden){close(true);return;}if(activeCancelMenu)activeCancelMenu.close();popover.hidden=false;cancel.setAttribute('aria-expanded','true');activeCancelMenu={control,close};keep.focus();};
-  confirm.onclick=()=>{
-   close();const list=savedOverview.items,index=list.indexOf(item);if(index<0)return;
-   const restore=()=>{if(!savedOverview.items.includes(item))savedOverview.items.splice(Math.min(index,savedOverview.items.length),0,item);renderOverview();};
-   list.splice(index,1);renderOverview();overviewStatus('');
-   showUndo('„'+item.title+'” tühistatud.',()=>{
-    google.script.run.withSuccessHandler(()=>{loadOverview();overviewStatus('Sündmus tühistatud.');})
-     .withFailureHandler(error=>{restore();overviewStatus(error.message||'Tühistamine ebaõnnestus.',true);}).pereCancelEvent({key:item.key});
-   },()=>{restore();overviewStatus('Tühistamine võeti tagasi.');});
-  };
-  actions.append(keep,confirm);popover.append(actions);control.append(cancel,popover);
   savedNotes(card,item);
   const last=card.lastElementChild||card.children[card.children.length-1],footer=document.createElement('div'),content=document.createElement('div');footer.className='saved-event-footer';content.append(last);
-  const tools=document.createElement('div');tools.className='card-tools';tools.append(editButton(item),control);footer.append(content,tools);card.append(footer);parent.append(card);
+  const tools=document.createElement('div');tools.className='card-tools';tools.append(editButton(item));footer.append(content,tools);card.append(footer);parent.append(card);
  }
  // See nädal: ülesanded vasakul (üle tähtaja ees), üritused paremal; mobiilis üksteise all väikese pealkirjaga.
  const weekTasks=items.filter(item=>isTask(item)&&inWeek(item)).sort((a,b)=>a.deadline.localeCompare(b.deadline));
