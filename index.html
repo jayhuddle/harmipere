@@ -224,6 +224,57 @@ section>.month-divider:first-of-type,h2+div>.month-divider:first-child{margin-to
 }
 @media(max-width:430px){.badge{display:none}}
 @media (prefers-reduced-motion:reduce){button{transition:none}}
+/* ---- Sisestus: "Täpsusta ▸" voldik ---- */
+.refine{margin:16px 0 0;border:1px solid var(--line);border-radius:16px;background:var(--glass-field)}
+.refine>summary{list-style:none;cursor:pointer;padding:12px 16px;display:flex;align-items:center;gap:6px;font-weight:650;color:var(--ink)}
+.refine>summary::-webkit-details-marker{display:none}
+.refine>summary:after{content:'›';margin-left:auto;color:var(--muted);font-size:22px;line-height:1;transition:transform .2s}
+.refine[open]>summary:after{transform:rotate(90deg)}
+.refine-summary{font-weight:400;color:var(--muted)}
+.refine>.row{margin:4px 16px 16px}
+/* Pildista: arvutis peidus, puuteekraanil esimene ja suurem */
+@media (pointer:fine){#camera{display:none}}
+@media (pointer:coarse){
+ .image-actions{flex-direction:column;align-items:stretch}
+ #camera{order:-1;min-height:58px;font-size:17px;justify-content:center;color:#fff;border-color:transparent;
+  background:linear-gradient(135deg,var(--accent),var(--accent-2));box-shadow:0 6px 20px color-mix(in srgb,var(--accent) 35%,transparent)}
+ #camera svg{width:24px;height:24px}
+ #pick{justify-content:center}
+}
+/* Pärast salvestamist: lühike kinnitus */
+.item-saved{padding:16px 18px}
+.saved-confirm h3{margin:6px 0}
+.saved-confirm-line{margin:4px 0 0}
+.saved-confirm-line strong{color:#15803d}
+:root[data-theme="dark"] .saved-confirm-line strong{color:#4ade80}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .saved-confirm-line strong{color:#4ade80}}
+.link-button{background:none;border:0;box-shadow:none;padding:0;color:var(--accent);font-weight:650;text-decoration:underline;cursor:pointer}
+/* ---- Pere ülevaade ---- */
+.person-chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:7px;min-height:36px;padding:7px 14px;border-radius:999px;font-size:14px;font-weight:650;background:var(--glass-strong);border:1px solid var(--stroke);color:var(--ink)}
+.chip:before{content:'';width:9px;height:9px;border-radius:50%;background:var(--chip,var(--muted))}
+.chip-all:before{display:none}
+.chip-otto{--chip:#0ea5e9;--chip-bg:linear-gradient(135deg,#38bdf8,#0284c7)}
+.chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
+.chip-elle{--chip:#ec4899;--chip-bg:linear-gradient(135deg,#f472b6,#db2777)}
+.chip-pere{--chip:#7e22ce;--chip-bg:linear-gradient(135deg,#7e22ce,#581c87)}
+.chip[aria-pressed="true"]{color:#fff;border-color:transparent;background:var(--chip-bg,linear-gradient(135deg,var(--accent),var(--accent-2)));box-shadow:0 4px 12px color-mix(in srgb,var(--chip,var(--accent)) 35%,transparent)}
+.chip[aria-pressed="true"]:before{background:#fff}
+.chip-eia[aria-pressed="true"]{color:#422c00}.chip-eia[aria-pressed="true"]:before{background:#422c00}
+.week-section{margin:0 0 26px}
+.week-section h2{font-size:20px;margin:0 0 2px}
+@media(min-width:741px){#savedWeek{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:24px}#savedWeek>.month-divider,#savedWeek>.empty{grid-column:1/-1}}
+.related-link{display:block;width:100%;text-align:left;border:0;box-shadow:none;font:inherit;font-size:14px;padding:10px 12px;margin:7px 0;cursor:pointer;border-radius:12px;color:var(--ink);background:color-mix(in srgb,var(--accent) 8%,transparent)}
+@media (hover:hover){.related-link:hover:not(:disabled){background:color-mix(in srgb,var(--accent) 15%,transparent);box-shadow:none}}
+.saved-card.flash{animation:pere-flash 1.8s ease}
+@keyframes pere-flash{0%,55%{box-shadow:0 0 0 3px var(--accent),var(--shadow)}100%{box-shadow:var(--shadow)}}
+.saved-conflict{color:var(--warn);font-weight:650;font-size:13px}
+/* Tagasivõtmise teade */
+.undo-toast{position:fixed;left:50%;transform:translateX(-50%);bottom:24px;z-index:60;display:flex;align-items:center;gap:14px;width:max-content;max-width:calc(100vw - 32px);
+ padding:10px 10px 10px 18px;border-radius:16px;background:var(--glass-strong);border:1px solid var(--stroke);box-shadow:var(--shadow);color:var(--ink);font-size:14px;
+ -webkit-backdrop-filter:blur(22px) saturate(170%);backdrop-filter:blur(22px) saturate(170%)}
+#undoButton{flex:0 0 auto;background:none;border:0;box-shadow:none;padding:8px 10px;color:var(--accent);font-weight:700}
+@media(max-width:740px){.undo-toast{bottom:calc(98px + env(safe-area-inset-bottom))}}
 </style>
 <style>
 .login-overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:24px;background:color-mix(in srgb,var(--bg) 55%,transparent);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
@@ -247,7 +298,7 @@ body:after{content:'';position:absolute;top:0;left:0;right:0;height:180px;z-inde
 <div class="login-card panel"><span class="brand-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="4.4" r="2.4"/><circle cx="19.2" cy="9.6" r="2.4"/><circle cx="16.5" cy="18.1" r="2.4"/><circle cx="7.5" cy="18.1" r="2.4"/><circle cx="4.8" cy="9.6" r="2.4"/><path d="M12 15l-2.6-2.5a1.6 1.6 0 0 1 2.6-2 1.6 1.6 0 0 1 2.6 2Z"/></svg></span>
 <h1 id="loginTitle">Härmipere</h1><p>Logi sisse oma Google'i kontoga. Selles seadmes on seda vaja teha üks kord.</p>
 <div id="googleButton"></div><p id="loginStatus" class="status" role="status" aria-live="polite"></p></div></div>
-<header><div class="brand"><span class="brand-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="4.4" r="2.4"/><circle cx="19.2" cy="9.6" r="2.4"/><circle cx="16.5" cy="18.1" r="2.4"/><circle cx="7.5" cy="18.1" r="2.4"/><circle cx="4.8" cy="9.6" r="2.4"/><path d="M12 15l-2.6-2.5a1.6 1.6 0 0 1 2.6-2 1.6 1.6 0 0 1 2.6 2Z"/></svg></span><span class="brand-name">Härmipere <span>dashboard</span></span></div><div class="header-tools"><span class="badge">Privaatne prooviversioon</span><button id="themeToggle" class="theme-toggle" type="button"></button></div></header>
+<header><div class="brand"><span class="brand-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="4.4" r="2.4"/><circle cx="19.2" cy="9.6" r="2.4"/><circle cx="16.5" cy="18.1" r="2.4"/><circle cx="7.5" cy="18.1" r="2.4"/><circle cx="4.8" cy="9.6" r="2.4"/><path d="M12 15l-2.6-2.5a1.6 1.6 0 0 1 2.6-2 1.6 1.6 0 0 1 2.6 2Z"/></svg></span><span class="brand-name">Härmipere <span>dashboard</span></span></div><div class="header-tools"><button id="themeToggle" class="theme-toggle" type="button"></button></div></header>
 <main>
 <nav class="view-nav" aria-label="Pereäpi vaated"><button id="inputTab" type="button" aria-pressed="true" aria-label="Lisa infot" title="Lisa infot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5H5v14h14v-7M11 13l2-5 6-6 3 3-6 6-5 2Z"/></svg></button><button id="overviewTab" type="button" aria-pressed="false" aria-label="Pere ülevaade">Pere<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18M7 14h2M15 14h2M7 17h2"/></svg><span id="urgentCount" class="nav-count" hidden></span></button><button id="mailTab" type="button" aria-pressed="false" aria-label="E-kirjad" title="E-kirjad"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 6 9 7 9-7"/></svg></button></nav>
 <div id="inputView">
@@ -257,8 +308,8 @@ body:after{content:'';position:absolute;top:0;left:0;right:0;height:180px;z-inde
 <section class="panel" aria-label="Lisa pereinfo">
 <label for="text">Teade, kutse või sinu enda märkus</label>
 <textarea id="text" maxlength="20000" placeholder="Kleebi siia tekst või kuvatõmmis…&#10;&#10;Näiteks: Palun tellige jalgpallivorm 20.10.2026 hiljemalt. Hind 35 eurot."></textarea>
-<div class="row"><div><label for="person">Kelle kohta?</label><select id="person"><option value="">Tuvasta sisust</option><option value="Eia-Liisa">Eia</option><option value="Otto Johan">Otto</option><option value="Elle-Riin">Elle</option><option value="Kogu pere">Pere</option><option value="__other__">Muu – sisesta</option></select><input id="personOther" type="text" maxlength="80" placeholder="Sisesta nimi" aria-label="Muu nimi" hidden></div>
-<div><label for="sourceDate">Algse sõnumi kuupäev · valikuline</label><input type="date" id="sourceDate"><p class="hint">Kui jätad tühjaks, kasutatakse tänast kuupäeva. Vanema teate puhul vali sõnumi kuupäev.</p></div></div>
+<details id="refine" class="refine"><summary><span class="refine-title">Täpsusta</span> <span id="refineSummary" class="refine-summary"></span></summary><div class="row"><div><label for="person">Kelle kohta?</label><select id="person"><option value="">Tuvasta sisust</option><option value="Eia-Liisa">Eia</option><option value="Otto Johan">Otto</option><option value="Elle-Riin">Elle</option><option value="Kogu pere">Pere</option><option value="__other__">Muu – sisesta</option></select><input id="personOther" type="text" maxlength="80" placeholder="Sisesta nimi" aria-label="Muu nimi" hidden></div>
+<div><label for="sourceDate">Algse sõnumi kuupäev</label><input type="date" id="sourceDate"><p class="hint">Vaikimisi täna. Vanema teate puhul vali sõnumi kuupäev.</p></div></div></details>
 <div id="drop" class="drop"><div class="image-actions"><button id="pick" type="button">+ Lisa pildid / PDF</button><button id="camera" type="button" title="Pildista kutset"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 6h4l2-3h4l2 3h4a1 1 0 0 1 1 1v13H3V7a1 1 0 0 1 1-1Z"/><circle cx="12" cy="13" r="4"/></svg>Pildista</button></div><input id="files" type="file" accept="image/png,image/jpeg,image/webp,application/pdf" multiple hidden><input id="cameraFile" type="file" accept="image/*" capture="environment" hidden><p class="hint">Või lohista siia / kleebi Ctrl+V.<br>Kuni 3 faili · PNG, JPG, WebP, PDF · kuni 4 MB fail, kokku 8 MB</p><div id="images" class="images"></div></div>
 <div class="actions"><button id="analyze" class="primary" type="button">Töötle infot →</button><button id="example" type="button">Proovi näidet</button></div>
 <p class="hint">Töötlemisel saadetakse lisatud tekst ja pildid Gemini API-le.</p>
@@ -269,19 +320,19 @@ body:after{content:'';position:absolute;top:0;left:0;right:0;height:180px;z-inde
 </div>
 <section id="results" class="results" hidden aria-label="Tuvastatud info">
 <h2>Vaata üle ja täpsusta</h2><p id="summary"></p><div id="questions" class="notice" hidden></div><div id="cards"></div>
-<div class="actions"><button id="download" type="button">Laadi parandatud mustand alla</button></div>
-<p class="hint">JSON-fail sisaldab parandatud eelvaadet ja algset teksti. Pildid ei kuulu allalaaditavasse mustandisse.</p>
 </section>
 </div>
 <section id="overviewView" hidden aria-label="Salvestatud pereinfo">
 <div class="overview-top"><div><div class="eyebrow">Kõik vajalik käepärast</div><div class="overview-title"><h1>Pere ülevaade</h1><span id="overviewDate" class="overview-date"></span></div></div><button id="refreshOverview" class="icon-button" type="button" aria-label="Värskenda" title="Värskenda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.8-4M4 4v3.5h3.5"/><path d="M4 13a8 8 0 0 0 14.8 4M20 20v-3.5h-3.5"/></svg></button></div>
 <p class="saved-meta">Ülesanded ja nendega seotud üritused ühest kohast.</p>
-<div class="overview-filters"><select id="overviewPerson" aria-label="Filtreeri pereliikme järgi"><option value="">Kõik pereliikmed</option></select><label><input id="showDone" type="checkbox">Näita ka tehtud ülesandeid</label></div>
+<div class="overview-filters"><div id="personChips" class="person-chips" role="group" aria-label="Pereliige"></div><select id="overviewPerson" hidden aria-label="Filtreeri pereliikme järgi"><option value="">Kõik pereliikmed</option></select><label><input id="showDone" type="checkbox">Näita ka tehtud ülesandeid</label></div>
 <p id="overviewStatus" class="status overview-message" role="status" aria-live="polite"></p>
+<section id="weekSection" class="week-section" aria-label="See nädal"><h2>See nädal <span id="weekCount" class="count"></span></h2><div id="savedWeek"></div></section>
 <div class="overview-grid"><section id="tasksSection" class="tasks-section collapsed" aria-label="Ülesannete loend"><h2><button id="tasksToggle" class="section-toggle" type="button" aria-expanded="false" aria-controls="savedTasks"><span>Ülesanded <span id="taskCount" class="count"></span></span><span id="taskUrgent" class="section-urgent" hidden></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></h2><div id="savedTasks"></div></section><section aria-label="Ürituste loend"><h2>Üritused <span id="eventCount" class="count"></span></h2><div id="savedEvents"></div></section></div>
 </section>
 <section id="mailView" hidden aria-label="Perepostkasti kirjad"><div class="overview-top"><h1>E-kirjad</h1><button id="refreshMail" class="icon-button" type="button" aria-label="Värskenda" title="Värskenda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.8-4M4 4v3.5h3.5"/><path d="M4 13a8 8 0 0 0 14.8 4M20 20v-3.5h-3.5"/></svg></button></div><p class="saved-meta">Automaatika lisab selged uued sündmused ja ülesanded. Siin saad üle vaadata ebaselge info ja töötluse tulemused. „Peida” jätab Gmaili kirja alles.</p><div class="overview-filters"><label><input id="showProcessedMail" type="checkbox">Näita ka automaatselt töödeldud kirju</label></div><p id="mailStatus" class="status" role="status" aria-live="polite"></p><div id="mailCards"></div></section>
 <footer>Kuni 40 töötluskatset päevas · AI tulemus vajab ülevaatamist · <button type="button" class="logout-link" onclick="pereLogout()">Logi välja</button></footer>
+<div id="undoToast" class="undo-toast" role="status" aria-live="polite" hidden><span id="undoText"></span><button id="undoButton" type="button">Võta tagasi</button></div>
 </main>
 <script src="config.js"></script>
 <script>
@@ -347,6 +398,13 @@ const $ = id => document.getElementById(id);
 let images = [], result = null, sourceSnapshot = null, busy = false, loadingImages = false, inheritedPeople = new WeakSet();
 const labels = {event:'Sündmus',task:'Ülesanne',invoice:'Arve',info:'Teade'};
 let savedOverview=null,overviewLoading=false;
+const monthsShort=['jaan','veebr','märts','apr','mai','juuni','juuli','aug','sept','okt','nov','dets'];
+function shortDate(date){if(!date)return '';const p=date.split('-').map(Number),year=(savedOverview&&savedOverview.today||tallinnToday()).slice(0,4);return p[2]+'. '+monthsShort[p[1]-1]+(String(p[0])!==year?' '+p[0]:'');}
+function shortDay(date){return date?['P','E','T','K','N','R','L'][new Date(date+'T12:00:00Z').getUTCDay()]+' '+shortDate(date):'';}
+function addDays(date,days){const d=new Date(date+'T12:00:00Z');d.setUTCDate(d.getUTCDate()+days);return d.toISOString().slice(0,10);}
+function clockMinutes(time){const m=/^(\d{1,2}):(\d{2})/.exec(time||'');return m?Number(m[1])*60+Number(m[2]):null;}
+function placeKey(value){return String(value||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim();}
+function updateRefine(){const node=$('refineSummary');if(!node)return;const p=$('person'),who=p.value==='__other__'?($('personOther').value.trim()||'muu'):p.value?shortPerson(p.value):'tuvasta sisust';const d=$('sourceDate').value;node.textContent='· '+who+' · '+(!d||d===tallinnToday()?'täna':shortDate(d));}
 function readCache(key){try{const value=JSON.parse(localStorage.getItem(key)||'null');return value&&Array.isArray(value.items)?value:null;}catch(_){return null;}}
 function writeCache(key,data){try{localStorage.setItem(key,JSON.stringify(data));}catch(_){}}
 function tallinnToday(){return new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Tallinn'}).format(new Date());}
@@ -467,49 +525,96 @@ function savedNotes(card,item){if(item.notes){const details=document.createEleme
 let activeCancelMenu=null;
 document.addEventListener('click',event=>{if(activeCancelMenu&&!activeCancelMenu.control.contains(event.target))activeCancelMenu.close();});
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&activeCancelMenu){event.preventDefault();activeCancelMenu.close(true);}});
+// Pere ülevaade (asendab Index-enne-klaasi.html renderOverview funktsiooni; build-glass-index.cjs paneb selle sisse).
+// "See nädal" (täna + 6 päeva, üle tähtaja ülesanded ülal), allpool kuude kaupa ülejäänu ilma kordusteta.
+let overviewEventCards=new Map(),pendingUndo=null;
+// Kattuvad üritused: sama inimene (Pere = iga laps) või eri inimesed eri/teadmata kohas. Lõputa = 1 h; kogupäevased ei loe.
+function eventConflicts(events){
+ const result=new Map();
+ const timed=events.map(e=>{const s=clockMinutes(e.time);if(s===null)return null;let end=clockMinutes(e.endTime);if(end===null||end<=s)end=s+60;
+  return {e,s,end,person:canonicalPerson(String(e.person||'').trim()),place:placeKey(e.location)};}).filter(Boolean);
+ for(let i=0;i<timed.length;i++)for(let j=i+1;j<timed.length;j++){
+  const a=timed[i],b=timed[j];
+  if(a.e.date!==b.e.date||!(a.s<b.end&&b.s<a.end))continue;
+  const same=!!(a.person&&b.person&&(a.person===b.person||a.person==='Kogu pere'||b.person==='Kogu pere'));
+  if(!same&&a.place&&a.place===b.place)continue;
+  [[a,b],[b,a]].forEach(([x,y])=>{if(!result.has(x.e.key))result.set(x.e.key,[]);result.get(x.e.key).push(y.e.title+' '+y.e.time+(y.e.endTime?'–'+y.e.endTime:''));});
+ }
+ return result;
+}
+// Tagasivõtmine: toiming tehakse 5 s pärast; rakenduse taustale minekul kohe.
+function showUndo(message,commit,undo){
+ if(pendingUndo)pendingUndo.flush();
+ let done=false,timer=null;
+ const entry={flush(){if(done)return;finish();commit();},cancel(){if(done)return;finish();undo();}};
+ function finish(){done=true;clearTimeout(timer);$('undoToast').hidden=true;if(pendingUndo===entry)pendingUndo=null;}
+ $('undoText').textContent=message;$('undoToast').hidden=false;$('undoButton').onclick=()=>entry.cancel();
+ pendingUndo=entry;timer=setTimeout(()=>entry.flush(),5000);
+}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&pendingUndo)pendingUndo.flush();});
+function renderPersonChips(){
+ const select=$('overviewPerson'),box=$('personChips'),order={'Eia-Liisa':1,'Otto Johan':2,'Elle-Riin':3,'Kogu pere':4};
+ box.replaceChildren();
+ [...select.options].sort((a,b)=>(a.value?order[canonicalPerson(a.value)]||5:0)-(b.value?order[canonicalPerson(b.value)]||5:0)).forEach(option=>{
+  const chip=document.createElement('button');chip.type='button';
+  const color=option.value?({'Otto Johan':'otto','Eia-Liisa':'eia','Elle-Riin':'elle','Kogu pere':'pere'}[canonicalPerson(option.value)]||'other'):'all';
+  chip.className='chip chip-'+color;chip.textContent=option.value?shortPerson(option.value):'Kõik';
+  chip.setAttribute('aria-pressed',String(select.value===option.value));
+  chip.onclick=()=>{select.value=option.value;renderOverview();};box.append(chip);
+ });
+}
+function focusEvent(rel){
+ const match=item=>item.kind==='event'&&item.title===rel.title&&item.date===rel.date&&(!rel.time||item.time===rel.time);
+ let target=(savedOverview.items.find(match)||{}).key,card=target&&overviewEventCards.get(target);
+ if(target&&!card&&$('overviewPerson').value){$('overviewPerson').value='';renderOverview();card=overviewEventCards.get(target);}
+ if(!card){overviewStatus('Seotud üritust ei leitud (võib olla tühistatud).',true);return;}
+ const details=card.closest&&card.closest('details');if(details)details.open=true;
+ card.scrollIntoView({behavior:'smooth',block:'center'});card.classList.add('flash');setTimeout(()=>card.classList.remove('flash'),1800);
+}
 function renderOverview(){
  if(activeCancelMenu)activeCancelMenu.close();
  if(!savedOverview)return;
- const nextDay=new Date(savedOverview.today+'T12:00:00Z');nextDay.setUTCDate(nextDay.getUTCDate()+1);const tomorrow=nextDay.toISOString().slice(0,10);
- $('overviewDate').textContent=displayEventDate(savedOverview.today);
- const urgent=savedOverview.items.filter(item=>['task','invoice'].includes(item.kind)&&item.status!=='Tehtud'&&item.deadline&&item.deadline<=tomorrow).length;
+ const today=savedOverview.today,tomorrow=addDays(today,1),weekEnd=addDays(today,6);
+ $('overviewDate').textContent=displayEventDate(today);
+ const isTask=item=>['task','invoice'].includes(item.kind);
+ const urgent=savedOverview.items.filter(item=>isTask(item)&&item.status!=='Tehtud'&&item.deadline&&item.deadline<=tomorrow).length;
  $('urgentCount').textContent=String(urgent);$('urgentCount').hidden=!urgent;
  $('overviewTab').setAttribute('aria-label','Pere ülevaade'+(urgent?' · '+urgent+' kiiret ülesannet':''));
+ renderPersonChips();
  const person=$('overviewPerson').value,items=savedOverview.items.filter(item=>!person||item.person===person);
- const tasks=items.filter(item=>['task','invoice'].includes(item.kind)&&($('showDone').checked||item.status!=='Tehtud')).sort((a,b)=>(a.status==='Tehtud')-(b.status==='Tehtud')||(a.deadline||'9999').localeCompare(b.deadline||'9999'));
- const events=items.filter(item=>item.kind==='event').sort((a,b)=>(a.date+' '+a.time).localeCompare(b.date+' '+b.time));
- $('savedTasks').replaceChildren();$('savedEvents').replaceChildren();$('taskCount').textContent='('+tasks.length+')';
- const sectionUrgent=tasks.filter(item=>item.status!=='Tehtud'&&item.deadline&&item.deadline<=tomorrow).length;
- $('taskUrgent').textContent=sectionUrgent+' kiiret';$('taskUrgent').hidden=!sectionUrgent;
- let taskGroup=null;
- tasks.forEach(item=>{
-  const group=item.status==='Tehtud'?'Tehtud':item.deadline?monthLabel(item.deadline):'Tähtajata';
-  if(group!==taskGroup){monthDivider($('savedTasks'),group);taskGroup=group;}
-  const due=item.status!=='Tehtud'&&item.deadline?(item.deadline<savedOverview.today?'due-overdue':item.deadline===savedOverview.today?'due-today':item.deadline===tomorrow?'due-soon':''):'';
+ const inWeek=item=>isTask(item)?item.status!=='Tehtud'&&!!item.deadline&&item.deadline<=weekEnd:item.kind==='event'&&item.date>=today&&item.date<=weekEnd;
+ const conflicts=eventConflicts(savedOverview.items.filter(item=>item.kind==='event'&&item.date>=today));
+ overviewEventCards=new Map();
+ function taskCard(item,parent){
+  const due=item.status!=='Tehtud'&&item.deadline?(item.deadline<today?'due-overdue':item.deadline===today?'due-today':item.deadline===tomorrow?'due-soon':''):'';
   const card=document.createElement('article');card.className='saved-card'+(item.status==='Tehtud'?' done':'')+(due?' '+due:'');
   const heading=document.createElement('div');heading.className='saved-event-heading';
   savedText(heading,'h3',item.title+(item.kind==='invoice'&&item.amount?' · '+item.amount+' '+item.currency:''));savedPersonTag(heading,item.person);card.append(heading);
-  if(item.deadline){const late=item.status!=='Tehtud'&&item.deadline<savedOverview.today,today=item.deadline===savedOverview.today;
-   const soon=item.status!=='Tehtud'&&item.deadline===tomorrow;
-   savedText(card,'p','Tähtaeg: '+displayDate(item.deadline)+(late?' · üle tähtaja':today?' · täna':soon?' · homme':''),'saved-deadline'+(late?' overdue':today?' today':soon?' tomorrow':''));
+  if(item.deadline){const late=item.status!=='Tehtud'&&item.deadline<today,isToday=item.deadline===today,soon=item.status!=='Tehtud'&&item.deadline===tomorrow;
+   savedText(card,'p','Tähtaeg: '+shortDay(item.deadline)+(late?' · üle tähtaja':isToday?' · täna':soon?' · homme':''),'saved-deadline'+(late?' overdue':isToday?' today':soon?' tomorrow':''));
   }else savedText(card,'p','Tähtaega pole määratud','saved-meta');
-  if(item.relatedEvent)savedText(card,'p','Üritus: '+item.relatedEvent.title+' · '+displayDate(item.relatedEvent.date)+(item.relatedEvent.time?' kell '+item.relatedEvent.time:''),'saved-related');
+  if(item.relatedEvent){const rel=item.relatedEvent,link=document.createElement('button');link.type='button';link.className='saved-related related-link';
+   link.textContent='Üritus: '+rel.title+' · '+shortDay(rel.date)+(rel.time?' '+rel.time:'')+' ›';link.onclick=()=>focusEvent(rel);card.append(link);}
   savedNotes(card,item);
   const complete=document.createElement('button');complete.type='button';complete.className='complete-button';complete.textContent=item.status==='Tehtud'?'Ava ülesanne uuesti':'✓ Märgi tehtuks';
-  complete.onclick=()=>{complete.disabled=true;const done=item.status!=='Tehtud';
-   google.script.run.withSuccessHandler(response=>{item.status=response.status;renderOverview();overviewStatus(done?'Ülesanne märgitud tehtuks.':'Ülesanne on uuesti avatud.');})
-    .withFailureHandler(error=>{complete.disabled=false;overviewStatus(error.message||'Ülesande muutmine ebaõnnestus.',true);}).pereSetTaskDone({key:item.key,done:done});
-  };card.append(complete);$('savedTasks').append(card);
- });
- if(!tasks.length)savedText($('savedTasks'),'p',items.some(item=>['task','invoice'].includes(item.kind))?'Kõik selle vaate ülesanded on tehtud.':'Ülesandeid pole veel salvestatud.','empty');
- const upcoming=events.filter(item=>item.date>=savedOverview.today),past=events.filter(item=>item.date<savedOverview.today);
- $('eventCount').textContent='('+upcoming.length+' tulekul)';
+  complete.onclick=()=>{
+   if(item.status==='Tehtud'){complete.disabled=true;
+    google.script.run.withSuccessHandler(response=>{item.status=response.status;renderOverview();overviewStatus('Ülesanne on uuesti avatud.');})
+     .withFailureHandler(error=>{complete.disabled=false;overviewStatus(error.message||'Ülesande muutmine ebaõnnestus.',true);}).pereSetTaskDone({key:item.key,done:false});return;}
+   item.status='Tehtud';renderOverview();overviewStatus('');
+   showUndo('„'+item.title+'” märgitud tehtuks.',()=>{
+    google.script.run.withSuccessHandler(response=>{item.status=response.status;renderOverview();})
+     .withFailureHandler(error=>{item.status='Avatud';renderOverview();overviewStatus(error.message||'Ülesande muutmine ebaõnnestus.',true);}).pereSetTaskDone({key:item.key,done:true});
+   },()=>{item.status='Avatud';renderOverview();});
+  };card.append(complete);parent.append(card);
+ }
  function eventCard(item,parent){
-  const card=document.createElement('article');card.className='saved-card saved-event-card';
+  const card=document.createElement('article');card.className='saved-card saved-event-card';overviewEventCards.set(item.key,card);
   const heading=document.createElement('div');heading.className='saved-event-heading';
   savedText(heading,'h3',item.title);savedPersonTag(heading,item.person);card.append(heading);
-  savedText(card,'p',displayEventDate(item.date)+(item.time?' kell '+item.time+(item.endTime?'–'+item.endTime:''):' · kogu päev'),'saved-deadline');
+  savedText(card,'p',shortDay(item.date)+(item.time?' · '+item.time+(item.endTime?'–'+item.endTime:''):' · kogu päev'),'saved-deadline');
   if(item.location)savedText(card,'p',item.location,'saved-meta');
+  if(conflicts.has(item.key))savedText(card,'p','⚠ Kattub: '+conflicts.get(item.key).join('; '),'saved-conflict');
   const cancel=document.createElement('button');cancel.type='button';cancel.className='cancel-event';cancel.title='Tühista sündmus';cancel.setAttribute('aria-label','Tühista sündmus: '+item.title);
   cancel.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7"/></svg>';
   const control=document.createElement('div');control.className='cancel-control';
@@ -523,19 +628,54 @@ function renderOverview(){
   cancel.setAttribute('aria-haspopup','dialog');cancel.setAttribute('aria-expanded','false');
   cancel.onclick=()=>{if(!popover.hidden){close(true);return;}if(activeCancelMenu)activeCancelMenu.close();popover.hidden=false;cancel.setAttribute('aria-expanded','true');activeCancelMenu={control,close};keep.focus();};
   confirm.onclick=()=>{
-   close();cancel.disabled=true;
-   google.script.run.withSuccessHandler(()=>{loadOverview();overviewStatus('Sündmus tühistatud.');})
-    .withFailureHandler(error=>{cancel.disabled=false;overviewStatus(error.message||'Tühistamine ebaõnnestus.',true);}).pereCancelEvent({key:item.key});
+   close();const list=savedOverview.items,index=list.indexOf(item);if(index<0)return;
+   const restore=()=>{if(!savedOverview.items.includes(item))savedOverview.items.splice(Math.min(index,savedOverview.items.length),0,item);renderOverview();};
+   list.splice(index,1);renderOverview();overviewStatus('');
+   showUndo('„'+item.title+'” tühistatud.',()=>{
+    google.script.run.withSuccessHandler(()=>{loadOverview();overviewStatus('Sündmus tühistatud.');})
+     .withFailureHandler(error=>{restore();overviewStatus(error.message||'Tühistamine ebaõnnestus.',true);}).pereCancelEvent({key:item.key});
+   },()=>{restore();overviewStatus('Tühistamine võeti tagasi.');});
   };
   actions.append(keep,confirm);popover.append(actions);control.append(cancel,popover);
   savedNotes(card,item);
   const last=card.lastElementChild||card.children[card.children.length-1],footer=document.createElement('div'),content=document.createElement('div');footer.className='saved-event-footer';content.append(last);footer.append(content,control);card.append(footer);parent.append(card);
  }
- let eventGroup=null;upcoming.forEach(item=>{const group=monthLabel(item.date);if(group!==eventGroup){monthDivider($('savedEvents'),group);eventGroup=group;}eventCard(item,$('savedEvents'));});
- if(!upcoming.length)savedText($('savedEvents'),'p','Tulevasi üritusi pole selles vaates.','empty');
- if(past.length){const details=document.createElement('details');savedText(details,'summary','Möödunud üritused ('+past.length+')');let pastGroup=null;past.reverse().forEach(item=>{const group=monthLabel(item.date);if(group!==pastGroup){monthDivider(details,group);pastGroup=group;}eventCard(item,details);});$('savedEvents').append(details);}
+ // See nädal: üle tähtaja ülal, siis päevade kaupa; päeva sees ajaga üritused, siis ülesanded.
+ const dayOf=item=>isTask(item)?item.deadline:item.date;
+ const weekKey=item=>(isTask(item)&&item.deadline<today?'0':'1')+dayOf(item)+(isTask(item)?'~':(item.time||''));
+ const week=items.filter(inWeek).sort((a,b)=>weekKey(a).localeCompare(weekKey(b)));
+ $('savedWeek').replaceChildren();$('weekCount').textContent='('+week.length+')';
+ let weekGroup=null;
+ week.forEach(item=>{
+  const day=dayOf(item),group=isTask(item)&&day<today?'Üle tähtaja':day===today?'Täna · '+shortDay(day):day===tomorrow?'Homme · '+shortDay(day):shortDay(day);
+  if(group!==weekGroup){monthDivider($('savedWeek'),group);weekGroup=group;}
+  if(isTask(item))taskCard(item,$('savedWeek'));else eventCard(item,$('savedWeek'));
+ });
+ if(!week.length)savedText($('savedWeek'),'p','Järgmise 7 päeva jooksul pole midagi kirjas.','empty');
+ // Hilisemad ülesanded (ja soovi korral tehtud) kuude kaupa.
+ const tasks=items.filter(item=>isTask(item)&&!inWeek(item)&&($('showDone').checked||item.status!=='Tehtud'))
+  .sort((a,b)=>(a.status==='Tehtud')-(b.status==='Tehtud')||(a.deadline||'9999').localeCompare(b.deadline||'9999'));
+ $('savedTasks').replaceChildren();$('savedEvents').replaceChildren();$('taskCount').textContent='('+tasks.length+')';
+ const sectionUrgent=tasks.filter(item=>item.status!=='Tehtud'&&item.deadline&&item.deadline<=tomorrow).length;
+ $('taskUrgent').textContent=sectionUrgent+' kiiret';$('taskUrgent').hidden=!sectionUrgent;
+ let taskGroup=null;
+ tasks.forEach(item=>{
+  const group=item.status==='Tehtud'?'Tehtud':item.deadline?monthLabel(item.deadline):'Tähtajata';
+  if(group!==taskGroup){monthDivider($('savedTasks'),group);taskGroup=group;}
+  taskCard(item,$('savedTasks'));
+ });
+ if(!tasks.length)savedText($('savedTasks'),'p',items.some(item=>isTask(item)&&inWeek(item))?'Lähemad ülesanded on „See nädal” all.':items.some(isTask)?'Kõik selle vaate ülesanded on tehtud.':'Ülesandeid pole veel salvestatud.','empty');
+ const events=items.filter(item=>item.kind==='event').sort((a,b)=>(a.date+' '+a.time).localeCompare(b.date+' '+b.time));
+ const later=events.filter(item=>item.date>weekEnd),past=events.filter(item=>item.date<today);
+ $('eventCount').textContent='('+later.length+' hiljem)';
+ let eventGroup=null;
+ later.forEach(item=>{const group=monthLabel(item.date);if(group!==eventGroup){monthDivider($('savedEvents'),group);eventGroup=group;}eventCard(item,$('savedEvents'));});
+ if(!later.length)savedText($('savedEvents'),'p','Hilisemaid üritusi pole selles vaates.','empty');
+ if(past.length){const details=document.createElement('details');savedText(details,'summary','Möödunud üritused ('+past.length+')');
+  let pastGroup=null;past.reverse().forEach(item=>{const group=monthLabel(item.date);if(group!==pastGroup){monthDivider(details,group);pastGroup=group;}eventCard(item,details);});
+  $('savedEvents').append(details);}
 }
-function status(text, error=false){$('status').textContent=text;$('status').classList.toggle('error',error);}
+function status(text, error=false){updateRefine();$('status').textContent=text;$('status').classList.toggle('error',error);}
 function resetResult(){result=null;sourceSnapshot=null;$('results').hidden=true;$('cards').replaceChildren();}
 function setBusy(value){busy=value;['analyze','example','pick','camera','cameraFile','text','person','personOther','sourceDate','files'].forEach(id=>$(id).disabled=value);$('analyze').textContent=value?'Töötlen…':'Töötle infot →';renderImages();}
 function sourcePerson(){return $('person').value==='__other__' ? $('personOther').value.trim() : $('person').value;}
@@ -667,7 +807,7 @@ function renderResult(){
   save.onclick=()=>{
    if(!sourceSnapshot?.text.trim()&&!sourceSnapshot?.images.length){state.textContent='Salvestamiseks lisa algne tekst, pilt või PDF.';state.classList.add('error');return;}
    save.disabled=true;state.textContent='Salvestan…';state.classList.remove('error');
-   const runner=google.script.run.withSuccessHandler(res=>{state.replaceChildren();state.append(document.createTextNode(res.message+' '));const view=document.createElement('button');view.type='button';view.textContent='Vaata pere ülevaadet';view.onclick=()=>showView('overview');state.append(view);savedImages(state,res.imageUrls);save.disabled=true;save.textContent=res.status==='duplicate'?'Juba olemas':'Salvestatud';})
+   const runner=google.script.run.withSuccessHandler(res=>{const done=document.createElement('div');done.className='saved-confirm';savedText(done,'div',labels[item.kind],'kind');savedText(done,'h3',item.title||'(nimetu)');const line=document.createElement('p');line.className='saved-confirm-line';savedText(line,'strong',res.status==='duplicate'?'Juba olemas ✓':'Salvestatud ✓');line.append(document.createTextNode(' · '));const view=document.createElement('button');view.type='button';view.className='link-button';view.textContent='Ava ülevaates';view.onclick=()=>showView('overview');line.append(view);done.append(line);if(res.message)savedText(done,'p',res.message,'hint');savedImages(done,res.imageUrls);card.className='item item-saved';card.replaceChildren(done);})
     .withFailureHandler(e=>{state.textContent=e.message||'Salvestamine ebaõnnestus.';state.classList.add('error');save.disabled=false;});
    if(paired)runner.pereSaveBundle({event:item,eventIndex:index,task:result.items[pairedTaskIndex],taskIndex:pairedTaskIndex,source:sourceSnapshot});
    else runner.pereSaveOne({item,index,source:sourceSnapshot});
@@ -678,10 +818,9 @@ function renderResult(){
  if(!result.items.length){const p=document.createElement('p');p.className='empty';p.textContent='Sellest sisendist ei tuvastatud kirjeid. Vajadusel lisa täpsem tekst või selgem pilt.';$('cards').append(p);}
  $('results').hidden=false;
 }
-$('download').onclick=()=>{
- if(!result)return;const blob=new Blob([JSON.stringify({version:1,stage:'preview',source:sourceSnapshot,...result},null,2)],{type:'application/json'});
- const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='pere-mustand.json';document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),10000);
-};
+['change','input'].forEach(type=>{$('person').addEventListener(type,updateRefine);$('personOther').addEventListener(type,updateRefine);$('sourceDate').addEventListener(type,updateRefine);});
+$('refine').addEventListener('toggle',()=>{if($('refine').open&&!$('sourceDate').value)$('sourceDate').value=tallinnToday();updateRefine();});
+updateRefine();
 if(window.google?.script?.run)loadOverview();
 </script>
 <script>
