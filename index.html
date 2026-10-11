@@ -321,6 +321,14 @@ section>.month-divider:first-of-type,h2+div>.month-divider:first-child{margin-to
 @media(max-width:740px) and (prefers-color-scheme:dark){
  :root:not([data-theme="light"]) #inputView .actions #analyze{background:color-mix(in srgb,var(--accent) 30%,var(--glass-strong));color:#d9d5ff;border-color:color-mix(in srgb,var(--accent) 75%,transparent);box-shadow:0 6px 20px rgba(0,0,0,.45)}
 }
+/* Mobiil: ülevaate filtri chip'id ühel real (vajadusel külgsuunas keritav) */
+@media(max-width:740px){
+ #personChips{flex-wrap:nowrap;gap:6px;overflow-x:auto;scrollbar-width:none;width:100%;padding:2px 0 6px}
+ #personChips::-webkit-scrollbar{display:none}
+ #personChips .chip{flex:1 0 auto;justify-content:center;padding:6px 10px;font-size:13px;min-height:34px;gap:5px}
+ #personChips .chip:before{width:7px;height:7px}
+ .overview-filters{flex-wrap:wrap}
+}
 </style>
 <style>
 .login-overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:24px;background:color-mix(in srgb,var(--bg) 55%,transparent);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
