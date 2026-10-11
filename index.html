@@ -349,6 +349,15 @@ section>.month-divider:first-of-type,h2+div>.month-divider:first-child{margin-to
 /* "Sisesta info" ei murdu kahele reale */
 #analyze{white-space:nowrap}
 @media(max-width:740px){#inputView .actions #analyze{flex:0 0 auto;min-width:calc(50% - 6px);padding:10px 18px}}
+/* Mobiil: Pere ülevaate päis sama ritmiga mis sisestamise leht (8 px / 15 px, pealkiri 24 px) */
+@media(max-width:740px){
+ #overviewView .overview-top{position:relative;display:block;min-height:0}
+ #overviewView .overview-top>div{padding-right:52px}
+ #overviewView #refreshOverview{position:absolute;right:0;top:0;margin:0}
+ #overviewView .overview-title h1{font-size:24px;margin:8px 0 0}
+ #overviewView .overview-date{font-size:14px}
+ #overviewView>.saved-meta{margin:15px 0 0}
+}
 </style>
 <style>
 .login-overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:24px;background:color-mix(in srgb,var(--bg) 55%,transparent);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
