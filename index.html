@@ -329,6 +329,18 @@ section>.month-divider:first-of-type,h2+div>.month-divider:first-child{margin-to
  #personChips .chip:before{width:7px;height:7px}
  .overview-filters{flex-wrap:wrap}
 }
+/* "See nädal" esile: punktiirraam + kerge toon (variant B) */
+.week-section{border:1.5px dashed color-mix(in srgb,var(--accent) 45%,transparent);background:color-mix(in srgb,var(--accent) 5%,transparent);border-radius:22px;padding:16px 18px 8px}
+.week-section>h2{color:var(--accent)}
+.week-section>h2 .count{color:color-mix(in srgb,var(--accent) 60%,var(--muted))}
+@media(max-width:740px){
+ .week-section{padding:12px 10px 4px;border-radius:20px;margin-bottom:20px}
+ .week-section .week-col-label{margin-top:10px}
+ /* Kokkuvolditud pealkirjad lähemale */
+ .overview-grid{row-gap:4px}
+ .tasks-section.collapsed{margin-bottom:0}
+ .tasks-section:not(.collapsed){margin-bottom:18px}
+}
 </style>
 <style>
 .login-overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:24px;background:color-mix(in srgb,var(--bg) 55%,transparent);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
