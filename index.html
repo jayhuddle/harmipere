@@ -307,6 +307,11 @@ section>.month-divider:first-of-type,h2+div>.month-divider:first-child{margin-to
 #personPicker{margin-top:2px}
 #personPicker .chip{min-height:38px}
 #personPicker .chip:disabled{opacity:.5}
+/* Mobiil: "Töötle infot" pehmem, et ei võistleks alumise menüü aktiivse indigoga */
+@media(max-width:740px){
+ #analyze{background:color-mix(in srgb,var(--accent) 14%,var(--glass-strong));color:var(--accent);border:1.5px solid color-mix(in srgb,var(--accent) 40%,transparent);box-shadow:none;font-weight:700}
+ #analyze:disabled{opacity:.6}
+}
 </style>
 <style>
 .login-overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:24px;background:color-mix(in srgb,var(--bg) 55%,transparent);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
