@@ -312,6 +312,15 @@ section>.month-divider:first-of-type,h2+div>.month-divider:first-child{margin-to
  #inputView .actions #analyze{flex:0 0 calc(50% - 6px);background:color-mix(in srgb,var(--accent) 14%,var(--glass-strong));color:var(--accent);border:1.5px solid color-mix(in srgb,var(--accent) 40%,transparent);box-shadow:0 6px 18px rgba(40,44,110,.16);font-weight:700}
  #analyze:disabled{opacity:.6}
 }
+/* "Sisesta info" ikoon; tumedas teemas mobiilinupp nähtavam */
+#analyze{display:inline-flex;align-items:center;justify-content:center;gap:8px}
+#analyze .enter-icon{width:20px;height:20px;flex:0 0 auto}
+@media(max-width:740px){
+ :root[data-theme="dark"] #inputView .actions #analyze{background:color-mix(in srgb,var(--accent) 30%,var(--glass-strong));color:#d9d5ff;border-color:color-mix(in srgb,var(--accent) 75%,transparent);box-shadow:0 6px 20px rgba(0,0,0,.45)}
+}
+@media(max-width:740px) and (prefers-color-scheme:dark){
+ :root:not([data-theme="light"]) #inputView .actions #analyze{background:color-mix(in srgb,var(--accent) 30%,var(--glass-strong));color:#d9d5ff;border-color:color-mix(in srgb,var(--accent) 75%,transparent);box-shadow:0 6px 20px rgba(0,0,0,.45)}
+}
 </style>
 <style>
 .login-overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:24px;background:color-mix(in srgb,var(--bg) 55%,transparent);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
@@ -349,7 +358,7 @@ body:after{content:'';position:absolute;top:0;left:0;right:0;height:180px;z-inde
 <div id="drop" class="drop"><div class="image-actions"><button id="pick" type="button">+ Lisa pildid / PDF</button><button id="camera" type="button" title="Pildista kutset"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 6h4l2-3h4l2 3h4a1 1 0 0 1 1 1v13H3V7a1 1 0 0 1 1-1Z"/><circle cx="12" cy="13" r="4"/></svg>Pildista</button></div><input id="files" type="file" accept="image/png,image/jpeg,image/webp,application/pdf" multiple hidden><input id="cameraFile" type="file" accept="image/*" capture="environment" hidden><p class="hint">Või lohista siia / kleebi Ctrl+V.<br>Kuni 3 faili · PNG, JPG, WebP, PDF · kuni 4 MB fail, kokku 8 MB</p><div id="images" class="images"></div></div>
 <details id="refine" class="refine"><summary><span class="refine-title">Täpsusta</span> <span id="refineSummary" class="refine-summary"></span></summary><div class="row"><div><label for="person">Kelle kohta?</label><div id="personPicker" class="person-chips" role="group" aria-label="Kelle kohta"></div><select id="person" hidden><option value="">Tuvasta sisust</option><option value="Eia-Liisa">Eia</option><option value="Otto Johan">Otto</option><option value="Elle-Riin">Elle</option><option value="Kogu pere">Pere</option><option value="__other__">Muu – sisesta</option></select><input id="personOther" type="text" maxlength="80" placeholder="Sisesta nimi" aria-label="Muu nimi" hidden></div>
 <div><label for="sourceDate">Algse sõnumi kuupäev</label><input type="date" id="sourceDate"><p class="hint">Vaikimisi täna. Vanema teate puhul vali sõnumi kuupäev.</p></div></div></details>
-<div class="actions"><button id="analyze" class="primary" type="button">Sisesta info →</button></div>
+<div class="actions"><button id="analyze" class="primary" type="button">Sisesta info<svg class="enter-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 4h7a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-7"/><path d="M11 4a2 2 0 0 0-2 2v2M11 20a2 2 0 0 1-2-2v-2"/><path d="M3 12h11M11 9l3 3-3 3"/></svg></button></div>
 <p class="hint">Töötlemisel saadetakse lisatud tekst ja pildid Gemini API-le.</p>
 <p class="hint">Vaata tulemus üle ja salvesta iga kirje eraldi. Algne fail jääb salvestamisel Drive’i alles.</p>
 <p id="status" class="status" role="status" aria-live="polite"></p>
@@ -770,7 +779,7 @@ function renderOverview(){
 }
 function status(text, error=false){updateRefine();$('status').textContent=text;$('status').classList.toggle('error',error);}
 function resetResult(){result=null;sourceSnapshot=null;$('results').hidden=true;$('cards').replaceChildren();}
-function setBusy(value){busy=value;['analyze','pick','camera','cameraFile','text','person','personOther','sourceDate','files'].forEach(id=>$(id).disabled=value);$('analyze').textContent=value?'Töötlen…':'Sisesta info →';renderImages();}
+function setBusy(value){busy=value;['analyze','pick','camera','cameraFile','text','person','personOther','sourceDate','files'].forEach(id=>$(id).disabled=value);$('analyze').innerHTML=value?'Töötlen…':'Sisesta info'+"<svg class=\"enter-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M11 4h7a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-7\"/><path d=\"M11 4a2 2 0 0 0-2 2v2M11 20a2 2 0 0 1-2-2v-2\"/><path d=\"M3 12h11M11 9l3 3-3 3\"/></svg>";renderImages();}
 function sourcePerson(){return $('person').value==='__other__' ? $('personOther').value.trim() : $('person').value;}
 $('person').onchange=()=>{$('personOther').hidden=$('person').value!=='__other__';$('personOther').value='';resetResult();if(!$('personOther').hidden)$('personOther').focus();};
 $('personOther').oninput=resetResult;
