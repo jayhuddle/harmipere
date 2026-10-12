@@ -413,8 +413,67 @@ header{padding-top:calc(16px + env(safe-area-inset-top))}
 :root[data-theme="dark"]{--status:#13122a}
 body:after{content:'';position:absolute;top:0;left:0;right:0;height:180px;z-index:-1;pointer-events:none;background:linear-gradient(var(--status) 0,var(--status) 24px,color-mix(in srgb,var(--status) 55%,transparent) 90px,transparent 180px)}
 </style>
+<style>
+#splash{--sp-bg:#eceefa;--sp-ink:#1b2140;--sp-glass:rgba(255,255,255,.28);--sp-grad:linear-gradient(90deg,#4b3ff0,#a24bff);--sp-blob:.55;
+ position:fixed;inset:0;z-index:300;background:var(--sp-bg);overflow:hidden;transition:opacity .5s ease,transform .5s ease;cursor:pointer;-webkit-tap-highlight-color:transparent}
+:root[data-theme="dark"] #splash{--sp-bg:#0d0f1e;--sp-ink:#eceefe;--sp-glass:rgba(18,20,44,.38);--sp-grad:linear-gradient(90deg,#8c82ff,#c4a1ff);--sp-blob:.4}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #splash{--sp-bg:#0d0f1e;--sp-ink:#eceefe;--sp-glass:rgba(18,20,44,.38);--sp-grad:linear-gradient(90deg,#8c82ff,#c4a1ff);--sp-blob:.4}}
+#splash.sp-out{opacity:0;transform:scale(1.04);pointer-events:none}
+.sp-drift{position:absolute;inset:0;animation:sp-drift 6s ease-in-out infinite alternate}
+@keyframes sp-drift{to{transform:translate(10px,-14px) scale(1.04)}}
+.sp-bl{position:absolute;border-radius:50%;filter:blur(38px);opacity:0;animation:sp-bl 1.1s ease forwards}
+.sp-b1{width:66vmin;height:66vmin;left:-16vmin;top:-10vmin;background:#7c6cff}
+.sp-b2{width:60vmin;height:60vmin;right:-18vmin;top:22%;background:#2dd4bf;animation-delay:.1s}
+.sp-b3{width:68vmin;height:68vmin;right:-10vmin;bottom:-16vmin;background:#f472b6;animation-delay:.2s}
+.sp-b4{width:56vmin;height:56vmin;left:-16vmin;bottom:12%;background:#60a5fa;animation-delay:.15s}
+@keyframes sp-bl{to{opacity:var(--sp-blob)}}
+.sp-glass{position:absolute;inset:0;background:var(--sp-glass);-webkit-backdrop-filter:blur(26px) saturate(160%);backdrop-filter:blur(26px) saturate(160%)}
+.sp-center{position:absolute;left:0;right:0;top:50%;transform:translateY(-58%);display:flex;flex-direction:column;align-items:center}
+.sp-tile{width:118px;height:118px;border-radius:32px;background:linear-gradient(135deg,#3b2ff0,#6d3cf5 55%,#a24bff);display:flex;align-items:center;justify-content:center;
+ box-shadow:0 18px 44px rgba(91,60,245,.45),inset 0 1px 0 rgba(255,255,255,.4);opacity:0;transform:scale(.7);animation:sp-tile .6s cubic-bezier(.2,.9,.3,1.2) .2s forwards}
+@keyframes sp-tile{to{opacity:1;transform:scale(1)}}
+.sp-tile svg{width:84px;height:84px;overflow:visible}
+.sp-h{transform-box:fill-box;transform-origin:center;opacity:0;animation:sp-pop .55s cubic-bezier(.2,1.4,.4,1) forwards}
+.sp-h1{animation-delay:.55s}.sp-h2{animation-delay:.67s}.sp-h3{animation-delay:.79s}.sp-h4{animation-delay:.91s}.sp-h5{animation-delay:1.03s}
+@keyframes sp-pop{0%{opacity:0;transform:translate(var(--x),var(--y)) scale(0)}70%{opacity:1;transform:translate(0,0) scale(1.18)}100%{opacity:1;transform:none}}
+.sp-heart{transform-box:fill-box;transform-origin:center;opacity:0;animation:sp-hp .5s ease .4s forwards,sp-beat 1.1s ease-in-out 1.5s infinite}
+@keyframes sp-hp{from{opacity:0;transform:scale(.2)}to{opacity:1;transform:scale(1)}}
+@keyframes sp-beat{0%,100%{transform:scale(1)}18%{transform:scale(1.14)}36%{transform:scale(1)}}
+.sp-name{margin-top:26px;font-family:'Outfit',system-ui,sans-serif;font-weight:700;font-size:28px;color:var(--sp-ink);letter-spacing:-.4px;opacity:0;transform:translateY(10px);animation:sp-up .5s ease 1.25s forwards}
+.sp-tag{font-family:'Righteous','Outfit',system-ui,sans-serif;font-size:26px;margin-top:2px;background:var(--sp-grad);-webkit-background-clip:text;background-clip:text;color:transparent;opacity:0;transform:translateY(10px);animation:sp-up .5s ease 1.5s forwards}
+@keyframes sp-up{to{opacity:1;transform:none}}
+.sp-bar{position:absolute;left:50%;bottom:11%;width:min(180px,50vw);height:3px;margin-left:calc(min(180px,50vw)/-2);border-radius:2px;background:rgba(91,84,232,.18);overflow:hidden;opacity:0;animation:sp-up .4s ease 1.7s forwards}
+.sp-bar:after{content:'';position:absolute;inset:0;width:40%;background:linear-gradient(90deg,transparent,#6d3cf5,transparent);animation:sp-sh 1.1s ease-in-out 1.7s infinite}
+@keyframes sp-sh{from{transform:translateX(-100%)}to{transform:translateX(260%)}}
+@media (prefers-reduced-motion:reduce){
+ .sp-drift,.sp-heart,.sp-bar:after{animation:none}
+ .sp-tile,.sp-h,.sp-name,.sp-tag,.sp-bar{animation:sp-up .4s ease .1s forwards;transform:none}
+ .sp-h,.sp-heart{opacity:1;animation:none}
+}
+</style>
 </head>
 <body>
+<div id="splash" aria-hidden="true"><div class="sp-drift"><i class="sp-bl sp-b1"></i><i class="sp-bl sp-b2"></i><i class="sp-bl sp-b3"></i><i class="sp-bl sp-b4"></i></div><div class="sp-glass"></div>
+<div class="sp-center"><div class="sp-tile"><svg viewBox="0 0 24 24" fill="#fff"><circle class="sp-h sp-h1" cx="12" cy="4.4" r="2.4" style="--x:0.0px;--y:-8.1px"/><circle class="sp-h sp-h2" cx="19.2" cy="9.6" r="2.4" style="--x:8.8px;--y:-3.1px"/><circle class="sp-h sp-h3" cx="16.5" cy="18.1" r="2.4" style="--x:5.0px;--y:7.5px"/><circle class="sp-h sp-h4" cx="7.5" cy="18.1" r="2.4" style="--x:-5.0px;--y:7.5px"/><circle class="sp-h sp-h5" cx="4.8" cy="9.6" r="2.4" style="--x:-8.8px;--y:-3.1px"/><path class="sp-heart" d="M12 15l-2.6-2.5a1.6 1.6 0 0 1 2.6-2 1.6 1.6 0 0 1 2.6 2Z"/></svg></div>
+<div class="sp-name">Härmipere</div><div class="sp-tag">tegemised</div></div><div class="sp-bar"></div></div>
+<script>
+(function(){
+ const MIN=2200,MAX=9000,started=Date.now(),clr=t=>{if(typeof clearTimeout==='function')clearTimeout(t);};let ready=false,closed=false,timer=null;
+ function close(){
+  if(closed)return;closed=true;clr(timer);const node=document.getElementById('splash');if(!node)return;
+  node.classList.add('sp-out');setTimeout(()=>{if(node.parentNode)node.parentNode.removeChild(node);},600);
+ }
+ function check(){
+  if(closed)return;const elapsed=Date.now()-started;
+  if(elapsed>=MAX||(ready&&elapsed>=MIN)){close();return;}
+  clr(timer);timer=setTimeout(check,Math.max(50,ready?MIN-elapsed:300));
+ }
+ window.pereSplashReady=()=>{ready=true;check();};
+ window.pereSplashClose=close;
+ const node=document.getElementById('splash');if(node)node.addEventListener('click',close);
+ timer=setTimeout(check,MIN);
+})();
+</script>
 <div id="loginOverlay" class="login-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="loginTitle">
 <div class="login-card panel"><span class="brand-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="4.4" r="2.4"/><circle cx="19.2" cy="9.6" r="2.4"/><circle cx="16.5" cy="18.1" r="2.4"/><circle cx="7.5" cy="18.1" r="2.4"/><circle cx="4.8" cy="9.6" r="2.4"/><path d="M12 15l-2.6-2.5a1.6 1.6 0 0 1 2.6-2 1.6 1.6 0 0 1 2.6 2Z"/></svg></span>
 <h1 id="loginTitle">Härmipere</h1><p>Logi sisse oma Google'i kontoga. Selles seadmes on seda vaja teha üks kord.</p>
@@ -500,6 +559,7 @@ body:after{content:'';position:absolute;top:0;left:0;right:0;height:180px;z-inde
   }catch(error){loginStatus(error.message||'Sisselogimine ebaõnnestus.',true);}
  }
  function showLogin(){
+  if(window.pereSplashReady)window.pereSplashReady();
   const overlay=document.getElementById('loginOverlay');if(!overlay)return;overlay.hidden=false;
   if(!gisReady||buttonShown)return;
   if(!config.clientId){loginStatus('Sisselogimine pole seadistatud (config.js).',true);return;}
@@ -636,13 +696,13 @@ function loadOverview(){
  if(overviewLoading)return;
  if(!window.google?.script?.run){overviewStatus('Salvestatud info avaneb Apps Scripti veebirakenduses.',true);return;}
  overviewLoading=true;$('refreshOverview').disabled=true;
- if(!savedOverview){const cached=readCache('pere-overview');if(cached){cached.today=tallinnToday();savedOverview=cached;syncPersonOptions(cached.items);renderOverview();}}
+ if(!savedOverview){const cached=readCache('pere-overview');if(cached){cached.today=tallinnToday();savedOverview=cached;syncPersonOptions(cached.items);renderOverview();if(window.pereSplashReady)window.pereSplashReady();}}
  overviewStatus(savedOverview?'':'Laadin pereinfot…');
  google.script.run.withSuccessHandler(data=>{
   overviewLoading=false;$('refreshOverview').disabled=false;savedOverview=data;writeCache('pere-overview',data);
   syncPersonOptions(data.items);
-  renderOverview();overviewStatus(overviewNotice||(data.limited?'Kuvatud on viimased 1000 salvestatud kirjet.':''));overviewNotice='';
- }).withFailureHandler(error=>{overviewLoading=false;$('refreshOverview').disabled=false;overviewStatus((error.message||'Pereinfo laadimine ebaõnnestus.')+(savedOverview?' Kuvatud on viimati laaditud andmed.':''),true);}).pereListSaved();
+  if(window.pereSplashReady)window.pereSplashReady();renderOverview();overviewStatus(overviewNotice||(data.limited?'Kuvatud on viimased 1000 salvestatud kirjet.':''));overviewNotice='';
+ }).withFailureHandler(error=>{if(window.pereSplashReady)window.pereSplashReady();overviewLoading=false;$('refreshOverview').disabled=false;overviewStatus((error.message||'Pereinfo laadimine ebaõnnestus.')+(savedOverview?' Kuvatud on viimati laaditud andmed.':''),true);}).pereListSaved();
 }
 function shortPerson(person){return {'Eia-Liisa':'Eia','Otto Johan':'Otto','Elle-Riin':'Elle','Kogu pere':'Pere'}[person]||person;}
 function savedPersonTag(parent,person){
