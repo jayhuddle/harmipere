@@ -552,6 +552,13 @@ function normalizeTime(value){const text=String(value||'').trim(),digits=text.re
  else if(digits.length<=2){h=digits;m='00';}else if(digits.length===3){h='0'+digits[0];m=digits.slice(1);}else{h=digits.slice(0,2);m=digits.slice(2,4);}
  if(Number(h)>23||Number(m)>59)return String(value);return h.padStart(2,'0')+':'+m;}
 function showResultsCard(){setTimeout(()=>{const target=$('results').hidden?$('inputView'):$('results');target.scrollIntoView({behavior:'smooth',block:'start'});},80);}
+function syncPersonOptions(items){
+ const select=$('overviewPerson'),selected=select.value,known=['Eia-Liisa','Otto Johan','Elle-Riin','Kogu pere'];
+ select.replaceChildren();
+ const all=document.createElement('option');all.value='';all.textContent='Kõik pereliikmed';select.append(all);
+ [...new Set(known.concat((items||[]).map(item=>item.person).filter(Boolean)))].forEach(person=>{const option=document.createElement('option');option.value=person;option.textContent=shortPerson(person);select.append(option);});
+ select.value=[...select.options].some(option=>option.value===selected)?selected:'';
+}
 function tallinnToday(){return new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Tallinn'}).format(new Date());}
 // Teema: automaatne (seadme järgi) → hele → tume. Valik jääb selle brauseri mällu.
 const themeIcons={auto:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16Z" fill="currentColor"/></svg>',
@@ -629,16 +636,11 @@ function loadOverview(){
  if(overviewLoading)return;
  if(!window.google?.script?.run){overviewStatus('Salvestatud info avaneb Apps Scripti veebirakenduses.',true);return;}
  overviewLoading=true;$('refreshOverview').disabled=true;
- if(!savedOverview){const cached=readCache('pere-overview');if(cached){cached.today=tallinnToday();savedOverview=cached;renderOverview();}}
+ if(!savedOverview){const cached=readCache('pere-overview');if(cached){cached.today=tallinnToday();savedOverview=cached;syncPersonOptions(cached.items);renderOverview();}}
  overviewStatus(savedOverview?'':'Laadin pereinfot…');
  google.script.run.withSuccessHandler(data=>{
   overviewLoading=false;$('refreshOverview').disabled=false;savedOverview=data;writeCache('pere-overview',data);
-  const selected=$('overviewPerson').value;$('overviewPerson').replaceChildren();
-  const all=document.createElement('option');all.value='';all.textContent='Kõik pereliikmed';$('overviewPerson').append(all);
-  [...new Set(data.items.map(item=>item.person).filter(Boolean))].sort().forEach(person=>{
-   const option=document.createElement('option');option.value=person;option.textContent=shortPerson(person);$('overviewPerson').append(option);
-  });
-  $('overviewPerson').value=[...$('overviewPerson').options].some(option=>option.value===selected)?selected:'';
+  syncPersonOptions(data.items);
   renderOverview();overviewStatus(overviewNotice||(data.limited?'Kuvatud on viimased 1000 salvestatud kirjet.':''));overviewNotice='';
  }).withFailureHandler(error=>{overviewLoading=false;$('refreshOverview').disabled=false;overviewStatus((error.message||'Pereinfo laadimine ebaõnnestus.')+(savedOverview?' Kuvatud on viimati laaditud andmed.':''),true);}).pereListSaved();
 }
@@ -954,6 +956,7 @@ function renderCalendar(){
 }
 $('calendarButton').onclick=openCalendar;$('calScrim').onclick=closeCalendar;
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&calOpen){event.preventDefault();closeCalendar();}});
+syncPersonOptions([]);renderPersonChips();
 function status(text, error=false){updateRefine();$('status').textContent=text;$('status').classList.toggle('error',error);}
 function resetResult(){result=null;sourceSnapshot=null;$('results').hidden=true;$('cards').replaceChildren();}
 function setBusy(value){busy=value;['analyze','pick','camera','cameraFile','text','person','personOther','sourceDate','files'].forEach(id=>$(id).disabled=value);$('analyze').innerHTML=value?'Töötlen…':'Sisesta info'+"<svg class=\"enter-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M10 4h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-8\"/><path d=\"M3 12h11.5\"/><path d=\"M11.3 8.8l3.2 3.2-3.2 3.2\"/></svg>";renderImages();}
