@@ -365,9 +365,13 @@ section>.month-divider:first-of-type,h2+div>.month-divider:first-child{margin-to
 .cal-overlay{position:fixed;inset:0;z-index:90;display:flex;align-items:flex-end;justify-content:center;overscroll-behavior:contain}
 .cal-overlay[hidden]{display:none}
 body:has(.cal-overlay:not([hidden])){overflow:hidden}
-.cal-scrim{position:absolute;inset:0;background:rgba(20,22,52,.42);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);animation:cal-fade .2s ease}
+.cal-scrim{position:absolute;inset:0;background:rgba(20,22,52,.26);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);animation:cal-fade .2s ease}
 .cal-sheet{position:relative;width:100%;max-width:520px;max-height:90vh;overflow:auto;border-radius:26px 26px 0 0;padding:8px 16px calc(18px + env(safe-area-inset-bottom));
- background:color-mix(in srgb,var(--bg) 90%,#fff);border:1px solid var(--stroke);border-bottom:0;box-shadow:0 -14px 40px rgba(20,22,52,.28);animation:cal-up .25s cubic-bezier(.2,.8,.2,1)}
+ background:rgba(255,255,255,.56);-webkit-backdrop-filter:blur(30px) saturate(180%);backdrop-filter:blur(30px) saturate(180%);
+ border:1px solid rgba(255,255,255,.7);border-bottom:0;box-shadow:0 -14px 44px rgba(20,22,52,.26),inset 0 1px 0 rgba(255,255,255,.75);animation:cal-up .25s cubic-bezier(.2,.8,.2,1)}
+:root[data-theme="dark"] .cal-sheet{background:rgba(26,28,56,.58);border-color:rgba(255,255,255,.14);box-shadow:0 -14px 44px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.12)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cal-sheet{background:rgba(26,28,56,.58);border-color:rgba(255,255,255,.14);box-shadow:0 -14px 44px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.12)}}
+.cal-card{-webkit-backdrop-filter:none;backdrop-filter:none;background:var(--glass-strong)}
 @keyframes cal-up{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
 @keyframes cal-fade{from{opacity:0}to{opacity:1}}
 @media(min-width:741px){.cal-overlay{align-items:center}.cal-sheet{border-radius:26px;border-bottom:1px solid var(--stroke);max-height:88vh}}
