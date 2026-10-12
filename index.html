@@ -352,12 +352,50 @@ section>.month-divider:first-of-type,h2+div>.month-divider:first-child{margin-to
 /* Mobiil: Pere ülevaate päis sama ritmiga mis sisestamise leht (8 px / 15 px, pealkiri 24 px) */
 @media(max-width:740px){
  #overviewView .overview-top{position:relative;display:block;min-height:0}
- #overviewView .overview-top>div{padding-right:52px}
- #overviewView #refreshOverview{position:absolute;right:0;top:0;margin:0}
+ #overviewView .overview-top>div:first-child{padding-right:104px}
+ #overviewView .top-actions{position:absolute;right:0;top:0;display:flex;gap:8px}
+ #overviewView .top-actions .icon-button{margin:0}
  #overviewView .overview-title h1{font-size:24px;margin:8px 0 0}
  #overviewView .overview-date{font-size:14px}
  #overviewView>.saved-meta{margin:15px 0 0}
 }
+/* Pere ülevaade: päise nupud ühes grupis */
+.top-actions{display:flex;gap:8px;align-items:flex-start}
+/* ---- Kuu paneel (alt tulev) ---- */
+.cal-overlay{position:fixed;inset:0;z-index:90;display:flex;align-items:flex-end;justify-content:center;overscroll-behavior:contain}
+.cal-overlay[hidden]{display:none}
+body:has(.cal-overlay:not([hidden])){overflow:hidden}
+.cal-scrim{position:absolute;inset:0;background:rgba(20,22,52,.42);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);animation:cal-fade .2s ease}
+.cal-sheet{position:relative;width:100%;max-width:520px;max-height:90vh;overflow:auto;border-radius:26px 26px 0 0;padding:8px 16px calc(18px + env(safe-area-inset-bottom));
+ background:color-mix(in srgb,var(--bg) 90%,#fff);border:1px solid var(--stroke);border-bottom:0;box-shadow:0 -14px 40px rgba(20,22,52,.28);animation:cal-up .25s cubic-bezier(.2,.8,.2,1)}
+@keyframes cal-up{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+@keyframes cal-fade{from{opacity:0}to{opacity:1}}
+@media(min-width:741px){.cal-overlay{align-items:center}.cal-sheet{border-radius:26px;border-bottom:1px solid var(--stroke);max-height:88vh}}
+.cal-grab{width:40px;height:4px;border-radius:2px;background:color-mix(in srgb,var(--muted) 45%,transparent);margin:2px auto 10px;touch-action:none}
+.cal-head{display:flex;align-items:center;gap:4px;margin-bottom:6px}
+.cal-title{flex:1;text-align:center;font-size:18px;margin:0}
+.cal-nav{background:none;border:0;box-shadow:none;width:40px;height:40px;padding:0;font-size:22px;line-height:1;color:var(--accent);border-radius:12px;display:inline-flex;align-items:center;justify-content:center}
+.cal-today{width:auto;padding:0 12px;font-size:13px;font-weight:650;background:color-mix(in srgb,var(--accent) 12%,transparent)}
+.cal-close{color:var(--muted)}
+.cal-weekdays,.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);text-align:center}
+.cal-weekdays span{font-size:11px;font-weight:650;color:var(--soft);padding:4px 0}
+.cal-day{height:46px;margin:1px;padding:0;border-radius:13px;background:transparent;border:0;box-shadow:none;color:var(--ink);font-size:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+.cal-day.today{box-shadow:inset 0 0 0 1.5px var(--accent);font-weight:700}
+.cal-day.over{color:var(--danger)}
+.cal-day.sel{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;box-shadow:0 6px 16px color-mix(in srgb,var(--accent) 40%,transparent)}
+.cal-dots{display:flex;gap:3px;align-items:center;height:7px}
+.cal-dot{display:inline-block;width:6px;height:6px;border-radius:50%}
+.cal-task{display:inline-block;width:6px;height:6px;border-radius:2px;border:1.5px solid #f59e0b;box-sizing:border-box}
+.cal-day.sel .cal-dot{box-shadow:0 0 0 1.2px #fff}.cal-day.sel .cal-task{border-color:#fff}
+.cal-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:11px;color:var(--muted);margin:8px 6px 4px}
+.cal-legend span{display:inline-flex;align-items:center;gap:5px}
+.cal-dayhead{display:flex;justify-content:space-between;align-items:center;margin:14px 4px 6px;font-family:'Outfit',system-ui,sans-serif;font-size:13px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted)}
+.cal-dayhead .link-button{text-transform:none;letter-spacing:0;font-family:inherit;font-size:13px}
+.cal-card{margin:8px 0;padding:11px 14px;cursor:pointer}
+.cal-card h3{font-size:15px;margin:0}
+.cal-card p{margin:4px 0 0}
+.cal-card:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 35%,transparent)}
+@media (prefers-reduced-motion:reduce){.cal-sheet,.cal-scrim{animation:none}}
 </style>
 <style>
 .login-overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:24px;background:color-mix(in srgb,var(--bg) 55%,transparent);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
@@ -407,7 +445,7 @@ body:after{content:'';position:absolute;top:0;left:0;right:0;height:180px;z-inde
 </section>
 </div>
 <section id="overviewView" hidden aria-label="Salvestatud pereinfo">
-<div class="overview-top"><div><div class="eyebrow">Kõik vajalik käepärast</div><div class="overview-title"><h1>Pere ülevaade</h1><span id="overviewDate" class="overview-date"></span></div></div><button id="refreshOverview" class="icon-button" type="button" aria-label="Värskenda" title="Värskenda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.8-4M4 4v3.5h3.5"/><path d="M4 13a8 8 0 0 0 14.8 4M20 20v-3.5h-3.5"/></svg></button></div>
+<div class="overview-top"><div><div class="eyebrow">Kõik vajalik käepärast</div><div class="overview-title"><h1>Pere ülevaade</h1><span id="overviewDate" class="overview-date"></span></div></div><div class="top-actions"><button id="calendarButton" class="icon-button" type="button" aria-label="Kalender" title="Kalender" aria-haspopup="dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 17.5h.01M12 17.5h.01"/></svg></button><button id="refreshOverview" class="icon-button" type="button" aria-label="Värskenda" title="Värskenda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.8-4M4 4v3.5h3.5"/><path d="M4 13a8 8 0 0 0 14.8 4M20 20v-3.5h-3.5"/></svg></button></div></div>
 <p class="saved-meta">Üritused ja tegemised ühel lehel</p>
 <div class="overview-filters"><div id="personChips" class="person-chips" role="group" aria-label="Pereliige"></div><select id="overviewPerson" hidden aria-label="Filtreeri pereliikme järgi"><option value="">Kõik pereliikmed</option></select></div>
 <p id="overviewStatus" class="status overview-message" role="status" aria-live="polite"></p>
@@ -417,6 +455,7 @@ body:after{content:'';position:absolute;top:0;left:0;right:0;height:180px;z-inde
 <section id="mailView" hidden aria-label="Perepostkasti kirjad"><div class="overview-top"><h1>E-kirjad</h1><button id="refreshMail" class="icon-button" type="button" aria-label="Värskenda" title="Värskenda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.8-4M4 4v3.5h3.5"/><path d="M4 13a8 8 0 0 0 14.8 4M20 20v-3.5h-3.5"/></svg></button></div><p class="saved-meta">Automaatika lisab selged uued sündmused ja ülesanded. Siin saad üle vaadata ebaselge info ja töötluse tulemused. „Peida” jätab Gmaili kirja alles.</p><div class="overview-filters"><label><input id="showProcessedMail" type="checkbox">Näita ka automaatselt töödeldud kirju</label></div><p id="mailStatus" class="status" role="status" aria-live="polite"></p><div id="mailCards"></div></section>
 <footer>Kuni 40 töötluskatset päevas · AI tulemus vajab ülevaatamist · <button type="button" class="logout-link" onclick="pereLogout()">Logi välja</button></footer>
 <div id="undoToast" class="undo-toast" role="status" aria-live="polite" hidden><span id="undoText"></span><button id="undoButton" type="button">Võta tagasi</button></div>
+<div id="calOverlay" class="cal-overlay" hidden><div id="calScrim" class="cal-scrim"></div><div id="calSheet" class="cal-sheet" role="dialog" aria-modal="true" aria-label="Kuukalender"></div></div>
 </main>
 <script src="config.js"></script>
 <script>
@@ -633,7 +672,7 @@ document.addEventListener('click',event=>{if(activeCancelMenu&&!activeCancelMenu
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&activeCancelMenu){event.preventDefault();activeCancelMenu.close(true);}});
 // Pere ülevaade (asendab Index-enne-klaasi.html renderOverview funktsiooni; build-glass-index.cjs paneb selle sisse).
 // "See nädal" (täna + 6 päeva, üle tähtaja ülesanded ülal), allpool kuude kaupa ülejäänu ilma kordusteta.
-let overviewEventCards=new Map(),pendingUndo=null,overviewEditing=null,overviewNotice='';
+let overviewEventCards=new Map(),overviewTaskCards=new Map(),pendingUndo=null,overviewEditing=null,overviewNotice='';
 // Muutmine: pliiats avab kaardi sees vormi; ülesandel ka "+1 päev / +1 nädal". Server muudab tabelit ja üritusel ka kalendrit.
 const pencilIcon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4Z"/><path d="m13.5 6.5 4 4"/></svg>';
 function editButton(item){
@@ -751,14 +790,14 @@ function renderOverview(){
  const person=$('overviewPerson').value,items=savedOverview.items.filter(item=>!person||item.person===person);
  const inWeek=item=>isTask(item)?item.status!=='Tehtud'&&!!item.deadline&&item.deadline<=weekEnd:item.kind==='event'&&item.date>=today&&item.date<=weekEnd;
  const conflicts=eventConflicts(savedOverview.items.filter(item=>item.kind==='event'&&item.date>=today));
- overviewEventCards=new Map();
+ overviewEventCards=new Map();overviewTaskCards=new Map();
  if(overviewEditing&&!savedOverview.items.some(item=>item.key===overviewEditing.key))overviewEditing=null;
  const editing=(item,parent)=>{if(!overviewEditing||overviewEditing.key!==item.key)return false;const card=document.createElement('article');editorCard(item,card);
-  if(item.kind==='event')overviewEventCards.set(item.key,card);parent.append(card);return true;};
+  if(item.kind==='event')overviewEventCards.set(item.key,card);else overviewTaskCards.set(item.key,card);parent.append(card);return true;};
  function taskCard(item,parent){
   if(editing(item,parent))return;
   const due=item.status!=='Tehtud'&&item.deadline?(item.deadline<today?'due-overdue':item.deadline===today?'due-today':item.deadline===tomorrow?'due-soon':''):'';
-  const card=document.createElement('article');card.className='saved-card'+(item.status==='Tehtud'?' done':'')+(due?' '+due:'');
+  const card=document.createElement('article');card.className='saved-card'+(item.status==='Tehtud'?' done':'')+(due?' '+due:'');overviewTaskCards.set(item.key,card);
   const heading=document.createElement('div');heading.className='saved-event-heading';
   savedText(heading,'h3',item.title+(item.kind==='invoice'&&item.amount?' · '+item.amount+' '+item.currency:''));savedPersonTag(heading,item.person);card.append(heading);
   if(item.deadline){const late=item.status!=='Tehtud'&&item.deadline<today,isToday=item.deadline===today,soon=item.status!=='Tehtud'&&item.deadline===tomorrow;
@@ -829,7 +868,92 @@ function renderOverview(){
  if(past.length){const details=document.createElement('details');savedText(details,'summary','Möödunud üritused ('+past.length+')');
   let pastGroup=null;past.reverse().forEach(item=>{const group=monthLabel(item.date);if(group!==pastGroup){monthDivider(details,group);pastGroup=group;}eventCard(item,details);});
   $('savedEvents').append(details);}
+ if(calOpen)renderCalendar();
 }
+
+// ---- Kuuvaade: alt tulev paneel (kalendriikoon Pere ülevaate päises) ----
+let calOpen=false,calMonth='',calSel='';
+const calPersonColor={'Otto Johan':'#0ea5e9','Eia-Liisa':'#f59e0b','Elle-Riin':'#ec4899','Kogu pere':'#7e22ce'};
+function calItems(){
+ const person=$('overviewPerson').value;
+ return savedOverview.items.filter(item=>(!person||item.person===person)&&((item.kind==='event'&&item.date)||(['task','invoice'].includes(item.kind)&&item.deadline&&item.status!=='Tehtud')));
+}
+const calDay=item=>item.kind==='event'?item.date:item.deadline;
+function calMonthLabel(ym){const [y,m]=ym.split('-').map(Number);const text=new Intl.DateTimeFormat('et-EE',{month:'long',year:'numeric'}).format(new Date(Date.UTC(y,m-1,15,12)));return text.charAt(0).toUpperCase()+text.slice(1);}
+function calShift(ym,delta){const [y,m]=ym.split('-').map(Number);return new Date(Date.UTC(y,m-1+delta,1,12)).toISOString().slice(0,7);}
+function openCalendar(){
+ if(!savedOverview)return;
+ calOpen=true;calMonth=savedOverview.today.slice(0,7);calSel=savedOverview.today;
+ $('calOverlay').hidden=false;renderCalendar();
+ const close=$('calSheet').querySelector&&$('calSheet').querySelector('.cal-close');if(close&&close.focus)close.focus();
+}
+function closeCalendar(){calOpen=false;$('calOverlay').hidden=true;if($('calendarButton').focus)$('calendarButton').focus();}
+function focusItemKey(key){
+ const card=overviewEventCards.get(key)||overviewTaskCards.get(key);
+ closeCalendar();
+ if(!card){overviewStatus('Kirjet ei leitud.',true);return;}
+ const details=card.closest&&card.closest('details');if(details)details.open=true;
+ const inWeek=$('savedWeek').contains&&$('savedWeek').contains(card);
+ if(overviewTaskCards.get(key)===card&&!inWeek&&$('tasksSection').classList.contains('collapsed'))$('tasksToggle').onclick();
+ card.scrollIntoView({behavior:'smooth',block:'center'});card.classList.add('flash');setTimeout(()=>card.classList.remove('flash'),1800);
+}
+function renderCalendar(){
+ const sheet=$('calSheet'),today=savedOverview.today,items=calItems(),byDay=new Map();
+ items.forEach(item=>{const day=calDay(item);if(!byDay.has(day))byDay.set(day,{events:[],tasks:[]});byDay.get(day)[item.kind==='event'?'events':'tasks'].push(item);});
+ const conflicts=eventConflicts(items.filter(item=>item.kind==='event'&&item.date>=today));
+ sheet.replaceChildren();
+ const grab=document.createElement('div');grab.className='cal-grab';grab.setAttribute('aria-hidden','true');
+ let startY=null;
+ grab.addEventListener('touchstart',event=>{startY=event.touches[0].clientY;});
+ grab.addEventListener('touchend',event=>{if(startY!==null&&event.changedTouches[0].clientY-startY>50)closeCalendar();startY=null;});
+ sheet.append(grab);
+ const head=document.createElement('div');head.className='cal-head';
+ const mk=(label,aria,onclick,className='')=>{const button=document.createElement('button');button.type='button';button.className='cal-nav '+className;button.textContent=label;button.setAttribute('aria-label',aria);button.onclick=onclick;return button;};
+ const title=document.createElement('h2');title.className='cal-title';title.textContent=calMonthLabel(calMonth);title.setAttribute('aria-live','polite');
+ const go=delta=>()=>{calMonth=calShift(calMonth,delta);calSel=calMonth===today.slice(0,7)?today:calMonth+'-01';renderCalendar();};
+ head.append(mk('‹','Eelmine kuu',go(-1)),title,mk('›','Järgmine kuu',go(1)));
+ const jump=mk('Täna','Mine tänase päeva juurde',()=>{calMonth=today.slice(0,7);calSel=today;renderCalendar();},'cal-today');
+ jump.hidden=calMonth===today.slice(0,7)&&calSel===today;
+ head.append(jump,mk('×','Sulge kalender',closeCalendar,'cal-close'));sheet.append(head);
+ const [y,m]=calMonth.split('-').map(Number),offset=(new Date(Date.UTC(y,m-1,1,12)).getUTCDay()+6)%7,count=new Date(Date.UTC(y,m,0,12)).getUTCDate();
+ const weekdays=document.createElement('div');weekdays.className='cal-weekdays';['E','T','K','N','R','L','P'].forEach(name=>savedText(weekdays,'span',name));sheet.append(weekdays);
+ const grid=document.createElement('div');grid.className='cal-grid';
+ for(let i=0;i<offset;i++){const blank=document.createElement('span');blank.className='cal-blank';grid.append(blank);}
+ for(let day=1;day<=count;day++){
+  const date=calMonth+'-'+String(day).padStart(2,'0'),entry=byDay.get(date)||{events:[],tasks:[]};
+  const button=document.createElement('button');button.type='button';
+  button.className='cal-day'+(date===today?' today':'')+(date===calSel?' sel':'')+(date<today&&entry.tasks.length?' over':'');
+  button.setAttribute('aria-label',day+'. '+monthsShort[m-1]+(entry.events.length+entry.tasks.length?', '+entry.events.length+' üritust, '+entry.tasks.length+' ülesannet':', tühi'));
+  button.setAttribute('aria-pressed',String(date===calSel));
+  savedText(button,'span',String(day));
+  const dots=document.createElement('span');dots.className='cal-dots';
+  [...new Set(entry.events.map(item=>calPersonColor[canonicalPerson(item.person)]||'#64748b'))].slice(0,3).forEach(color=>{const dot=document.createElement('i');dot.className='cal-dot';dot.style.background=color;dots.append(dot);});
+  if(entry.tasks.length){const task=document.createElement('i');task.className='cal-task';dots.append(task);}
+  button.append(dots);button.onclick=()=>{calSel=date;renderCalendar();};grid.append(button);
+ }
+ sheet.append(grid);
+ const legend=document.createElement('div');legend.className='cal-legend';
+ legend.innerHTML='<span><i class="cal-dot" style="background:#0ea5e9"></i>üritus (inimese värv)</span><span><i class="cal-task"></i>ülesande tähtaeg</span>';sheet.append(legend);
+ const entry=byDay.get(calSel)||{events:[],tasks:[]},list=[...entry.events.slice().sort((a,b)=>(a.time||'').localeCompare(b.time||'')),...entry.tasks];
+ const dayHead=document.createElement('div');dayHead.className='cal-dayhead';savedText(dayHead,'span',shortDay(calSel)+(calSel===today?' · täna':''));
+ if(list.length){const open=document.createElement('button');open.type='button';open.className='link-button';open.textContent='Ava päev ›';open.onclick=()=>focusItemKey(list[0].key);dayHead.append(open);}
+ sheet.append(dayHead);
+ list.forEach(item=>{
+  const card=document.createElement('article');card.className='saved-card cal-card';card.tabIndex=0;card.setAttribute('role','button');
+  const heading=document.createElement('div');heading.className='saved-event-heading';
+  savedText(heading,'h3',item.title+(item.kind==='invoice'&&item.amount?' · '+item.amount+' '+item.currency:''));savedPersonTag(heading,item.person);card.append(heading);
+  if(item.kind==='event'){
+   savedText(card,'p',(item.time?item.time+(item.endTime?'–'+item.endTime:''):'kogu päev')+(item.location?' · '+item.location:''),'saved-meta');
+   if(conflicts.has(item.key))savedText(card,'p','⚠ Kattub: '+conflicts.get(item.key).join('; '),'saved-conflict');
+  }else savedText(card,'p','Tähtaeg'+(item.deadline<today?' · üle tähtaja':item.deadline===today?' · täna':''),'saved-deadline'+(item.deadline<today?' overdue':item.deadline===today?' today':''));
+  card.onclick=()=>focusItemKey(item.key);
+  card.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();focusItemKey(item.key);}});
+  sheet.append(card);
+ });
+ if(!list.length)savedText(sheet,'p','Sel päeval pole midagi kirjas.','empty');
+}
+$('calendarButton').onclick=openCalendar;$('calScrim').onclick=closeCalendar;
+document.addEventListener('keydown',event=>{if(event.key==='Escape'&&calOpen){event.preventDefault();closeCalendar();}});
 function status(text, error=false){updateRefine();$('status').textContent=text;$('status').classList.toggle('error',error);}
 function resetResult(){result=null;sourceSnapshot=null;$('results').hidden=true;$('cards').replaceChildren();}
 function setBusy(value){busy=value;['analyze','pick','camera','cameraFile','text','person','personOther','sourceDate','files'].forEach(id=>$(id).disabled=value);$('analyze').innerHTML=value?'Töötlen…':'Sisesta info'+"<svg class=\"enter-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M10 4h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-8\"/><path d=\"M3 12h11.5\"/><path d=\"M11.3 8.8l3.2 3.2-3.2 3.2\"/></svg>";renderImages();}
