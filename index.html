@@ -497,6 +497,7 @@ function renderPersonPicker(){const box=$('personPicker'),select=$('person');if(
   chip.onclick=()=>{if(select.value===option.value)return;select.value=option.value;select.onchange();updateRefine();};box.append(chip);});}
 function readCache(key){try{const value=JSON.parse(localStorage.getItem(key)||'null');return value&&Array.isArray(value.items)?value:null;}catch(_){return null;}}
 function writeCache(key,data){try{localStorage.setItem(key,JSON.stringify(data));}catch(_){}}
+function showResultsCard(){setTimeout(()=>{const target=$('results').hidden?$('inputView'):$('results');target.scrollIntoView({behavior:'smooth',block:'start'});},80);}
 function tallinnToday(){return new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Tallinn'}).format(new Date());}
 // Teema: automaatne (seadme järgi) → hele → tume. Valik jääb selle brauseri mällu.
 const themeIcons={auto:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16Z" fill="currentColor"/></svg>',
@@ -557,7 +558,7 @@ function loadMail(collect=false){
       sourceSnapshot={text:source.text,sourceDate:source.sourceDate,person:'',images:source.images,mailStatus:source.status};result=source.analysis;renderResult();
       status((processed.includes(source.status)?'See kiri on juba automaatselt töödeldud. Muudatusi tee olemasoleva kirje juures.':'AI eelvaade on valmis. Täpsusta vajalik info ja salvesta.')+(source.note?'\n'+source.note:''));
      }else status('E-kiri laaditud. Kontrolli algse teate kuupäeva ja vajuta „Sisesta info”.'+(source.warnings?'\n'+source.warnings:''));
-     mailStatus('');
+     mailStatus('');showResultsCard();
     }).withFailureHandler(error=>{setBusy(false);open.disabled=false;hide.disabled=false;mailStatus(error.message||'Kirja laadimine ebaõnnestus.',true);}).pereLoadMail(item.id);
    };
    hide.onclick=()=>{hide.disabled=true;open.disabled=true;google.script.run.withSuccessHandler(()=>loadMail()).withFailureHandler(error=>{hide.disabled=false;open.disabled=false;mailStatus(error.message,true);}).pereHideMail(item.id);};
@@ -888,7 +889,7 @@ function field(item,key,label,type='text',index=-1){
  const wrap=document.createElement('div'),id='f-'+Math.random().toString(36).slice(2);
  wrap.className='field';
  const title=document.createElement('label');title.htmlFor=id;title.textContent=label;
- const input=document.createElement(key==='person'?'select':type==='textarea'?'textarea':'input');input.id=id;if(input.tagName==='INPUT')input.type=type;
+ const input=document.createElement(key==='person'?'select':type==='textarea'?'textarea':'input');input.id=id;input.dataset.key=key;if(input.tagName==='INPUT')input.type=type;
  if(key==='person'){
   [['','Vali, kelle kohta'],['Eia-Liisa','Eia'],['Otto Johan','Otto'],['Elle-Riin','Elle'],['Kogu pere','Pere'],['__other__','Muu – sisesta']].forEach(([value,text])=>{const option=document.createElement('option');option.value=value;option.textContent=text;input.append(option);});
   const other=document.createElement('input');other.type='text';other.maxLength=80;other.placeholder='Sisesta nimi';other.setAttribute('aria-label','Muu nimi');
@@ -942,13 +943,28 @@ function renderResult(){
   const save=document.createElement('button');save.type='button';save.className='primary';save.textContent='Salvesta '+labels[item.kind].toLowerCase();
   if(['Automaatselt lisatud','Juba olemas','Ebaoluline'].includes(sourceSnapshot?.mailStatus)){save.disabled=true;save.textContent='Juba töödeldud';}
   const state=document.createElement('p');state.className='save-state';state.setAttribute('role','status');
-  save.onclick=()=>{
+  const startSave=()=>{
    if(!sourceSnapshot?.text.trim()&&!sourceSnapshot?.images.length){state.textContent='Salvestamiseks lisa algne tekst, pilt või PDF.';state.classList.add('error');return;}
    save.disabled=true;state.textContent='Salvestan…';state.classList.remove('error');
    const runner=google.script.run.withSuccessHandler(res=>{const done=document.createElement('div');done.className='saved-confirm';savedText(done,'div',labels[item.kind],'kind');savedText(done,'h3',item.title||'(nimetu)');const line=document.createElement('p');line.className='saved-confirm-line';savedText(line,'strong',res.status==='duplicate'?'Juba olemas ✓':'Salvestatud ✓');line.append(document.createTextNode(' · '));const view=document.createElement('button');view.type='button';view.className='link-button';view.textContent='Ava ülevaates';view.onclick=()=>showView('overview');line.append(view);done.append(line);if(res.message)savedText(done,'p',res.message,'hint');savedImages(done,res.imageUrls);card.className='item item-saved';card.replaceChildren(done);})
     .withFailureHandler(e=>{state.textContent=e.message||'Salvestamine ebaõnnestus.';state.classList.add('error');save.disabled=false;});
    if(paired)runner.pereSaveBundle({event:item,eventIndex:index,task:result.items[pairedTaskIndex],taskIndex:pairedTaskIndex,source:sourceSnapshot});
    else runner.pereSaveOne({item,index,source:sourceSnapshot});
+  };
+  save.onclick=()=>{
+   if(item.kind==='event'&&item.time&&!item.end_time&&!item.allDay&&!item.end_date){
+    const [h,m]=item.time.split(':').map(Number),total=h*60+m+60,wrap=total>=1440,endMin=total%1440;
+    const endTime=String(Math.floor(endMin/60)).padStart(2,'0')+':'+String(endMin%60).padStart(2,'0');
+    state.classList.remove('error');state.replaceChildren();savedText(state,'span','Lõppaega pole. Salvesta kestusega 1 h ('+item.time+'–'+endTime+')? ');
+    const yes=document.createElement('button');yes.type='button';yes.className='link-button';yes.textContent='Salvesta 1 h';
+    const own=document.createElement('button');own.type='button';own.className='link-button';own.textContent='Lisa ise';
+    yes.onclick=()=>{item.end_time=endTime;if(wrap&&item.date)item.end_date=addDays(item.date,1);
+     const endInput=card.querySelector('[data-key="end_time"]');if(endInput)endInput.value=endTime;const endDate=card.querySelector('[data-key="end_date"]');if(endDate&&wrap)endDate.value=item.end_date;
+     state.replaceChildren();startSave();};
+    own.onclick=()=>{state.replaceChildren();const endInput=card.querySelector('[data-key="end_time"]');if(endInput&&endInput.focus)endInput.focus();};
+    state.append(yes,document.createTextNode(' · '),own);return;
+   }
+   startSave();
   };card.append(save,state);
   $('cards').append(card);
  });
