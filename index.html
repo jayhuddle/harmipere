@@ -497,6 +497,11 @@ function renderPersonPicker(){const box=$('personPicker'),select=$('person');if(
   chip.onclick=()=>{if(select.value===option.value)return;select.value=option.value;select.onchange();updateRefine();};box.append(chip);});}
 function readCache(key){try{const value=JSON.parse(localStorage.getItem(key)||'null');return value&&Array.isArray(value.items)?value:null;}catch(_){return null;}}
 function writeCache(key,data){try{localStorage.setItem(key,JSON.stringify(data));}catch(_){}}
+function clearInputIfDone(){
+ const cards=[...$('cards').children].filter(node=>String(node.className||'').split(' ').includes('item'));
+ if(!cards.length||!cards.every(node=>String(node.className).includes('item-saved')))return;
+ $('text').value='';images=[];renderImages();$('person').value='';$('personOther').value='';$('personOther').hidden=true;$('sourceDate').value='';updateRefine();
+}
 function formatTimeInput(value){const digits=String(value||'').replace(/\D/g,'').slice(0,4);return digits.length>2?digits.slice(0,2)+':'+digits.slice(2):digits;}
 function normalizeTime(value){const text=String(value||'').trim(),digits=text.replace(/\D/g,'');if(!digits)return '';let h,m;
  const parts=text.split(/[:.,\s]+/);
@@ -955,7 +960,7 @@ function renderResult(){
   const startSave=()=>{
    if(!sourceSnapshot?.text.trim()&&!sourceSnapshot?.images.length){state.textContent='Salvestamiseks lisa algne tekst, pilt või PDF.';state.classList.add('error');return;}
    save.disabled=true;state.textContent='Salvestan…';state.classList.remove('error');
-   const runner=google.script.run.withSuccessHandler(res=>{const done=document.createElement('div');done.className='saved-confirm';savedText(done,'div',labels[item.kind],'kind');savedText(done,'h3',item.title||'(nimetu)');const line=document.createElement('p');line.className='saved-confirm-line';savedText(line,'strong',res.status==='duplicate'?'Juba olemas ✓':'Salvestatud ✓');line.append(document.createTextNode(' · '));const view=document.createElement('button');view.type='button';view.className='link-button';view.textContent='Ava ülevaates';view.onclick=()=>showView('overview');line.append(view);done.append(line);if(res.message)savedText(done,'p',res.message,'hint');savedImages(done,res.imageUrls);card.className='item item-saved';card.replaceChildren(done);})
+   const runner=google.script.run.withSuccessHandler(res=>{const done=document.createElement('div');done.className='saved-confirm';savedText(done,'div',labels[item.kind],'kind');savedText(done,'h3',item.title||'(nimetu)');const line=document.createElement('p');line.className='saved-confirm-line';savedText(line,'strong',res.status==='duplicate'?'Juba olemas ✓':'Salvestatud ✓');line.append(document.createTextNode(' · '));const view=document.createElement('button');view.type='button';view.className='link-button';view.textContent='Ava ülevaates';view.onclick=()=>showView('overview');line.append(view);done.append(line);if(res.message)savedText(done,'p',res.message,'hint');savedImages(done,res.imageUrls);card.className='item item-saved';card.replaceChildren(done);clearInputIfDone();})
     .withFailureHandler(e=>{state.textContent=e.message||'Salvestamine ebaõnnestus.';state.classList.add('error');save.disabled=false;});
    if(paired)runner.pereSaveBundle({event:item,eventIndex:index,task:result.items[pairedTaskIndex],taskIndex:pairedTaskIndex,source:sourceSnapshot});
    else runner.pereSaveOne({item,index,source:sourceSnapshot});
