@@ -1189,6 +1189,23 @@ function field(item,key,label,type='text',index=-1){
  }
  return wrap;
 }
+function linkEventPicker(item){
+ const details=document.createElement('details');details.className='refine link-event';
+ const summary=document.createElement('summary'),title=document.createElement('span'),sum=document.createElement('span');
+ title.className='refine-title';title.textContent='Seo üritusega';sum.className='refine-summary';summary.append(title,document.createTextNode(' '),sum);
+ const body=document.createElement('div');body.className='row';const select=document.createElement('select');select.setAttribute('aria-label','Seotud üritus');body.append(select);details.append(summary,body);
+ let loaded=false;item.linkEventKey='';
+ const events=[];const label=ev=>ev.title+' · '+shortDay(ev.date)+(ev.time?' '+ev.time:'');
+ const fill=data=>{const today=data.today||tallinnToday();events.length=0;data.items.filter(it=>it.kind==='event'&&it.date&&it.date>=today).sort((a,b)=>(a.date+' '+a.time).localeCompare(b.date+' '+b.time)).forEach(ev=>events.push(ev));
+  select.replaceChildren();const none=document.createElement('option');none.value='';none.textContent=events.length?'Pole seotud':'Tulevasi üritusi pole';select.append(none);
+  events.forEach(ev=>{const option=document.createElement('option');option.value=ev.key;option.textContent=label(ev);select.append(option);});select.value=item.linkEventKey;};
+ select.onchange=()=>{item.linkEventKey=select.value;const ev=events.find(e=>e.key===select.value);sum.textContent=ev?'· '+ev.title:'';};
+ details.addEventListener('toggle',()=>{if(!details.open||loaded)return;loaded=true;
+  if(savedOverview){fill(savedOverview);return;}
+  select.replaceChildren();const wait=document.createElement('option');wait.textContent='Laen üritusi…';select.append(wait);
+  google.script.run.withSuccessHandler(data=>fill(data)).withFailureHandler(()=>{loaded=false;wait.textContent='Üritusi ei õnnestunud laadida';}).pereListSaved();});
+ return details;
+}
 function renderResult(){
  $('summary').textContent=result.summary;$('cards').replaceChildren();$('questions').replaceChildren();$('questions').hidden=!result.questions.length;
  inheritedPeople=new WeakSet();result.items.forEach(item=>{if(item.kind==='task'&&!item.person)inheritedPeople.add(item);});
@@ -1206,6 +1223,7 @@ function renderResult(){
   if(item.kind==='invoice')fields.push(['amount','Summa'],['currency','Valuuta']);
   for(let i=0;i<fields.length;i+=2){const row=document.createElement('div');row.className='row';fields.slice(i,i+2).forEach(f=>row.append(field(item,f[0],f[1],f[2]||'text',index)));card.append(row);}
   card.append(field(item,'notes','Märkused','textarea'));
+  if(['task','invoice'].includes(item.kind))card.append(linkEventPicker(item));
   if(item.kind==='event'){
    const all=document.createElement('div');all.className='all-day';const check=document.createElement('input');check.type='checkbox';check.id='allday-'+index;check.checked=item.allDay===true;check.onchange=()=>item.allDay=check.checked;const label=document.createElement('label');label.htmlFor=check.id;label.textContent='Kogupäevane sündmus (kui kellaaega pole)';all.append(check,label);card.append(all);
   }
@@ -1232,7 +1250,7 @@ function renderResult(){
    const runner=google.script.run.withSuccessHandler(res=>{const done=document.createElement('div');done.className='saved-confirm';savedText(done,'div',labels[item.kind],'kind');savedText(done,'h3',item.title||'(nimetu)');const line=document.createElement('p');line.className='saved-confirm-line';savedText(line,'strong',res.status==='duplicate'?'Juba olemas ✓':'Salvestatud ✓');line.append(document.createTextNode(' · '));const view=document.createElement('button');view.type='button';view.className='link-button';view.textContent='Ava ülevaates';view.onclick=()=>showView('overview');line.append(view);done.append(line);if(res.message)savedText(done,'p',res.message,'hint');savedImages(done,res.imageUrls);card.className='item item-saved';card.replaceChildren(done);clearInputIfDone();})
     .withFailureHandler(e=>{state.textContent=e.message||'Salvestamine ebaõnnestus.';state.classList.add('error');save.disabled=false;});
    if(paired)runner.pereSaveBundle({event:item,eventIndex:index,task:result.items[pairedTaskIndex],taskIndex:pairedTaskIndex,source:sourceSnapshot});
-   else runner.pereSaveOne({item,index,source:sourceSnapshot});
+   else runner.pereSaveOne({item,index,source:sourceSnapshot,linkEventKey:item.linkEventKey||''});
   };
   save.onclick=()=>{
    if(item.kind==='event'&&item.time&&!item.end_time&&!item.allDay&&!item.end_date){
