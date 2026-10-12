@@ -419,10 +419,6 @@ html,body{overscroll-behavior-y:contain}
 @media(max-width:740px){.cal-fab{right:16px;bottom:calc(92px + env(safe-area-inset-bottom))}.undo-toast{bottom:calc(164px + env(safe-area-inset-bottom))}}
 :root[data-theme="dark"] .cal-fab{box-shadow:0 10px 28px rgba(0,0,0,.5),0 2px 6px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.16)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cal-fab{box-shadow:0 10px 28px rgba(0,0,0,.5),0 2px 6px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.16)}}
-.cal-fab{width:auto;height:52px;padding:0 22px 0 18px;gap:9px;border-radius:26px;right:auto;left:50%;transform:translateX(-50%);font:600 16px/1 'Outfit',system-ui,sans-serif}
-.cal-fab:active{transform:translateX(-50%) scale(.95)}
-.cal-fab svg{width:22px;height:22px}
-@media(max-width:740px){.cal-fab{right:auto;bottom:calc(92px + env(safe-area-inset-bottom))}.undo-toast{bottom:calc(158px + env(safe-area-inset-bottom))}}
 </style>
 <style>
 .login-overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:24px;background:color-mix(in srgb,var(--bg) 55%,transparent);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
@@ -535,7 +531,7 @@ body:after{content:'';position:absolute;top:0;left:0;right:0;height:180px;z-inde
 </section>
 </div>
 <section id="overviewView" hidden aria-label="Salvestatud pereinfo">
-<button id="calendarButton" class="cal-fab" type="button" aria-label="Kalender" title="Kalender" aria-haspopup="dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 17.5h.01M12 17.5h.01"/></svg><span>Kuu</span></button>
+<button id="calendarButton" class="cal-fab" type="button" aria-label="Kalender" title="Kalender" aria-haspopup="dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 17.5h.01M12 17.5h.01"/></svg></button>
 <div class="overview-top"><div><div class="eyebrow">Kõik vajalik käepärast</div><div class="overview-title"><h1>Pere ülevaade</h1><span id="overviewDate" class="overview-date"></span></div></div><button id="refreshOverview" class="icon-button" type="button" aria-label="Värskenda" title="Värskenda" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.8-4M4 4v3.5h3.5"/><path d="M4 13a8 8 0 0 0 14.8 4M20 20v-3.5h-3.5"/></svg></button></div>
 <p class="saved-meta">Üritused ja tegemised ühel lehel</p>
 <div class="overview-filters"><div id="personChips" class="person-chips" role="group" aria-label="Pereliige"></div><select id="overviewPerson" hidden aria-label="Filtreeri pereliikme järgi"><option value="">Kõik pereliikmed</option></select></div>
