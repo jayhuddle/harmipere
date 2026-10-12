@@ -497,9 +497,13 @@ function renderPersonPicker(){const box=$('personPicker'),select=$('person');if(
   chip.onclick=()=>{if(select.value===option.value)return;select.value=option.value;select.onchange();updateRefine();};box.append(chip);});}
 function readCache(key){try{const value=JSON.parse(localStorage.getItem(key)||'null');return value&&Array.isArray(value.items)?value:null;}catch(_){return null;}}
 function writeCache(key,data){try{localStorage.setItem(key,JSON.stringify(data));}catch(_){}}
+let currentMail=null;
 function clearInputIfDone(){
  const cards=[...$('cards').children].filter(node=>String(node.className||'').split(' ').includes('item'));
  if(!cards.length||!cards.every(node=>String(node.className).includes('item-saved')))return;
+ // Kui sisend tuli E-kirjadest ja tekst on muutmata, märgi kiri töödeldud (ei jää ülevaatamise loendisse).
+ const mail=currentMail;currentMail=null;const norm=value=>String(value||'').replace(/\r\n?/g,'\n').trim();
+ if(mail&&sourceSnapshot&&norm(sourceSnapshot.text)===norm(mail.text)&&window.google?.script?.run)google.script.run.withSuccessHandler(()=>{}).withFailureHandler(()=>{}).pereMailMarkDone(mail.id);
  $('text').value='';images=[];renderImages();$('person').value='';$('personOther').value='';$('personOther').hidden=true;$('sourceDate').value='';updateRefine();
 }
 function formatTimeInput(value){const digits=String(value||'').replace(/\D/g,'').slice(0,4);return digits.length>2?digits.slice(0,2)+':'+digits.slice(2):digits;}
@@ -543,7 +547,7 @@ function loadMail(collect=false){
  mailLoading=true;$('refreshMail').disabled=true;$('refreshMail').setAttribute('aria-label',collect?'Korjan ja töötlen…':'Laadin…');mailStatus(collect?'Korjan uued kirjad ja töötlen AI-ga. See võib võtta mõne minuti.':'Laadin kirju…');
  const runner=google.script.run.withSuccessHandler(data=>{
   mailLoading=false;$('refreshMail').disabled=false;$('refreshMail').setAttribute('aria-label','Värskenda');$('mailCards').replaceChildren();
-  const processed=['Automaatselt lisatud','Juba olemas','Ebaoluline'];
+  const processed=['Automaatselt lisatud','Juba olemas','Ebaoluline','Käsitsi lisatud'];
   const visible=data.items.filter(item=>$('showProcessedMail').checked||!processed.includes(item.status));
   mailStatus(data.refreshMessage||(data.limited?'Kuvatud on viimase 500 kirja seas olevad peitmata kirjad.':visible.length?'':'Ülevaatamist ootavaid kirju pole. Töödeldud kirju näed ülal oleva valikuga.'));
   visible.forEach(item=>{
@@ -561,7 +565,7 @@ function loadMail(collect=false){
     if(($('text').value.trim()||images.length)&&!window.confirm('Asendan praeguse sisendi selle e-kirjaga. Kas jätkan?'))return;
     setBusy(true);open.disabled=true;hide.disabled=true;mailStatus('Laadin kirja ja pilte…');
     google.script.run.withSuccessHandler(source=>{
-     setBusy(false);open.disabled=false;hide.disabled=false;resetResult();$('text').value=source.text;$('sourceDate').value=source.sourceDate;
+     setBusy(false);open.disabled=false;hide.disabled=false;resetResult();$('text').value=source.text;currentMail={id:item.id,text:source.text};$('sourceDate').value=source.sourceDate;
      $('person').value='';$('personOther').value='';$('personOther').hidden=true;
      images=source.images.map(img=>({...img,size:Math.floor(img.data.length*3/4),url:'data:'+img.mime+';base64,'+img.data}));
      renderImages();showView('input');
@@ -955,7 +959,7 @@ function renderResult(){
    card.append(section);
   }
   const save=document.createElement('button');save.type='button';save.className='primary';save.textContent='Salvesta '+labels[item.kind].toLowerCase();
-  if(['Automaatselt lisatud','Juba olemas','Ebaoluline'].includes(sourceSnapshot?.mailStatus)){save.disabled=true;save.textContent='Juba töödeldud';}
+  if(['Automaatselt lisatud','Juba olemas','Ebaoluline','Käsitsi lisatud'].includes(sourceSnapshot?.mailStatus)){save.disabled=true;save.textContent='Juba töödeldud';}
   const state=document.createElement('p');state.className='save-state';state.setAttribute('role','status');
   const startSave=()=>{
    if(!sourceSnapshot?.text.trim()&&!sourceSnapshot?.images.length){state.textContent='Salvestamiseks lisa algne tekst, pilt või PDF.';state.classList.add('error');return;}
