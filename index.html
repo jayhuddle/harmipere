@@ -415,6 +415,8 @@ html,body{overscroll-behavior-y:contain}
  box-shadow:0 10px 28px color-mix(in srgb,var(--accent) 28%,transparent),0 2px 6px rgba(20,22,52,.14),inset 0 1px 0 rgba(255,255,255,.8)}
 .cal-fab svg{width:26px;height:26px}
 .cal-fab:active{transform:scale(.94)}
+.cal-fab,:root[data-theme="dark"] .cal-fab{color:#fff;background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 82%,transparent),color-mix(in srgb,var(--accent-2) 78%,transparent));border:1px solid rgba(255,255,255,.38);box-shadow:0 12px 30px color-mix(in srgb,var(--accent) 42%,transparent),0 2px 6px rgba(20,22,52,.18),inset 0 1px 0 rgba(255,255,255,.5)}
+@media(max-width:740px){.cal-fab{bottom:calc(100px + env(safe-area-inset-bottom))}.undo-toast{bottom:calc(172px + env(safe-area-inset-bottom))}}
 </style>
 <style>
 .login-overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:24px;background:color-mix(in srgb,var(--bg) 55%,transparent);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
