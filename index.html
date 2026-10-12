@@ -400,6 +400,15 @@ body:has(.cal-overlay:not([hidden])){overflow:hidden}
 .cal-card p{margin:4px 0 0}
 .cal-card:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 35%,transparent)}
 @media (prefers-reduced-motion:reduce){.cal-sheet,.cal-scrim{animation:none}}
+/* Tõmba alla värskendamiseks: Chrome'i enda lehe uuestilaadimine välja, oma indikaator sisse */
+html,body{overscroll-behavior-y:contain}
+.ptr{position:fixed;left:50%;top:calc(env(safe-area-inset-top) + 10px);width:44px;height:44px;margin-left:-22px;border-radius:50%;z-index:80;display:flex;align-items:center;justify-content:center;
+ background:var(--glass-strong);border:1px solid var(--stroke);box-shadow:var(--shadow);color:var(--accent);opacity:0;transform:translateY(-60px);pointer-events:none;
+ -webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
+.ptr.anim{transition:transform .25s ease,opacity .25s ease}
+.ptr svg{width:22px;height:22px}
+.ptr.ready{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;border-color:transparent}
+.ptr.spin svg{animation:pere-spin .8s linear infinite}
 </style>
 <style>
 .login-overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:24px;background:color-mix(in srgb,var(--bg) 55%,transparent);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
@@ -466,7 +475,7 @@ body:after{content:'';position:absolute;top:0;left:0;right:0;height:180px;z-inde
 <div class="sp-name">Härmipere</div><div class="sp-tag"><span class="sp-l" style="--i:0;--p:0%">t</span><span class="sp-l" style="--i:1;--p:13%">e</span><span class="sp-l" style="--i:2;--p:25%">g</span><span class="sp-l" style="--i:3;--p:38%">e</span><span class="sp-l" style="--i:4;--p:50%">m</span><span class="sp-l" style="--i:5;--p:63%">i</span><span class="sp-l" style="--i:6;--p:75%">s</span><span class="sp-l" style="--i:7;--p:88%">e</span><span class="sp-l" style="--i:8;--p:100%">d</span></div></div></div>
 <script>
 (function(){
- const MIN=4400,MAX=9000,started=Date.now(),clr=t=>{if(typeof clearTimeout==='function')clearTimeout(t);};let ready=false,closed=false,timer=null;
+ const MIN=3900,MAX=9000,started=Date.now(),clr=t=>{if(typeof clearTimeout==='function')clearTimeout(t);};let ready=false,closed=false,timer=null;
  function close(){
   if(closed)return;closed=true;clr(timer);const node=document.getElementById('splash');if(!node)return;
   node.classList.add('sp-out');setTimeout(()=>{if(node.parentNode)node.parentNode.removeChild(node);},600);
@@ -522,6 +531,7 @@ body:after{content:'';position:absolute;top:0;left:0;right:0;height:180px;z-inde
 <section id="mailView" hidden aria-label="Perepostkasti kirjad"><div class="overview-top"><h1>E-kirjad</h1><button id="refreshMail" class="icon-button" type="button" aria-label="Värskenda" title="Värskenda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.8-4M4 4v3.5h3.5"/><path d="M4 13a8 8 0 0 0 14.8 4M20 20v-3.5h-3.5"/></svg></button></div><p class="saved-meta">Automaatika lisab selged uued sündmused ja ülesanded. Siin saad üle vaadata ebaselge info ja töötluse tulemused. „Peida” jätab Gmaili kirja alles.</p><div class="overview-filters"><label><input id="showProcessedMail" type="checkbox">Näita ka automaatselt töödeldud kirju</label></div><p id="mailStatus" class="status" role="status" aria-live="polite"></p><div id="mailCards"></div></section>
 <footer>Kuni 40 töötluskatset päevas · AI tulemus vajab ülevaatamist · <button type="button" class="logout-link" onclick="pereLogout()">Logi välja</button></footer>
 <div id="undoToast" class="undo-toast" role="status" aria-live="polite" hidden><span id="undoText"></span><button id="undoButton" type="button">Võta tagasi</button></div>
+<div id="ptr" class="ptr" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v13M6 12l6 6 6-6"/></svg></div>
 <div id="calOverlay" class="cal-overlay" hidden><div id="calScrim" class="cal-scrim"></div><div id="calSheet" class="cal-sheet" role="dialog" aria-modal="true" aria-label="Kuukalender"></div></div>
 </main>
 <script src="config.js"></script>
@@ -1025,6 +1035,46 @@ function renderCalendar(){
 $('calendarButton').onclick=openCalendar;$('calScrim').onclick=closeCalendar;
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&calOpen){event.preventDefault();closeCalendar();}});
 syncPersonOptions([]);renderPersonChips();
+
+// ---- Tõmba alla värskendamiseks (puuteekraan). Lehte ei laeta uuesti, seega laadimiskuvandit ei näidata. ----
+(function(){
+ const node=$('ptr'),THRESH=72,MAX=120;let startY=null,pull=0,ready=false,tracking=false,working=false;
+ const icon=()=>node.querySelector('svg')||{style:{}};
+ const atTop=()=>(window.scrollY||(document.documentElement&&document.documentElement.scrollTop)||0)<=0;
+ const blocked=target=>{
+  if(calOpen||working)return true;
+  const login=document.getElementById('loginOverlay');if(login&&!login.hidden)return true;
+  if(document.getElementById('splash'))return true;
+  const tag=target&&target.closest?target.closest('textarea,select,input'):null;return !!tag;
+ };
+ function place(dist){node.style.transform='translateY('+(dist-60)+'px)';node.style.opacity=String(Math.min(1,dist/40));icon().style.transform='rotate('+Math.min(180,Math.round(dist/THRESH*180))+'deg)';}
+ function reset(){node.classList.add('anim');node.classList.remove('ready','spin');node.style.transform='translateY(-60px)';node.style.opacity='0';icon().style.transform='';setTimeout(()=>node.classList.remove('anim'),300);}
+ function run(){
+  working=true;node.classList.add('anim','spin');node.classList.remove('ready');node.style.transform='translateY(14px)';node.style.opacity='1';icon().style.transform='';
+  if(!$('mailView').hidden)loadMail(true);else loadOverview();
+  const started=Date.now();
+  const wait=()=>{const elapsed=Date.now()-started;if(elapsed<700||((overviewLoading||mailLoading)&&elapsed<20000)){setTimeout(wait,150);return;}working=false;reset();};
+  wait();
+ }
+ document.addEventListener('touchstart',event=>{
+  if(event.touches.length!==1||!atTop()||blocked(event.target)){startY=null;return;}
+  startY=event.touches[0].clientY;pull=0;tracking=false;
+ },{passive:true});
+ document.addEventListener('touchmove',event=>{
+  if(startY===null)return;
+  const dy=event.touches[0].clientY-startY;
+  if(dy<=0||!atTop()){if(tracking){tracking=false;ready=false;reset();}startY=null;return;}
+  tracking=true;pull=Math.min(MAX,dy*0.5);node.classList.remove('anim');place(pull);
+  const nowReady=pull>=THRESH;
+  if(nowReady!==ready){ready=nowReady;node.classList.toggle('ready',ready);if(ready&&typeof navigator!=='undefined'&&navigator.vibrate)navigator.vibrate(8);}
+  if(event.cancelable)event.preventDefault();
+ },{passive:false});
+ document.addEventListener('touchend',()=>{
+  if(startY===null)return;
+  const go=tracking&&ready;startY=null;tracking=false;ready=false;
+  if(go)run();else if(node.style.opacity&&node.style.opacity!=='0')reset();
+ });
+})();
 function status(text, error=false){updateRefine();$('status').textContent=text;$('status').classList.toggle('error',error);}
 function resetResult(){result=null;sourceSnapshot=null;$('results').hidden=true;$('cards').replaceChildren();}
 function setBusy(value){busy=value;['analyze','pick','camera','cameraFile','text','person','personOther','sourceDate','files'].forEach(id=>$(id).disabled=value);$('analyze').innerHTML=value?'Töötlen…':'Sisesta info'+"<svg class=\"enter-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M10 4h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-8\"/><path d=\"M3 12h11.5\"/><path d=\"M11.3 8.8l3.2 3.2-3.2 3.2\"/></svg>";renderImages();}
