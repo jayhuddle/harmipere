@@ -938,12 +938,14 @@ function renderOverview(){
   const column=document.createElement('div');column.className='week-col';savedText(column,'div',label,'week-col-label');
   list.forEach(item=>draw(item,column));if(!list.length)savedText(column,'p',empty,'empty');$('savedWeek').append(column);
  });
- // Hilisemad avatud ülesanded kuude kaupa; tehtud ülesanded eraldi linnukese all (viimased 3 tähtaja järgi).
+ // Hilisemad avatud ülesanded kuude kaupa; tehtud ülesanded eraldi linnukese all (viimased 3 tähtaja järgi + kõik, mille üritus pole veel toimunud).
  const tasks=items.filter(item=>isTask(item)&&!inWeek(item)&&item.status!=='Tehtud')
   .sort((a,b)=>(a.deadline||'9999').localeCompare(b.deadline||'9999'));
  $('doneTasks').replaceChildren();
  if($('showDone').checked){
-  const doneTasks=items.filter(item=>isTask(item)&&item.status==='Tehtud').sort((a,b)=>(b.deadline||'').localeCompare(a.deadline||'')).slice(0,3);
+  const doneAll=items.filter(item=>isTask(item)&&item.status==='Tehtud').sort((a,b)=>(b.deadline||'').localeCompare(a.deadline||'')),
+   upcomingDone=item=>item.relatedEvent?item.relatedEvent.date>=today:!!item.deadline&&item.deadline>=today,
+   doneTasks=doneAll.filter((item,i)=>i<3||upcomingDone(item));
   doneTasks.forEach(item=>taskCard(item,$('doneTasks')));
   if(!doneTasks.length)savedText($('doneTasks'),'p','Tehtud ülesandeid pole.','empty');
  }
