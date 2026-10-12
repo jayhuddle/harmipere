@@ -426,6 +426,45 @@ html,body{overscroll-behavior-y:contain}
  ::-webkit-scrollbar-thumb:hover{background:color-mix(in srgb,var(--accent) 55%,transparent) padding-box}
  ::-webkit-scrollbar-corner{background:transparent}
 }
+/* Otsing: klaasaken ülalt, ikoon nagu teemanupul */
+.search-toggle{flex:none;margin-left:auto}
+.search-overlay{align-items:flex-start;padding:calc(env(safe-area-inset-top) + 10px) 10px 0}
+.search-sheet{border-radius:22px;padding:10px 12px 12px;max-height:min(78vh,660px);border-bottom:1px solid rgba(255,255,255,.7);animation:search-drop .22s cubic-bezier(.2,.8,.2,1);box-shadow:0 18px 50px rgba(20,22,52,.28),inset 0 1px 0 rgba(255,255,255,.75)}
+@keyframes search-drop{from{transform:translateY(-14px);opacity:0}to{transform:none;opacity:1}}
+.search-field{display:flex;align-items:center;gap:8px;height:48px;padding:0 4px 0 14px;border-radius:15px;background:var(--glass-field);border:1px solid var(--line)}
+.search-glass{display:inline-flex;color:var(--accent)}.search-glass svg{width:20px;height:20px}
+.search-field input{flex:1;min-width:0;height:100%;padding:0;border:0;outline:0;background:transparent;box-shadow:none;font-size:16px;color:var(--ink)}
+.search-close{width:40px;height:40px;padding:0;border:0;background:none;box-shadow:none;color:var(--muted);font-size:16px;border-radius:12px}
+.search-results{margin-top:4px}
+.search-label,.search-count{font-family:'Outfit',system-ui,sans-serif;font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted);margin:12px 4px 4px}
+.search-count{margin-bottom:0;font-weight:600;letter-spacing:.4px;text-transform:none;font-size:12px}
+.search-row{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;text-align:left;padding:9px 12px;margin:4px 0;border-radius:13px;background:color-mix(in srgb,var(--glass-strong) 42%,transparent);border:1px solid color-mix(in srgb,var(--stroke) 70%,transparent);box-shadow:none;cursor:pointer}
+.search-title{font-weight:650;font-size:15px;color:var(--ink);line-height:1.3}
+.search-meta,.search-hit{font-size:12px;font-weight:400;color:var(--muted);line-height:1.35}
+.search-row.done .search-title{opacity:.62}
+.search-row mark{background:color-mix(in srgb,var(--accent) 30%,transparent);color:inherit;border-radius:4px;padding:0 1px}
+.search-row:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 35%,transparent)}
+@media (hover:hover){.search-row:hover{background:color-mix(in srgb,var(--glass-strong) 75%,transparent)}}
+.search-empty{padding:18px 6px;text-align:center;color:var(--muted);margin:0}
+@media(min-width:741px){.search-overlay{justify-content:center;padding-top:9vh}.search-sheet{max-width:560px}}
+@media (prefers-reduced-motion:reduce){.search-sheet{animation:none}}
+#overviewView .overview-top{display:flex;flex-wrap:nowrap;align-items:flex-start;gap:12px}
+#overviewView .overview-top>div:first-child{min-width:0;flex:1}
+#overviewView .search-toggle{margin-top:17px}
+/* Kalender: riigipühad (paks indigo number) ja koolivaheajad (lilla joon päeva all) */
+.cal-day{--hol:#5b54e8;--brk:#a78bfa}
+:root[data-theme="dark"] .cal-day{--hol:#a79fff;--brk:#7c74ff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cal-day{--hol:#a79fff;--brk:#7c74ff}}
+.cal-day.break:not(.sel){border-radius:0;box-shadow:inset 0 -3px 0 var(--brk)}
+.cal-day.holiday:not(.sel){color:var(--hol);font-weight:800}
+.cal-day.today.break:not(.sel){border-radius:13px}
+.cal-hol,.cal-brk{display:inline-block;vertical-align:middle}
+.cal-hol{width:auto;height:auto;font-style:normal;font-weight:800;color:#5b54e8;line-height:1}.cal-hol:before{content:'12'}
+.cal-brk{width:14px;height:3px;border-radius:2px;background:#a78bfa}
+:root[data-theme="dark"] .cal-hol{color:#a79fff}:root[data-theme="dark"] .cal-brk{background:#7c74ff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cal-hol{color:#a79fff}:root:not([data-theme="light"]) .cal-brk{background:#7c74ff}}
+.cal-offnote{margin:-2px 4px 6px;font-size:12px;color:var(--muted)}
+.cal-warn{margin:6px 6px 0;font-size:12px;color:var(--danger)}
 </style>
 <style>
 .login-overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:24px;background:color-mix(in srgb,var(--bg) 55%,transparent);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
@@ -539,7 +578,7 @@ body:after{content:'';position:absolute;top:0;left:0;right:0;height:180px;z-inde
 </div>
 <section id="overviewView" hidden aria-label="Salvestatud pereinfo">
 <button id="calendarButton" class="cal-fab" type="button" aria-label="Kalender" title="Kalender" aria-haspopup="dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18"/><path d="M8 14h.01M12 14h.01M16 14h.01M8 17.5h.01M12 17.5h.01"/></svg></button>
-<div class="overview-top"><div><div class="eyebrow">Kõik vajalik käepärast</div><div class="overview-title"><h1>Pere ülevaade</h1><span id="overviewDate" class="overview-date"></span></div></div><button id="refreshOverview" class="icon-button" type="button" aria-label="Värskenda" title="Värskenda" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.8-4M4 4v3.5h3.5"/><path d="M4 13a8 8 0 0 0 14.8 4M20 20v-3.5h-3.5"/></svg></button></div>
+<div class="overview-top"><div><div class="eyebrow">Kõik vajalik käepärast</div><div class="overview-title"><h1>Pere ülevaade</h1><span id="overviewDate" class="overview-date"></span></div></div><button id="refreshOverview" class="icon-button" type="button" aria-label="Värskenda" title="Värskenda" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.8-4M4 4v3.5h3.5"/><path d="M4 13a8 8 0 0 0 14.8 4M20 20v-3.5h-3.5"/></svg></button><button id="searchButton" class="theme-toggle search-toggle" type="button" aria-label="Otsi" title="Otsi" aria-haspopup="dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg></button></div>
 <p class="saved-meta">Üritused ja tegemised ühel lehel</p>
 <div class="overview-filters"><div id="personChips" class="person-chips" role="group" aria-label="Pereliige"></div><select id="overviewPerson" hidden aria-label="Filtreeri pereliikme järgi"><option value="">Kõik pereliikmed</option></select></div>
 <p id="overviewStatus" class="status overview-message" role="status" aria-live="polite"></p>
@@ -550,6 +589,7 @@ body:after{content:'';position:absolute;top:0;left:0;right:0;height:180px;z-inde
 <footer>Kuni 40 töötluskatset päevas · AI tulemus vajab ülevaatamist · <button type="button" class="logout-link" onclick="pereLogout()">Logi välja</button></footer>
 <div id="undoToast" class="undo-toast" role="status" aria-live="polite" hidden><span id="undoText"></span><button id="undoButton" type="button">Võta tagasi</button></div>
 <div id="ptr" class="ptr" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 0 0-14.8-4M4 4v3.5h3.5"/><path d="M4 13a8 8 0 0 0 14.8 4M20 20v-3.5h-3.5"/></svg></div>
+<div id="searchOverlay" class="cal-overlay search-overlay" hidden><div id="searchScrim" class="cal-scrim"></div><div id="searchSheet" class="cal-sheet search-sheet" role="dialog" aria-modal="true" aria-label="Otsing"><div class="search-field"><span class="search-glass"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg></span><input id="searchInput" type="text" inputmode="search" enterkeyhint="search" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Otsi: nimi, koht, märkus…" aria-label="Otsi"><button id="searchClose" class="search-close" type="button" aria-label="Sulge">✕</button></div><div id="searchResults" class="search-results"></div></div></div>
 <div id="calOverlay" class="cal-overlay" hidden><div id="calScrim" class="cal-scrim"></div><div id="calSheet" class="cal-sheet" role="dialog" aria-modal="true" aria-label="Kuukalender"></div></div>
 </main>
 <script src="config.js"></script>
@@ -770,6 +810,7 @@ document.addEventListener('click',event=>{if(activeCancelMenu&&!activeCancelMenu
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&activeCancelMenu){event.preventDefault();activeCancelMenu.close(true);}});
 // Pere ülevaade (asendab Index-enne-klaasi.html renderOverview funktsiooni; build-glass-index.cjs paneb selle sisse).
 // "See nädal" (täna + 6 päeva, üle tähtaja ülesanded ülal), allpool kuude kaupa ülejäänu ilma kordusteta.
+const searchPinned=new Set();
 let overviewEventCards=new Map(),overviewTaskCards=new Map(),pendingUndo=null,overviewEditing=null,overviewNotice='';
 // Muutmine: pliiats avab kaardi sees vormi; ülesandel ka "+1 päev / +1 nädal". Server muudab tabelit ja üritusel ka kalendrit.
 const pencilIcon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4Z"/><path d="m13.5 6.5 4 4"/></svg>';
@@ -945,7 +986,7 @@ function renderOverview(){
  if($('showDone').checked){
   const doneAll=items.filter(item=>isTask(item)&&item.status==='Tehtud').sort((a,b)=>(b.deadline||'').localeCompare(a.deadline||'')),
    upcomingDone=item=>item.relatedEvent?item.relatedEvent.date>=today:!!item.deadline&&item.deadline>=today,
-   doneTasks=doneAll.filter((item,i)=>i<3||upcomingDone(item));
+   doneTasks=doneAll.filter((item,i)=>i<3||upcomingDone(item)||searchPinned.has(item.key));
   doneTasks.forEach(item=>taskCard(item,$('doneTasks')));
   if(!doneTasks.length)savedText($('doneTasks'),'p','Tehtud ülesandeid pole.','empty');
  }
@@ -973,6 +1014,34 @@ function renderOverview(){
 
 // ---- Kuuvaade: alt tulev paneel (kalendriikoon Pere ülevaate päises) ----
 let calOpen=false,calMonth='',calSel='';
+// Eesti riigipühad (arvutatud igaks aastaks) ja koolivaheajad (tabel, uuenda igal õppeaastal: hm.ee koolivaheajad; suvevaheaega ei märgita).
+const EE_SCHOOL_BREAKS=[
+ {from:'2026-10-26',to:'2026-11-01',name:'Sügisvaheaeg'},{from:'2026-12-21',to:'2027-01-03',name:'Jõuluvaheaeg'},
+ {from:'2027-02-22',to:'2027-02-28',name:'Talvevaheaeg'},{from:'2027-04-12',to:'2027-04-18',name:'Kevadvaheaeg'}
+];
+const eeHolidayCache=new Map();
+function eeEaster(year){
+ const a=year%19,b=Math.floor(year/100),c=year%100,d=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),h=(19*a+b-d-g+15)%30,
+  i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+22*l)/451),month=Math.floor((h+l-7*m+114)/31),day=((h+l-7*m+114)%31)+1;
+ return Date.UTC(year,month-1,day,12);
+}
+function eeHolidays(year){
+ if(eeHolidayCache.has(year))return eeHolidayCache.get(year);
+ const map=new Map(),easter=eeEaster(year),iso=ms=>new Date(ms).toISOString().slice(0,10),pad=n=>String(n).padStart(2,'0'),fixed=(mm,dd,name)=>map.set(year+'-'+pad(mm)+'-'+pad(dd),name);
+ fixed(1,1,'Uusaasta');fixed(2,24,'Iseseisvuspäev');map.set(iso(easter-2*86400000),'Suur reede');map.set(iso(easter),'Ülestõusmispühade 1. püha');
+ fixed(5,1,'Kevadpüha');map.set(iso(easter+49*86400000),'Nelipühade 1. püha');fixed(6,23,'Võidupüha');fixed(6,24,'Jaanipäev');
+ fixed(8,20,'Taasiseseisvumispäev');fixed(12,24,'Jõululaupäev');fixed(12,25,'1. jõulupüha');fixed(12,26,'2. jõulupüha');
+ eeHolidayCache.set(year,map);return map;
+}
+// Server (PereSchool.gs) annab värskeima tabeli; sisseehitatud tabel täidab augud ega kirjuta serveri andmeid üle.
+function calSchoolBreaks(){
+ const server=savedOverview&&Array.isArray(savedOverview.schoolBreaks)?savedOverview.schoolBreaks:[];
+ return server.concat(EE_SCHOOL_BREAKS.filter(own=>!server.some(item=>item.from<=own.to&&item.to>=own.from)));
+}
+function calOff(date){
+ const holiday=eeHolidays(Number(date.slice(0,4))).get(date)||'',school=(calSchoolBreaks().find(item=>date>=item.from&&date<=item.to)||{}).name||'';
+ return {holiday,school};
+}
 const calPersonColor={'Otto Johan':'#0ea5e9','Eia-Liisa':'#f59e0b','Elle-Riin':'#ec4899','Kogu pere':'#7e22ce'};
 function calItems(){
  const person=$('overviewPerson').value;
@@ -1022,8 +1091,9 @@ function renderCalendar(){
  for(let day=1;day<=count;day++){
   const date=calMonth+'-'+String(day).padStart(2,'0'),entry=byDay.get(date)||{events:[],tasks:[]};
   const button=document.createElement('button');button.type='button';
-  button.className='cal-day'+(date===today?' today':'')+(date===calSel?' sel':'')+(date<today&&entry.tasks.length?' over':'');
-  button.setAttribute('aria-label',day+'. '+monthsShort[m-1]+(entry.events.length+entry.tasks.length?', '+entry.events.length+' üritust, '+entry.tasks.length+' ülesannet':', tühi'));
+  const off=calOff(date);
+  button.className='cal-day'+(date===today?' today':'')+(date===calSel?' sel':'')+(date<today&&entry.tasks.length?' over':'')+(off.holiday?' holiday':'')+(off.school?' break':'');
+  button.setAttribute('aria-label',day+'. '+monthsShort[m-1]+(entry.events.length+entry.tasks.length?', '+entry.events.length+' üritust, '+entry.tasks.length+' ülesannet':', tühi')+(off.holiday?', '+off.holiday:'')+(off.school?', '+off.school:''));
   button.setAttribute('aria-pressed',String(date===calSel));
   savedText(button,'span',String(day));
   const dots=document.createElement('span');dots.className='cal-dots';
@@ -1033,11 +1103,13 @@ function renderCalendar(){
  }
  sheet.append(grid);
  const legend=document.createElement('div');legend.className='cal-legend';
- legend.innerHTML='<span><i class="cal-dot" style="background:#0ea5e9"></i>üritus (inimese värv)</span><span><i class="cal-task"></i>ülesande tähtaeg</span>';sheet.append(legend);
+ legend.innerHTML='<span><i class="cal-dot" style="background:#0ea5e9"></i>üritus (inimese värv)</span><span><i class="cal-task"></i>ülesande tähtaeg</span><span><i class="cal-hol"></i>riigipüha</span><span><i class="cal-brk"></i>koolivaheaeg</span>';sheet.append(legend);
+ {const st=savedOverview.schoolStatus;if(st&&st.ok===false)savedText(sheet,'p','⚠ Koolivaheaegade automaatne uuendus ebaõnnestus'+(st.lastOk?' (viimati õnnestus '+shortDay(st.lastOk)+')':'')+'. Näidatud on viimane teadaolev tabel.','cal-warn');}
  const entry=byDay.get(calSel)||{events:[],tasks:[]},list=[...entry.events.slice().sort((a,b)=>(a.time||'').localeCompare(b.time||'')),...entry.tasks];
  const dayHead=document.createElement('div');dayHead.className='cal-dayhead';savedText(dayHead,'span',shortDay(calSel)+(calSel===today?' · täna':''));
  if(list.length){const open=document.createElement('button');open.type='button';open.className='link-button';open.textContent='Ava päev ›';open.onclick=()=>focusItemKey(list[0].key);dayHead.append(open);}
  sheet.append(dayHead);
+ {const off=calOff(calSel),notes=[off.holiday||off.school].filter(Boolean);if(notes.length){const note=document.createElement('div');note.className='cal-offnote';note.textContent=notes.join(' · ');sheet.append(note);}}
  list.forEach(item=>{
   const card=document.createElement('article');card.className='saved-card cal-card';card.tabIndex=0;card.setAttribute('role','button');
   const heading=document.createElement('div');heading.className='saved-event-heading';
@@ -1053,8 +1125,89 @@ function renderCalendar(){
  if(!list.length)savedText(sheet,'p','Sel päeval pole midagi kirjas.','empty');
 }
 $('calendarButton').onclick=openCalendar;$('calScrim').onclick=closeCalendar;
-document.addEventListener('keydown',event=>{if(event.key==='Escape'&&calOpen){event.preventDefault();closeCalendar();}});
+document.addEventListener('keydown',event=>{if(event.key==='Escape'&&searchOpen){event.preventDefault();closeSearch();}else if(event.key==='Escape'&&calOpen){event.preventDefault();closeCalendar();}});
 syncPersonOptions([]);renderPersonChips();
+
+// ---- Otsing: klaasaken, otsib kõigist salvestatud kirjetest (ka tehtud ja möödunud), tulemus kerib kaardini. ----
+let searchOpen=false;
+const SEARCH_FROM='äõöüšžåáàâéèêíìóòôúùñç',SEARCH_TO='aoouszaaaaeeeiiooouunc';
+function searchNorm(text){let out='';for(const ch of String(text||'').toLowerCase()){const i=SEARCH_FROM.indexOf(ch);out+=i>=0?SEARCH_TO[i]:ch;}return out;}
+function searchTokens(query){return searchNorm(query).split(' ').filter(Boolean);}
+function searchHay(item){return searchNorm([item.title,item.person,item.person?shortPerson(item.person):'',item.location,item.notes].join(' · '));}
+function searchHighlight(parent,text,tokens){
+ const norm=searchNorm(text),marks=[];
+ tokens.forEach(token=>{let from=0,at;while((at=norm.indexOf(token,from))>=0){marks.push([at,at+token.length]);from=at+token.length;}});
+ marks.sort((a,b)=>a[0]-b[0]);let pos=0;
+ marks.forEach(mark=>{let s=mark[0];const e=mark[1];if(e<=pos)return;if(s<pos)s=pos;
+  if(s>pos)parent.append(document.createTextNode(text.slice(pos,s)));
+  const hit=document.createElement('mark');hit.textContent=text.slice(s,e);parent.append(hit);pos=e;});
+ if(pos<text.length)parent.append(document.createTextNode(text.slice(pos)));
+}
+function searchRow(item,tokens){
+ const row=document.createElement('button');row.type='button';row.className='search-row'+(item.status==='Tehtud'?' done':'');
+ const title=document.createElement('span');title.className='search-title';searchHighlight(title,item.title||'(nimetu)',tokens);
+ const meta=document.createElement('span');meta.className='search-meta';
+ const day=item.kind==='event'?item.date:item.deadline;
+ const bits=[item.kind==='event'?'Üritus':item.kind==='invoice'?'Arve':'Ülesanne'];
+ if(day)bits.push(shortDay(day)+(item.kind==='event'&&item.time?' '+item.time:''));
+ if(item.person)bits.push(shortPerson(item.person));
+ if(item.status==='Tehtud')bits.push('tehtud ✓');
+ meta.textContent=bits.join(' · ');row.append(title,meta);
+ if(tokens.length&&!tokens.every(token=>searchNorm(item.title).includes(token))){
+  const field=[item.location,item.notes].find(value=>value&&tokens.some(token=>searchNorm(value).includes(token)));
+  if(field){const hit=document.createElement('span');hit.className='search-hit';searchHighlight(hit,field.length>90?field.slice(0,90)+'…':field,tokens);row.append(hit);}
+ }
+ row.onclick=()=>{closeSearch();revealItem(item.key);};
+ return row;
+}
+function renderSearch(){
+ const box=$('searchResults');box.replaceChildren();
+ if(!savedOverview)return;
+ const today=savedOverview.today,tomorrow=addDays(today,1),tokens=searchTokens($('searchInput').value);
+ const searchable=savedOverview.items.filter(item=>['event','task','invoice'].includes(item.kind));
+ const isTask=item=>item.kind!=='event';
+ let events,tasks,done;
+ if(tokens.length){
+  const matched=searchable.filter(item=>{const hay=searchHay(item);return tokens.every(token=>hay.includes(token));});
+  events=matched.filter(item=>item.kind==='event');tasks=matched.filter(item=>isTask(item)&&item.status!=='Tehtud');done=matched.filter(item=>isTask(item)&&item.status==='Tehtud');
+ }else{
+  events=searchable.filter(item=>item.kind==='event'&&item.date>=today&&item.date<=tomorrow);
+  tasks=searchable.filter(item=>isTask(item)&&item.status!=='Tehtud'&&item.deadline&&item.deadline<=tomorrow);done=[];
+  savedText(box,'div','Täna ja homme','search-label');
+ }
+ events.sort((a,b)=>{const pa=a.date>=today,pb=b.date>=today;if(pa!==pb)return pa?-1:1;return pa?(a.date+' '+a.time).localeCompare(b.date+' '+b.time):(b.date+' '+b.time).localeCompare(a.date+' '+a.time);});
+ tasks.sort((a,b)=>(a.deadline||'9999').localeCompare(b.deadline||'9999'));
+ done.sort((a,b)=>(b.deadline||'').localeCompare(a.deadline||''));
+ const total=events.length+tasks.length+done.length;
+ if(!total){savedText(box,'p',tokens.length?'Midagi ei leitud.':'Täna ja homme pole midagi.','search-empty');return;}
+ if(tokens.length)savedText(box,'div',total+(total===1?' tulemus':' tulemust'),'search-count');
+ let budget=40;
+ [['Üritused',events],['Ülesanded',tasks],['Tehtud',done]].forEach(group=>{
+  if(!group[1].length||budget<=0)return;
+  if(tokens.length)savedText(box,'div',group[0],'search-label');
+  group[1].slice(0,budget).forEach(item=>box.append(searchRow(item,tokens)));budget-=group[1].length;
+ });
+ if(budget<0)savedText(box,'p','…ja veel '+(-budget)+'. Täpsusta otsingut.','search-empty');
+}
+function openSearch(){
+ if(!savedOverview||searchOpen)return;
+ searchOpen=true;$('searchOverlay').hidden=false;$('searchInput').value='';renderSearch();
+ if($('searchInput').focus)$('searchInput').focus();
+}
+function closeSearch(){if(!searchOpen)return;searchOpen=false;$('searchOverlay').hidden=true;}
+// Kaart võib olla filtri või kokkuvolditud tehtud-loendi taga: eemalda takistus ja kerge kaardini.
+function revealItem(key){
+ if(!overviewEventCards.get(key)&&!overviewTaskCards.get(key)){
+  const item=savedOverview.items.find(entry=>entry.key===key);
+  if($('overviewPerson').value)$('overviewPerson').value='';
+  if(item&&item.status==='Tehtud'){searchPinned.add(key);$('showDone').checked=true;}
+  renderOverview();
+ }
+ focusItemKey(key);
+}
+$('searchButton').onclick=openSearch;$('searchClose').onclick=closeSearch;$('searchScrim').onclick=closeSearch;
+$('searchInput').oninput=renderSearch;
+$('searchInput').onkeydown=event=>{if(event.key==='Enter'){event.preventDefault();const first=$('searchResults').children.find?$('searchResults').children.find(node=>node.className&&node.className.indexOf('search-row')===0):$('searchResults').querySelector('.search-row');if(first&&first.onclick)first.onclick();}};
 
 // ---- Tõmba alla värskendamiseks (puuteekraan). Lehte ei laeta uuesti, seega laadimiskuvandit ei näidata. ----
 (function(){
@@ -1062,7 +1215,7 @@ syncPersonOptions([]);renderPersonChips();
  const icon=()=>node.querySelector('svg')||{style:{}};
  const atTop=()=>(window.scrollY||(document.documentElement&&document.documentElement.scrollTop)||0)<=0;
  const blocked=target=>{
-  if(calOpen||working)return true;
+  if(calOpen||searchOpen||working)return true;
   const login=document.getElementById('loginOverlay');if(login&&!login.hidden)return true;
   if(document.getElementById('splash'))return true;
   const tag=target&&target.closest?target.closest('textarea,select,input'):null;return !!tag;
@@ -1190,21 +1343,17 @@ function field(item,key,label,type='text',index=-1){
  return wrap;
 }
 function linkEventPicker(item){
- const details=document.createElement('details');details.className='refine link-event';
- const summary=document.createElement('summary'),title=document.createElement('span'),sum=document.createElement('span');
- title.className='refine-title';title.textContent='Seo üritusega';sum.className='refine-summary';summary.append(title,document.createTextNode(' '),sum);
- const body=document.createElement('div');body.className='row';const select=document.createElement('select');select.setAttribute('aria-label','Seotud üritus');body.append(select);details.append(summary,body);
- let loaded=false;item.linkEventKey='';
+ const wrap=document.createElement('div');wrap.className='link-event';item.linkEventKey='';
+ const title=document.createElement('label');title.textContent='Seo üritusega';
+ const select=document.createElement('select');select.setAttribute('aria-label','Seotud üritus');title.append(select);wrap.append(title);
  const events=[];const label=ev=>ev.title+' · '+shortDay(ev.date)+(ev.time?' '+ev.time:'');
+ const none=text=>{select.replaceChildren();const o=document.createElement('option');o.value='';o.textContent=text;select.append(o);};none('Pole seotud');
  const fill=data=>{const today=data.today||tallinnToday();events.length=0;data.items.filter(it=>it.kind==='event'&&it.date&&it.date>=today).sort((a,b)=>(a.date+' '+a.time).localeCompare(b.date+' '+b.time)).forEach(ev=>events.push(ev));
-  select.replaceChildren();const none=document.createElement('option');none.value='';none.textContent=events.length?'Pole seotud':'Tulevasi üritusi pole';select.append(none);
-  events.forEach(ev=>{const option=document.createElement('option');option.value=ev.key;option.textContent=label(ev);select.append(option);});select.value=item.linkEventKey;};
- select.onchange=()=>{item.linkEventKey=select.value;const ev=events.find(e=>e.key===select.value);sum.textContent=ev?'· '+ev.title:'';};
- details.addEventListener('toggle',()=>{if(!details.open||loaded)return;loaded=true;
-  if(savedOverview){fill(savedOverview);return;}
-  select.replaceChildren();const wait=document.createElement('option');wait.textContent='Laen üritusi…';select.append(wait);
-  google.script.run.withSuccessHandler(data=>fill(data)).withFailureHandler(()=>{loaded=false;wait.textContent='Üritusi ei õnnestunud laadida';}).pereListSaved();});
- return details;
+  none('Pole seotud');events.forEach(ev=>{const option=document.createElement('option');option.value=ev.key;option.textContent=label(ev);select.append(option);});select.value=item.linkEventKey;};
+ select.onchange=()=>{item.linkEventKey=select.value;};
+ if(savedOverview)fill(savedOverview);
+ else google.script.run.withSuccessHandler(data=>fill(data)).withFailureHandler(()=>{}).pereListSaved();
+ return wrap;
 }
 function renderResult(){
  $('summary').textContent=result.summary;$('cards').replaceChildren();$('questions').replaceChildren();$('questions').hidden=!result.questions.length;
