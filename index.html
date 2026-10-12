@@ -371,7 +371,7 @@ body:has(.cal-overlay:not([hidden])){overflow:hidden}
  border:1px solid rgba(255,255,255,.7);border-bottom:0;box-shadow:0 -14px 44px rgba(20,22,52,.26),inset 0 1px 0 rgba(255,255,255,.75);animation:cal-up .25s cubic-bezier(.2,.8,.2,1)}
 :root[data-theme="dark"] .cal-sheet{background:rgba(26,28,56,.58);border-color:rgba(255,255,255,.14);box-shadow:0 -14px 44px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.12)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cal-sheet{background:rgba(26,28,56,.58);border-color:rgba(255,255,255,.14);box-shadow:0 -14px 44px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.12)}}
-.cal-card{-webkit-backdrop-filter:none;backdrop-filter:none;background:var(--glass-strong)}
+.cal-card{-webkit-backdrop-filter:none;backdrop-filter:none;background:color-mix(in srgb,var(--glass-strong) 38%,transparent);border-color:color-mix(in srgb,var(--stroke) 70%,transparent);box-shadow:none}
 @keyframes cal-up{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
 @keyframes cal-fade{from{opacity:0}to{opacity:1}}
 @media(min-width:741px){.cal-overlay{align-items:center}.cal-sheet{border-radius:26px;border-bottom:1px solid var(--stroke);max-height:88vh}}
@@ -415,10 +415,6 @@ html,body{overscroll-behavior-y:contain}
  box-shadow:0 10px 28px color-mix(in srgb,var(--accent) 28%,transparent),0 2px 6px rgba(20,22,52,.14),inset 0 1px 0 rgba(255,255,255,.8)}
 .cal-fab svg{width:26px;height:26px}
 .cal-fab:active{transform:scale(.94)}
-@media (hover:hover){.cal-fab:hover{box-shadow:0 14px 34px color-mix(in srgb,var(--accent) 38%,transparent),0 2px 6px rgba(20,22,52,.14),inset 0 1px 0 rgba(255,255,255,.8)}}
-@media(max-width:740px){.cal-fab{right:16px;bottom:calc(92px + env(safe-area-inset-bottom))}.undo-toast{bottom:calc(164px + env(safe-area-inset-bottom))}}
-:root[data-theme="dark"] .cal-fab{box-shadow:0 10px 28px rgba(0,0,0,.5),0 2px 6px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.16)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cal-fab{box-shadow:0 10px 28px rgba(0,0,0,.5),0 2px 6px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.16)}}
 </style>
 <style>
 .login-overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:24px;background:color-mix(in srgb,var(--bg) 55%,transparent);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
