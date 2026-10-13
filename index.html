@@ -540,10 +540,10 @@ html,body{overscroll-behavior-y:contain}
 .cal-fab{transition:transform .28s cubic-bezier(.2,.8,.2,1),opacity .22s ease,box-shadow .2s ease}
 .cal-fab.fab-hidden{transform:translateY(110px) scale(.85);opacity:0;pointer-events:none}
 @media (prefers-reduced-motion:reduce){.cal-fab{transition:opacity .15s ease}.cal-fab.fab-hidden{transform:none}}
-/* Arvuti: 62 px kalendrinupp ujub paremal nimekiipide (Kõik/Eia/Otto…) kõrgusel, alati nähtav; sisu serva taga, kitsamal ekraanil serva peal */
+/* Arvuti: 69 px kalendrinupp ujub paremal nimekiipide (Kõik/Eia/Otto…) kõrgusel, alati nähtav; sisu serva taga, kitsamal ekraanil serva peal */
 @media(min-width:741px){
- .cal-fab{width:62px;height:62px;top:352px;bottom:auto;right:max(16px,calc(50% - 618px))}
- .cal-fab svg{width:28px;height:28px}
+ .cal-fab{width:69px;height:69px;top:352px;bottom:auto;right:max(16px,calc(50% - 625px))}
+ .cal-fab svg{width:31px;height:31px}
  .cal-fab.fab-hidden{transform:none;opacity:1;pointer-events:auto}
 }
 </style>
@@ -1422,9 +1422,12 @@ function alignCalendarButton(){
  if(!desktop){fab.style.top='';return;}
  const chip=(typeof chips.querySelector==='function'&&chips.querySelector('.chip'))||chips,box=chip.getBoundingClientRect();
  if(!box.height)return;
- const half=(typeof fab.getBoundingClientRect==='function'&&fab.getBoundingClientRect().height||62)/2;
- fab.style.top=Math.round(box.top+box.height/2+(window.scrollY||0)-half)+'px';
+ const half=(typeof fab.getBoundingClientRect==='function'&&fab.getBoundingClientRect().height||69)/2;
+ fab.style.top=(Math.round((box.top+box.height/2+(window.scrollY||0)-half)*2)/2)+'px';
 }
+// Paigutus võib nihkuda ka pärast joonistamist (fondid, andmed, teated): jälgi lehe suuruse muutust ja proovi uuesti mõne korra.
+if(typeof ResizeObserver==='function'&&typeof document!=='undefined'&&document.body){try{new ResizeObserver(()=>alignCalendarButton()).observe(document.body);}catch(_){}}
+if(typeof setTimeout==='function'){[150,600,1500,3500].forEach(ms=>setTimeout(alignCalendarButton,ms));}
 if(typeof window!=='undefined'&&typeof window.addEventListener==='function'){window.addEventListener('resize',alignCalendarButton);if(typeof document!=='undefined'&&document.fonts&&document.fonts.ready)document.fonts.ready.then(alignCalendarButton);}
 function status(text, error=false){updateRefine();$('status').textContent=text;$('status').classList.toggle('error',error);}
 function resetResult(){result=null;sourceSnapshot=null;$('results').hidden=true;$('cards').replaceChildren();}
