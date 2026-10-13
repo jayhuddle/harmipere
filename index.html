@@ -522,6 +522,20 @@ html,body{overscroll-behavior-y:contain}
 .related-text{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .related-icon{flex:none;display:inline-flex;color:var(--accent)}
 .related-icon svg{width:16px;height:16px}
+/* Mobiil: ring servale (variant 4), pisut väiksem ring sama puudutusalaga, väiksem silt */
+@media(max-width:740px){
+ .saved-card:has(.task-main){padding-left:9px}
+ .task-main{gap:8px}
+ .task-main>.complete-button{width:20px;height:20px;margin-top:2px;font-size:12px}
+ .task-main>.complete-button:before{inset:-10px}
+ .saved-person{min-width:42px;padding:3px 6px}
+}
+/* Mobiil: nädal päevade kaupa (agenda) */
+.agenda-day{display:flex;align-items:baseline;gap:8px;margin:16px 4px 6px;font-size:12px;font-weight:700;letter-spacing:1.1px;text-transform:uppercase;color:var(--muted)}
+.agenda-day.today{color:var(--accent)}
+.agenda-day small{font-size:12px;font-weight:550;letter-spacing:0;text-transform:none;color:var(--soft)}
+.overdue-label{color:var(--danger)}
+#savedWeek>.saved-card{margin:8px 0}
 </style>
 <style>
 .login-overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:24px;background:color-mix(in srgb,var(--bg) 55%,transparent);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
@@ -1042,12 +1056,22 @@ function renderOverview(){
   if(last&&last.className==='saved-deadline')footer.className+=' footer-plain';
   const tools=document.createElement('div');tools.className='card-tools';tools.append(editButton(item));footer.append(content,tools);card.append(footer);parent.append(card);
  }
- // See nädal: ülesanded vasakul (üle tähtaja ees), üritused paremal; mobiilis üksteise all väikese pealkirjaga.
+ // See nädal: arvutis ülesanded vasakul (üle tähtaja ees) ja üritused paremal; mobiilis päevade kaupa segamini (üle tähtaja ülal; päeva sees ülesanded enne üritusi).
  const weekTasks=items.filter(item=>isTask(item)&&inWeek(item)).sort((a,b)=>a.deadline.localeCompare(b.deadline));
  const weekEvents=items.filter(item=>item.kind==='event'&&inWeek(item)).sort((a,b)=>(a.date+' '+a.time).localeCompare(b.date+' '+b.time));
  $('savedWeek').replaceChildren();$('weekCount').textContent='('+(weekTasks.length+weekEvents.length)+')';
  if(!weekTasks.length&&!weekEvents.length)savedText($('savedWeek'),'p','Järgmise 7 päeva jooksul pole midagi kirjas.','empty');
- else [[weekTasks,'Ülesanded','Sel nädalal ülesandeid pole.',taskCard],[weekEvents,'Üritused','Sel nädalal üritusi pole.',eventCard]].forEach(([list,label,empty,draw])=>{
+ else if(typeof window!=='undefined'&&window.matchMedia&&window.matchMedia('(max-width:740px)').matches){
+  const week=$('savedWeek'),overdue=weekTasks.filter(item=>item.deadline<today);
+  if(overdue.length){savedText(week,'div','Üle tähtaja','week-col-label overdue-label');overdue.forEach(item=>taskCard(item,week));}
+  for(let i=0;i<7;i++){
+   const date=addDays(today,i),dayEvents=weekEvents.filter(item=>item.date===date),dayTasks=weekTasks.filter(item=>item.deadline===date);
+   if(!dayEvents.length&&!dayTasks.length)continue;
+   const head=document.createElement('div');head.className='agenda-day'+(i===0?' today':'');
+   savedText(head,'span',(i===0?'Täna · ':i===1?'Homme · ':'')+shortDay(date));const holiday=calOff(date).holiday;if(holiday)savedText(head,'small',holiday);week.append(head);
+   dayTasks.forEach(item=>taskCard(item,week));dayEvents.forEach(item=>eventCard(item,week));
+  }
+ }else [[weekTasks,'Ülesanded','Sel nädalal ülesandeid pole.',taskCard],[weekEvents,'Üritused','Sel nädalal üritusi pole.',eventCard]].forEach(([list,label,empty,draw])=>{
   const column=document.createElement('div');column.className='week-col';savedText(column,'div',label,'week-col-label');
   list.forEach(item=>draw(item,column));if(!list.length)savedText(column,'p',empty,'empty');$('savedWeek').append(column);
  });
@@ -1361,6 +1385,8 @@ $('searchInput').onkeydown=event=>{if(event.key==='Enter'){event.preventDefault(
   if(go)run();else if(node.style.opacity&&node.style.opacity!=='0')reset();
  });
 })();
+// Ekraani laius ületab/alandab mobiilipiiri: nädala plokk joonistatakse uue paigutusega.
+if(typeof window!=='undefined'&&window.matchMedia){try{window.matchMedia('(max-width:740px)').addEventListener('change',()=>{if(savedOverview)renderOverview();});}catch(_){}}
 function status(text, error=false){updateRefine();$('status').textContent=text;$('status').classList.toggle('error',error);}
 function resetResult(){result=null;sourceSnapshot=null;$('results').hidden=true;$('cards').replaceChildren();}
 function setBusy(value){busy=value;['analyze','pick','camera','cameraFile','text','person','personOther','sourceDate','files'].forEach(id=>$(id).disabled=value);$('analyze').innerHTML=value?'Töötlen…':'Sisesta info'+"<svg class=\"enter-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M10 4h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-8\"/><path d=\"M3 12h11.5\"/><path d=\"M11.3 8.8l3.2 3.2-3.2 3.2\"/></svg>";renderImages();}
