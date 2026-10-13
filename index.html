@@ -546,6 +546,11 @@ html,body{overscroll-behavior-y:contain}
  .cal-fab svg{width:31px;height:31px}
  .cal-fab.fab-hidden{transform:none;opacity:1;pointer-events:auto}
 }
+/* Kalender: karussell (eelmine | praegune | järgmine kuu), sõrm liigutab rööpa kaasa */
+.cal-viewport{overflow:hidden;touch-action:pan-y}
+.cal-track{display:flex;align-items:flex-start;transform:translateX(-100%);will-change:transform}
+.cal-track>.cal-grid{flex:0 0 100%;min-width:0;box-sizing:border-box}
+.cal-pane-blocked{visibility:hidden}
 </style>
 <style>
 .login-overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:24px;background:color-mix(in srgb,var(--bg) 55%,transparent);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
@@ -1160,10 +1165,10 @@ function calMonthLabel(ym){const [y,m]=ym.split('-').map(Number);const text=new 
 function calShift(ym,delta){const [y,m]=ym.split('-').map(Number);return new Date(Date.UTC(y,m-1+delta,1,12)).toISOString().slice(0,7);}
 let calAnim='';
 // Kuu vahetus (nooled, pühkimine, nooleklahvid): delta ±1; libiseb sisse selle suunast. Üle 18 kuu tagasi ei lähe.
-function calStep(delta){
+function calStep(delta,options){
  if(!savedOverview||!calOpen)return;
  const next=calShift(calMonth,delta);if(next<calMinMonth())return;
- calMonth=next;calSel=next===savedOverview.today.slice(0,7)?savedOverview.today:next+'-01';calAnim=delta>0?'next':'prev';renderCalendar();
+ calMonth=next;calSel=next===savedOverview.today.slice(0,7)?savedOverview.today:next+'-01';calAnim=options&&options.silent?'':(delta>0?'next':'prev');renderCalendar();
 }
 function openCalendar(){
  if(!savedOverview)return;
@@ -1214,37 +1219,67 @@ function renderCalendar(){
  const jump=mk('Täna','Mine tänase päeva juurde',()=>{calMonth=today.slice(0,7);calSel=today;renderCalendar();},'cal-today');
  jump.hidden=calMonth===today.slice(0,7)&&calSel===today;
  head.append(jump,mk('×','Sulge kalender',closeCalendar,'cal-close'));sheet.append(head);
- const [y,m]=calMonth.split('-').map(Number),offset=(new Date(Date.UTC(y,m-1,1,12)).getUTCDay()+6)%7,count=new Date(Date.UTC(y,m,0,12)).getUTCDate();
  const weekdays=document.createElement('div');weekdays.className='cal-weekdays';['E','T','K','N','R','L','P'].forEach(name=>savedText(weekdays,'span',name));sheet.append(weekdays);
- const grid=document.createElement('div');grid.className='cal-grid';
- const pad2=n=>String(n).padStart(2,'0'),prevMonth=calShift(calMonth,-1),nextMonth=calShift(calMonth,1),prevCount=new Date(Date.UTC(y,m-1,0,12)).getUTCDate();
+ const pad2=n=>String(n).padStart(2,'0');
  const makeDots=(date,entry)=>{const dots=document.createElement('span');dots.className='cal-dots';
   (date<today?entry.events.slice(0,3).map(()=>'#94a3b8'):[...new Set(entry.events.map(item=>calPersonColor[canonicalPerson(item.person)]||'#64748b'))].slice(0,3)).forEach(color=>{const dot=document.createElement('i');dot.className='cal-dot';dot.style.background=color;dots.append(dot);});
   if(entry.tasks.length){const task=document.createElement('i');task.className='cal-task';dots.append(task);}return dots;};
- const outCell=(date,day)=>{const off=calOff(date),entry=byDay.get(date)||{events:[],tasks:[]},cell=document.createElement('button');cell.type='button';
-  cell.className='cal-day cal-out'+(date<today?' pastday':'')+(off.holiday?' holiday':'')+(off.school?' break':'');
-  cell.setAttribute('aria-label',day+'. '+monthsShort[Number(date.slice(5,7))-1]+(entry.events.length+entry.tasks.length?', '+entry.events.length+' üritust, '+entry.tasks.length+' ülesannet':''));
-  savedText(cell,'span',String(day));cell.append(makeDots(date,entry));
-  if(date.slice(0,7)<calMinMonth())cell.disabled=true;
-  else cell.onclick=()=>{calAnim=date<calMonth+'-01'?'prev':'next';calMonth=date.slice(0,7);calSel=date;renderCalendar();};
-  return cell;};
- for(let i=0;i<offset;i++){const day=prevCount-offset+1+i;grid.append(outCell(prevMonth+'-'+pad2(day),day));}
- for(let day=1;day<=count;day++){
-  const date=calMonth+'-'+String(day).padStart(2,'0'),entry=byDay.get(date)||{events:[],tasks:[]};
-  const button=document.createElement('button');button.type='button';
-  const off=calOff(date);
-  button.className='cal-day'+(date===today?' today':'')+(date===calSel?' sel':'')+(date<today&&entry.tasks.length?' over':'')+(date<today?' pastday':'')+(off.holiday?' holiday':'')+(off.school?' break':'');
-  button.setAttribute('aria-label',day+'. '+monthsShort[m-1]+(entry.events.length+entry.tasks.length?', '+entry.events.length+' üritust, '+entry.tasks.length+' ülesannet':', tühi')+(off.holiday?', '+off.holiday:'')+(off.school?', '+off.school:''));
-  button.setAttribute('aria-pressed',String(date===calSel));
-  savedText(button,'span',String(day));
-  button.append(makeDots(date,entry));button.onclick=()=>{calSel=date;renderCalendar();};grid.append(button);
- }
- for(let day=1,tail=(7-(offset+count)%7)%7;day<=tail;day++)grid.append(outCell(nextMonth+'-'+pad2(day),day));
- {let sx=null,sy=null;
-  grid.addEventListener('touchstart',event=>{if(event.touches.length!==1){sx=null;return;}sx=event.touches[0].clientX;sy=event.touches[0].clientY;});
-  grid.addEventListener('touchend',event=>{if(sx===null)return;const t=event.changedTouches&&event.changedTouches[0];if(!t){sx=null;return;}const dx=t.clientX-sx,dy=t.clientY-sy;sx=null;if(Math.abs(dx)>=50&&Math.abs(dx)>=1.5*Math.abs(dy))calStep(dx<0?1:-1);});}
- if(calAnim){grid.classList.add('cal-slide-'+calAnim);calAnim='';}
- sheet.append(grid);
+ // Ühe kuu ruudustik (naabrikuu päevad hallilt servades)
+ const buildGrid=month=>{
+  const [y,m]=month.split('-').map(Number),offset=(new Date(Date.UTC(y,m-1,1,12)).getUTCDay()+6)%7,count=new Date(Date.UTC(y,m,0,12)).getUTCDate(),
+   prevMonth=calShift(month,-1),nextMonth=calShift(month,1),prevCount=new Date(Date.UTC(y,m-1,0,12)).getUTCDate();
+  const grid=document.createElement('div');grid.className='cal-grid';
+  const outCell=(date,day)=>{const off=calOff(date),entry=byDay.get(date)||{events:[],tasks:[]},cell=document.createElement('button');cell.type='button';
+   cell.className='cal-day cal-out'+(date<today?' pastday':'')+(off.holiday?' holiday':'')+(off.school?' break':'');
+   cell.setAttribute('aria-label',day+'. '+monthsShort[Number(date.slice(5,7))-1]+(entry.events.length+entry.tasks.length?', '+entry.events.length+' üritust, '+entry.tasks.length+' ülesannet':''));
+   savedText(cell,'span',String(day));cell.append(makeDots(date,entry));
+   if(date.slice(0,7)<calMinMonth())cell.disabled=true;
+   else cell.onclick=()=>{calAnim=date<calMonth+'-01'?'prev':'next';calMonth=date.slice(0,7);calSel=date;renderCalendar();};
+   return cell;};
+  for(let i=0;i<offset;i++){const day=prevCount-offset+1+i;grid.append(outCell(prevMonth+'-'+pad2(day),day));}
+  for(let day=1;day<=count;day++){
+   const date=month+'-'+pad2(day),entry=byDay.get(date)||{events:[],tasks:[]};
+   const button=document.createElement('button');button.type='button';
+   const off=calOff(date);
+   button.className='cal-day'+(date===today?' today':'')+(date===calSel?' sel':'')+(date<today&&entry.tasks.length?' over':'')+(date<today?' pastday':'')+(off.holiday?' holiday':'')+(off.school?' break':'');
+   button.setAttribute('aria-label',day+'. '+monthsShort[m-1]+(entry.events.length+entry.tasks.length?', '+entry.events.length+' üritust, '+entry.tasks.length+' ülesannet':', tühi')+(off.holiday?', '+off.holiday:'')+(off.school?', '+off.school:''));
+   button.setAttribute('aria-pressed',String(date===calSel));
+   savedText(button,'span',String(day));
+   button.append(makeDots(date,entry));button.onclick=()=>{calSel=date;renderCalendar();};grid.append(button);
+  }
+  for(let day=1,tail=(7-(offset+count)%7)%7;day<=tail;day++)grid.append(outCell(nextMonth+'-'+pad2(day),day));
+  return grid;};
+ // Karussell: eelmine | praegune | järgmine kuu kõrvuti; sõrm liigutab rööpa kaasa, lahtilaskmisel kleepub lähima kuu külge.
+ const minMonth=calMinMonth(),prevM=calShift(calMonth,-1),nextM=calShift(calMonth,1);
+ const viewport=document.createElement('div');viewport.className='cal-viewport';
+ const track=document.createElement('div');track.className='cal-track';
+ const panes=[prevM,calMonth,nextM].map((month,i)=>{const pane=buildGrid(month);pane.className+=i===1?' cal-pane-current':' cal-pane-side';
+  if(i===0&&month<minMonth)pane.className+=' cal-pane-blocked';if(i!==1){pane.setAttribute('aria-hidden','true');pane.setAttribute('inert','');}return pane;});
+ track.append(...panes);viewport.append(track);
+ {let sx=null,sy=null,t0=0,dx=0,mode=null;
+  const resetTrack=()=>{track.style.transition='';track.style.transform='';};
+  viewport.addEventListener('touchstart',event=>{if(event.touches.length!==1){sx=null;return;}sx=event.touches[0].clientX;sy=event.touches[0].clientY;t0=Date.now();dx=0;mode=null;});
+  viewport.addEventListener('touchmove',event=>{
+   if(sx===null)return;const t=event.touches[0],mx=t.clientX-sx,my=t.clientY-sy;
+   if(mode===null&&(Math.abs(mx)>8||Math.abs(my)>8))mode=Math.abs(mx)>Math.abs(my)*1.2?'x':'y';
+   if(mode!=='x')return;
+   dx=mx>0&&prevM<minMonth?mx*0.25:mx;
+   track.style.transition='none';track.style.transform='translateX(calc(-100% + '+dx+'px))';if(event.cancelable)event.preventDefault();
+  },{passive:false});
+  viewport.addEventListener('touchend',event=>{
+   if(sx===null)return;const t=event.changedTouches&&event.changedTouches[0];
+   const total=t?t.clientX-sx:dx,vertical=t?t.clientY-sy:0,was=mode,width=viewport.offsetWidth||360;sx=null;mode=null;dx=0;
+   if(!(was==='x'||(was===null&&Math.abs(total)>=50&&Math.abs(total)>=1.5*Math.abs(vertical))))return;
+   const fast=Math.abs(total)/Math.max(1,Date.now()-t0)>0.5&&Math.abs(total)>30;
+   const go=(Math.abs(total)>width*0.25||fast)?(total<0?1:-1):0;
+   if(!go||(go<0&&prevM<minMonth)){track.style.transition='transform .22s cubic-bezier(.2,.8,.2,1)';track.style.transform='translateX(-100%)';setTimeout(resetTrack,230);return;}
+   track.style.transition='transform .24s cubic-bezier(.2,.8,.2,1)';track.style.transform='translateX('+(go>0?'-200%':'0%')+')';
+   setTimeout(()=>calStep(go,{silent:true}),240);
+  });
+  viewport.addEventListener('touchcancel',()=>{if(sx===null)return;sx=null;mode=null;dx=0;track.style.transition='transform .2s ease';track.style.transform='translateX(-100%)';setTimeout(resetTrack,210);});}
+ if(calAnim){panes[1].classList.add('cal-slide-'+calAnim);calAnim='';}
+ sheet.append(viewport);
+ if(typeof requestAnimationFrame==='function')requestAnimationFrame(()=>{if(panes[1].offsetHeight)viewport.style.height=panes[1].offsetHeight+'px';});
  const legend=document.createElement('div');legend.className='cal-legend';
  legend.innerHTML='<span><i class="cal-dot" style="background:#0ea5e9"></i>üritus</span><span><i class="cal-task"></i>ülesanne</span><span><i class="cal-hol"></i>püha</span><span><i class="cal-brk"></i>vaheaeg</span>';sheet.append(legend);
  {const st=savedOverview.schoolStatus;if(st&&st.ok===false)savedText(sheet,'p','⚠ Koolivaheaegade automaatne uuendus ebaõnnestus'+(st.lastOk?' (viimati õnnestus '+shortDay(st.lastOk)+')':'')+'. Näidatud on viimane teadaolev tabel.','cal-warn');}
