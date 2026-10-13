@@ -556,6 +556,8 @@ html,body{overscroll-behavior-y:contain}
 @media (hover:hover){.location-link:hover{color:var(--accent)}}
 .location-link:active{color:var(--accent)}
 .location-link:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 35%,transparent);border-radius:4px}
+/* E-kirjade märk indigo (pole nii kriitiline kui Pere punane märk) */
+#mailCount.nav-count{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;box-shadow:0 2px 8px color-mix(in srgb,var(--accent) 45%,transparent)}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
@@ -654,7 +656,7 @@ body:after{content:'';position:absolute;top:0;left:0;right:0;height:180px;z-inde
 <div id="googleButton"></div><p id="loginStatus" class="status" role="status" aria-live="polite"></p></div></div>
 <header><div class="brand"><span class="brand-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="4.4" r="2.4"/><circle cx="19.2" cy="9.6" r="2.4"/><circle cx="16.5" cy="18.1" r="2.4"/><circle cx="7.5" cy="18.1" r="2.4"/><circle cx="4.8" cy="9.6" r="2.4"/><path d="M12 15l-2.6-2.5a1.6 1.6 0 0 1 2.6-2 1.6 1.6 0 0 1 2.6 2Z"/></svg></span><span class="brand-name">Härmipere <span>tegemised</span></span></div><div class="header-tools"><button id="themeToggle" class="theme-toggle" type="button"></button></div></header>
 <main>
-<nav class="view-nav" aria-label="Pereäpi vaated"><button id="inputTab" type="button" aria-pressed="true" aria-label="Lisa infot" title="Lisa infot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5H5v14h14v-7M11 13l2-5 6-6 3 3-6 6-5 2Z"/></svg></button><button id="overviewTab" type="button" aria-pressed="false" aria-label="Pere ülevaade">Pere<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18M7 14h2M15 14h2M7 17h2"/></svg><span id="urgentCount" class="nav-count" hidden></span></button><button id="mailTab" type="button" aria-pressed="false" aria-label="E-kirjad" title="E-kirjad"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 6 9 7 9-7"/></svg></button></nav>
+<nav class="view-nav" aria-label="Pereäpi vaated"><button id="inputTab" type="button" aria-pressed="true" aria-label="Lisa infot" title="Lisa infot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5H5v14h14v-7M11 13l2-5 6-6 3 3-6 6-5 2Z"/></svg></button><button id="overviewTab" type="button" aria-pressed="false" aria-label="Pere ülevaade">Pere<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18M7 14h2M15 14h2M7 17h2"/></svg><span id="urgentCount" class="nav-count" hidden></span></button><button id="mailTab" type="button" aria-pressed="false" aria-label="E-kirjad" title="E-kirjad"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 6 9 7 9-7"/></svg><span id="mailCount" class="nav-count" hidden></span></button></nav>
 <div id="inputView">
 <div class="eyebrow">Vähem meelespidamist</div><h1>Kõik oluline ühest teatest.</h1>
 <p class="intro">Kleebi kutse või kooliteade, lisa pilt.<span class="intro-more"> Vaata üle, millised sündmused, ülesanded ja arved sellest välja tulevad.</span></p>
@@ -789,7 +791,7 @@ function clearInputIfDone(){
  if(!cards.length||!cards.every(node=>String(node.className).includes('item-saved')))return;
  // Kui sisend tuli E-kirjadest ja tekst on muutmata, märgi kiri töödeldud (ei jää ülevaatamise loendisse).
  const mail=currentMail;currentMail=null;const norm=value=>String(value||'').replace(/\r\n?/g,'\n').trim();
- if(mail&&sourceSnapshot&&norm(sourceSnapshot.text)===norm(mail.text)&&window.google?.script?.run)google.script.run.withSuccessHandler(()=>{}).withFailureHandler(()=>{}).pereMailMarkDone(mail.id);
+ if(mail&&sourceSnapshot&&norm(sourceSnapshot.text)===norm(mail.text)&&window.google?.script?.run)google.script.run.withSuccessHandler(()=>loadMailBadge()).withFailureHandler(()=>{}).pereMailMarkDone({id:mail.id,persons:savedPersons()});
  $('text').value='';images=[];renderImages();$('person').value='';$('personOther').value='';$('personOther').hidden=true;$('sourceDate').value='';updateRefine();
 }
 function formatTimeInput(value){const digits=String(value||'').replace(/\D/g,'').slice(0,4);return digits.length>2?digits.slice(0,2)+':'+digits.slice(2):digits;}
@@ -833,13 +835,30 @@ $('mailTab').onclick=()=>showView('mail');$('refreshMail').onclick=()=>loadMail(
 $('showProcessedMail').onchange=loadMail;
 let mailLoading=false;
 function mailStatus(message,error=false){$('mailStatus').textContent=message;$('mailStatus').classList.toggle('error',error);}
+// E-kirjade nupu märk: mitu kirja ootab ülevaatamist ("Vajab ülevaatamist" = automaatika ei olnud kindel). Näidatakse kohe vahemälust, uuendatakse taustal.
+let mailBadgeAt=0;
+function setMailBadge(count){
+ const badge=$('mailCount'),tab=$('mailTab');if(!badge||!tab)return;
+ badge.textContent=String(count);badge.hidden=!count;
+ tab.setAttribute('aria-label','E-kirjad'+(count?' · '+count+(count===1?' kiri ootab':' kirja ootab')+' ülevaatamist':''));
+}
+function updateMailBadge(items){
+ const count=(items||[]).filter(item=>item.status==='Vajab ülevaatamist').length;
+ setMailBadge(count);writeCache('pere-mail-count',count);
+}
+function loadMailBadge(){
+ if(!window.google?.script?.run)return;mailBadgeAt=Date.now();
+ google.script.run.withSuccessHandler(data=>updateMailBadge(data&&data.items)).withFailureHandler(()=>{}).pereListMail();
+}
+{const cached=readCache('pere-mail-count');if(typeof cached==='number'&&cached>0)setMailBadge(cached);}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&Date.now()-mailBadgeAt>90000)loadMailBadge();});
 function loadMail(collect=false){
  collect=collect===true;
  if(mailLoading)return;
  if(!window.google?.script?.run){mailStatus('E-kirjad avanevad Apps Scripti veebirakenduses.',true);return;}
  mailLoading=true;$('refreshMail').disabled=true;$('refreshMail').setAttribute('aria-label',collect?'Korjan ja töötlen…':'Laadin…');mailStatus(collect?'Korjan uued kirjad ja töötlen AI-ga. See võib võtta mõne minuti.':'Laadin kirju…');
  const runner=google.script.run.withSuccessHandler(data=>{
-  mailLoading=false;$('refreshMail').disabled=false;$('refreshMail').setAttribute('aria-label','Värskenda');$('mailCards').replaceChildren();
+  mailLoading=false;$('refreshMail').disabled=false;$('refreshMail').setAttribute('aria-label','Värskenda');$('mailCards').replaceChildren();updateMailBadge(data.items);
   const processed=['Automaatselt lisatud','Juba olemas','Ebaoluline','Käsitsi lisatud'];
   const visible=data.items.filter(item=>$('showProcessedMail').checked||!processed.includes(item.status));
   mailStatus(data.refreshMessage||(data.limited?'Kuvatud on viimase 500 kirja seas olevad peitmata kirjad.':visible.length?'':'Ülevaatamist ootavaid kirju pole. Töödeldud kirju näed ülal oleva valikuga.'));
@@ -1461,7 +1480,7 @@ $('searchInput').onkeydown=event=>{if(event.key==='Enter'){event.preventDefault(
  function reset(){node.classList.add('anim');node.classList.remove('ready','spin');node.style.transform='translateY(-60px)';node.style.opacity='0';icon().style.transform='';setTimeout(()=>node.classList.remove('anim'),300);}
  function run(){
   working=true;node.classList.add('anim','spin');node.classList.remove('ready');node.style.transform='translateY(14px)';node.style.opacity='1';icon().style.transform='';
-  if(!$('mailView').hidden)loadMail(true);else loadOverview();
+  if(!$('mailView').hidden)loadMail(true);else{loadOverview();loadMailBadge();}
   const started=Date.now();
   const wait=()=>{const elapsed=Date.now()-started;if(elapsed<700||((overviewLoading||mailLoading)&&elapsed<20000)){setTimeout(wait,150);return;}working=false;reset();};
   wait();
@@ -1577,7 +1596,7 @@ $('analyze').onclick=()=>{
  if(!window.google?.script?.run){status('Gemini töötlus avaneb Apps Scripti veebirakenduses. See kohalik vaade on ainult kujunduse kontrolliks.',true);return;}
  if($('person').value==='__other__'&&!sourcePerson()){status('Sisesta „Muu” nimi.',true);$('personOther').focus();return;}
  resetResult();sourceSnapshot={text:$('text').value,person:sourcePerson(),sourceDate:$('sourceDate').value,images:images.map(({name,mime,data})=>({name,mime,data}))};
- const request={...sourceSnapshot,images:sourceSnapshot.images.map(({mime,data})=>({mime,data}))};setBusy(true);status('Loen sisendit. Palun hoia leht avatuna…');
+ const request={...sourceSnapshot,images:sourceSnapshot.images.map(({mime,data})=>({mime,data})),mailId:currentMail?currentMail.id:''};setBusy(true);status('Loen sisendit. Palun hoia leht avatuna…');
  google.script.run.withSuccessHandler(data=>{setBusy(false);result=data;renderResult();status('Eelvaade valmis. Kontrolli tuvastatud infot.');$('results').scrollIntoView({behavior:'smooth',block:'start'});})
  .withFailureHandler(error=>{setBusy(false);status(error.message||'Töötlus ebaõnnestus. Proovi uuesti.',true);}).pereAnalyze(request);
 };
@@ -1667,6 +1686,16 @@ function matchBanner(item,existing,changes){
  if(updating){const list=document.createElement('ul');changes.lines.forEach(line=>savedText(list,'li',line));box.append(list);}
  return box;
 }
+// Saatja → laps: tühjaks jäänud "kelle kohta" täideti saatja põhjal; märge eelvaates (kontrolli üle).
+function senderNote(hint){
+ const note=document.createElement('p');note.className='hint sender-note';
+ note.textContent='Kelle kohta: „'+shortPerson(hint.person)+'” valitud saadja põhjal ('+hint.count+(hint.count===1?' varasem kiri':' varasemat kirja')+'). Kontrolli üle.';
+ return note;
+}
+// Inimesed, kelle kohta see kiri salvestati (õppimiseks; õpitakse ainult siis, kui täpselt üks inimene).
+function savedPersons(){
+ return [...new Set((result&&result.items||[]).filter(entry=>['event','task','invoice'].includes(entry.kind)).map(entry=>canonicalPerson(String(entry.person||'').trim())).filter(Boolean))];
+}
 function renderResult(){
  $('summary').textContent=result.summary;$('cards').replaceChildren();$('questions').replaceChildren();$('questions').hidden=!result.questions.length;
  inheritedPeople=new WeakSet();result.items.forEach(item=>{if(item.kind==='task'&&!item.person)inheritedPeople.add(item);});
@@ -1680,6 +1709,7 @@ function renderResult(){
   const card=document.createElement('article');card.className='item';const kind=document.createElement('div');kind.className='kind';kind.textContent=labels[item.kind];card.append(kind);
   const existing=matchedExisting(item),firstChanges=existing?matchChanges(item,existing):null,updating=!!(existing&&item.matchStatus==='update'&&firstChanges.count>0);
   if(existing)card.append(matchBanner(item,existing,firstChanges));
+  if(item.personFromSender&&result.senderHint)card.append(senderNote(result.senderHint));
   const fields=[['title','Nimetus'],['person','Kelle kohta?']];
   if(item.kind==='event')fields.push(['date','Kuupäev','date'],['time','Algusaeg','time'],['end_date','Lõppkuupäev','date'],['end_time','Lõppaeg','time'],['location','Koht'],['recurrence','Kordumine']);
   if(['task','invoice'].includes(item.kind))fields.push(['deadline','Tähtaeg','date']);
@@ -1739,7 +1769,7 @@ function renderResult(){
 ['change','input'].forEach(type=>{$('person').addEventListener(type,updateRefine);$('personOther').addEventListener(type,updateRefine);$('sourceDate').addEventListener(type,updateRefine);});
 $('refine').addEventListener('toggle',()=>{if($('refine').open&&!$('sourceDate').value)$('sourceDate').value=tallinnToday();updateRefine();});
 updateRefine();
-if(window.google?.script?.run)loadOverview();
+if(window.google?.script?.run){loadOverview();if(typeof setTimeout==='function')setTimeout(loadMailBadge,900);}
 </script>
 <script>
 window.pereSharing=new URLSearchParams(location.search).has('share');
