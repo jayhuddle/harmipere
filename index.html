@@ -493,6 +493,35 @@ html,body{overscroll-behavior-y:contain}
 .cal-nav{width:44px;height:44px;font-size:26px}
 @media (prefers-reduced-motion:reduce){.cal-slide-next,.cal-slide-prev{animation:none}}
 .cal-nav.cal-today{width:auto;height:40px;font-size:13px}
+/* Ülesande kaart: "tehtud" ring vasakul, pliiats pealkirja real */
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.task-main{display:flex;align-items:flex-start;gap:12px}
+.task-body{flex:1;min-width:0}
+.task-main>.complete-button{position:relative;flex:none;width:26px;height:26px;min-height:0;margin:1px 0 0;padding:0;border-radius:50%;border:2px solid color-mix(in srgb,var(--muted) 65%,transparent);background:transparent;box-shadow:none;color:#fff;font-size:15px;line-height:1;display:inline-flex;align-items:center;justify-content:center;-webkit-backdrop-filter:none;backdrop-filter:none}
+.task-main>.complete-button:before{content:'';position:absolute;inset:-9px}
+.task-main>.complete-button:active{transform:scale(.9)}
+@media (hover:hover){.task-main>.complete-button:hover:not(:disabled){border-color:var(--accent);background:color-mix(in srgb,var(--accent) 14%,transparent)}}
+.saved-card.done .task-main>.complete-button{background:var(--accent);border-color:var(--accent)}
+.task-body .saved-event-heading .edit-item{margin:-6px -6px -6px -2px}
+.saved-event-card .saved-event-footer{margin-top:-6px}
+/* Väiksem tehtud-ring, linnukese animatsioon, maha tõmmatud pealkiri 5 s ja ürituse jaluse vahe */
+.task-main>.complete-button{width:22px;height:22px;margin-top:2px;border-width:1.8px;font-size:13px}
+.task-main>.complete-button>span[aria-hidden]{display:block;line-height:1}
+.saved-card.completing{opacity:.78;transition:opacity .3s ease}
+.saved-card.completing .complete-button>span[aria-hidden]{animation:pere-pop .28s cubic-bezier(.2,1.4,.4,1)}
+@keyframes pere-pop{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
+.strike{background:linear-gradient(currentColor,currentColor) no-repeat 0 58%/0% 2px;animation:pere-strike .45s ease .12s forwards;-webkit-box-decoration-break:clone;box-decoration-break:clone;color:var(--muted)}
+@keyframes pere-strike{to{background-size:100% 2px}}
+.saved-card.completing .saved-deadline,.saved-card.completing .saved-meta{color:var(--muted)}
+.saved-event-card .saved-event-footer.footer-plain{margin-top:4px}
+@media (prefers-reduced-motion:reduce){.strike{animation-duration:.01s;animation-delay:0s}.saved-card.completing .complete-button>span[aria-hidden]{animation:none}}
+.task-body .saved-event-footer{margin-top:-6px}
+.task-body .saved-event-footer.footer-plain{margin-top:4px}
+/* Seotud ürituse rida: tekst + lingi ikoon (kellaaeg ja noolt pole) */
+.related-link{display:flex;align-items:center;justify-content:space-between;gap:10px;width:fit-content;max-width:100%;padding:7px 11px;margin:6px 0}
+.related-text{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.related-icon{flex:none;display:inline-flex;color:var(--accent)}
+.related-icon svg{width:16px;height:16px}
 </style>
 <style>
 .login-overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:24px;background:color-mix(in srgb,var(--bg) 55%,transparent);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
@@ -832,13 +861,16 @@ function linkedNotes(parent,text){
  let start=0;noteLinks(text).forEach(({url,index})=>{parent.append(document.createTextNode(text.slice(start,index)),noteAnchor(url));start=index+url.length;});
  parent.append(document.createTextNode(text.slice(start)));
 }
-function savedNotes(card,item){if(item.notes){const details=document.createElement('details');savedText(details,'summary','Märkused');const notes=document.createElement('p');notes.className='saved-notes';linkedNotes(notes,item.notes);details.append(notes);card.append(details);}if(item.imageUrls?.length){const links=document.createElement('p');savedImages(links,item.imageUrls);card.append(links);}}
+function savedNotes(card,item){const hasNotes=!!item.notes,hasFiles=!!(item.imageUrls&&item.imageUrls.length);if(!hasNotes&&!hasFiles)return;const details=document.createElement('details');savedText(details,'summary','Märkused');if(hasNotes){const notes=document.createElement('p');notes.className='saved-notes';linkedNotes(notes,item.notes);details.append(notes);}if(hasFiles){const links=document.createElement('p');savedImages(links,item.imageUrls);details.append(links);}card.append(details);}
 let activeCancelMenu=null;
 document.addEventListener('click',event=>{if(activeCancelMenu&&!activeCancelMenu.control.contains(event.target))activeCancelMenu.close();});
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&activeCancelMenu){event.preventDefault();activeCancelMenu.close(true);}});
 // Pere ülevaade (asendab Index-enne-klaasi.html renderOverview funktsiooni; build-glass-index.cjs paneb selle sisse).
 // "See nädal" (täna + 6 päeva, üle tähtaja ülesanded ülal), allpool kuude kaupa ülejäänu ilma kordusteta.
 const searchPinned=new Set();
+// Tehtuks märgitud ülesanne jääb 5 s kaardile (linnuke + maha tõmmatud pealkiri), siis peidetakse; võta tagasi enne seda.
+const completing=new Map();
+const linkIcon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"/><path d="M8 7h9v9"/></svg>';
 let overviewEventCards=new Map(),overviewTaskCards=new Map(),pendingUndo=null,overviewEditing=null,overviewNotice='';
 // Muutmine: pliiats avab kaardi sees vormi; ülesandel ka "+1 päev / +1 nädal". Server muudab tabelit ja üritusel ka kalendrit.
 const pencilIcon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4Z"/><path d="m13.5 6.5 4 4"/></svg>';
@@ -955,7 +987,7 @@ function renderOverview(){
  $('overviewTab').setAttribute('aria-label','Pere ülevaade'+(urgent?' · '+urgent+' kiiret ülesannet':''));
  renderPersonChips();
  const person=$('overviewPerson').value,items=savedOverview.items.filter(item=>!person||item.person===person);
- const inWeek=item=>isTask(item)?item.status!=='Tehtud'&&!!item.deadline&&item.deadline<=weekEnd:item.kind==='event'&&item.date>=today&&item.date<=weekEnd;
+ const inWeek=item=>isTask(item)?(item.status!=='Tehtud'||completing.has(item.key))&&!!item.deadline&&item.deadline<=weekEnd:item.kind==='event'&&item.date>=today&&item.date<=weekEnd;
  const conflicts=eventConflicts(savedOverview.items.filter(item=>item.kind==='event'&&item.date>=today));
  overviewEventCards=new Map();overviewTaskCards=new Map();
  if(overviewEditing&&!savedOverview.items.some(item=>item.key===overviewEditing.key))overviewEditing=null;
@@ -964,27 +996,38 @@ function renderOverview(){
  function taskCard(item,parent){
   if(editing(item,parent))return;
   const due=item.status!=='Tehtud'&&item.deadline?(item.deadline<today?'due-overdue':item.deadline===today?'due-today':item.deadline===tomorrow?'due-soon':''):'';
-  const card=document.createElement('article');card.className='saved-card'+(item.status==='Tehtud'?' done':'')+(due?' '+due:'');overviewTaskCards.set(item.key,card);
+  const card=document.createElement('article');card.className='saved-card'+(item.status==='Tehtud'?' done':'')+(completing.has(item.key)?' completing':'')+(due?' '+due:'');overviewTaskCards.set(item.key,card);
+  const body=document.createElement('div');body.className='task-body';const main=document.createElement('div');main.className='task-main';
   const heading=document.createElement('div');heading.className='saved-event-heading';
-  savedText(heading,'h3',item.title+(item.kind==='invoice'&&item.amount?' · '+item.amount+' '+item.currency:''));savedPersonTag(heading,item.person);card.append(heading);
+  const titleText=item.title+(item.kind==='invoice'&&item.amount?' · '+item.amount+' '+item.currency:''),h3=document.createElement('h3');
+  if(completing.has(item.key)){const strike=document.createElement('span');strike.className='strike';strike.textContent=titleText;strike.style.animationDelay=(-(Date.now()-completing.get(item.key))/1000)+'s';h3.append(strike);}else h3.textContent=titleText;
+  heading.append(h3);savedPersonTag(heading,item.person);body.append(heading);
   if(item.deadline){const late=item.status!=='Tehtud'&&item.deadline<today,isToday=item.deadline===today,soon=item.status!=='Tehtud'&&item.deadline===tomorrow;
-   savedText(card,'p','Tähtaeg: '+shortDay(item.deadline)+(late?' · üle tähtaja':isToday?' · täna':soon?' · homme':''),'saved-deadline'+(late?' overdue':isToday?' today':soon?' tomorrow':''));
-  }else savedText(card,'p','Tähtaega pole määratud','saved-meta');
+   savedText(body,'p','Tähtaeg: '+shortDay(item.deadline)+(late?' · üle tähtaja':isToday?' · täna':soon?' · homme':''),'saved-deadline'+(late?' overdue':isToday?' today':soon?' tomorrow':''));
+  }else savedText(body,'p','Tähtaega pole määratud','saved-meta');
   if(item.relatedEvent){const rel=item.relatedEvent,link=document.createElement('button');link.type='button';link.className='saved-related related-link';
-   link.textContent='Üritus: '+rel.title+' · '+shortDay(rel.date)+(rel.time?' '+rel.time:'')+' ›';link.onclick=()=>focusEvent(rel);card.append(link);}
-  savedNotes(card,item);
-  const complete=document.createElement('button');complete.type='button';complete.className='complete-button';complete.textContent=item.status==='Tehtud'?'Ava ülesanne uuesti':'✓ Märgi tehtuks';
+   const label=document.createElement('span');label.className='related-text';label.textContent='Üritus: '+rel.title+' · '+shortDay(rel.date);
+   const icon=document.createElement('span');icon.className='related-icon';icon.setAttribute('aria-hidden','true');icon.innerHTML=linkIcon;link.append(label,icon);link.title='Ava seotud üritus';link.onclick=()=>focusEvent(rel);body.append(link);}
+  savedNotes(body,item);
+  const complete=document.createElement('button');complete.type='button';const doneNow=item.status==='Tehtud';complete.className='complete-button';complete.title=doneNow?'Ava ülesanne uuesti':'Märgi tehtuks';
+  const mark=document.createElement('span');mark.setAttribute('aria-hidden','true');mark.textContent=doneNow?'✓':'';savedText(complete,'span',(doneNow?'Ava ülesanne uuesti: ':'Märgi tehtuks: ')+item.title,'sr-only');complete.append(mark);
   complete.onclick=()=>{
+   if(completing.has(item.key)){if(pendingUndo)pendingUndo.cancel();return;}
    if(item.status==='Tehtud'){complete.disabled=true;
     google.script.run.withSuccessHandler(response=>{item.status=response.status;renderOverview();overviewStatus('Ülesanne on uuesti avatud.');})
      .withFailureHandler(error=>{complete.disabled=false;overviewStatus(error.message||'Ülesande muutmine ebaõnnestus.',true);}).pereSetTaskDone({key:item.key,done:false});return;}
-   item.status='Tehtud';renderOverview();overviewStatus('');
+   item.status='Tehtud';completing.set(item.key,Date.now());renderOverview();overviewStatus('');
    showUndo('„'+item.title+'” märgitud tehtuks.',()=>{
+    completing.delete(item.key);renderOverview();
     google.script.run.withSuccessHandler(response=>{item.status=response.status;renderOverview();})
      .withFailureHandler(error=>{item.status='Avatud';renderOverview();overviewStatus(error.message||'Ülesande muutmine ebaõnnestus.',true);}).pereSetTaskDone({key:item.key,done:true});
-   },()=>{item.status='Avatud';renderOverview();});
+   },()=>{completing.delete(item.key);item.status='Avatud';renderOverview();});
   };
-  const footer=document.createElement('div');footer.className='task-footer';footer.append(complete,editButton(item));card.append(footer);parent.append(card);
+  // Pliiats alla paremale (nagu ürituse kaardil): viimane rida liigub jalusesse pliiatsi kõrvale.
+  const last=body.lastElementChild||body.children[body.children.length-1],footer=document.createElement('div'),content=document.createElement('div');footer.className='saved-event-footer';content.append(last);
+  if(last&&String(last.className).indexOf('saved-deadline')===0)footer.className+=' footer-plain';
+  const tools=document.createElement('div');tools.className='card-tools';tools.append(editButton(item));footer.append(content,tools);body.append(footer);
+  main.append(complete,body);card.append(main);parent.append(card);
  }
  function eventCard(item,parent){
   if(editing(item,parent))return;
@@ -996,6 +1039,7 @@ function renderOverview(){
   if(conflicts.has(item.key))savedText(card,'p','⚠ Kattub: '+conflicts.get(item.key).join('; '),'saved-conflict');
   savedNotes(card,item);
   const last=card.lastElementChild||card.children[card.children.length-1],footer=document.createElement('div'),content=document.createElement('div');footer.className='saved-event-footer';content.append(last);
+  if(last&&last.className==='saved-deadline')footer.className+=' footer-plain';
   const tools=document.createElement('div');tools.className='card-tools';tools.append(editButton(item));footer.append(content,tools);card.append(footer);parent.append(card);
  }
  // See nädal: ülesanded vasakul (üle tähtaja ees), üritused paremal; mobiilis üksteise all väikese pealkirjaga.
@@ -1008,11 +1052,11 @@ function renderOverview(){
   list.forEach(item=>draw(item,column));if(!list.length)savedText(column,'p',empty,'empty');$('savedWeek').append(column);
  });
  // Hilisemad avatud ülesanded kuude kaupa; tehtud ülesanded eraldi linnukese all (viimased 3 tähtaja järgi + kõik, mille üritus pole veel toimunud).
- const tasks=items.filter(item=>isTask(item)&&!inWeek(item)&&item.status!=='Tehtud')
+ const tasks=items.filter(item=>isTask(item)&&!inWeek(item)&&(item.status!=='Tehtud'||completing.has(item.key)))
   .sort((a,b)=>(a.deadline||'9999').localeCompare(b.deadline||'9999'));
  $('doneTasks').replaceChildren();
  if($('showDone').checked){
-  const doneAll=items.filter(item=>isTask(item)&&item.status==='Tehtud').sort((a,b)=>(b.deadline||'').localeCompare(a.deadline||'')),
+  const doneAll=items.filter(item=>isTask(item)&&item.status==='Tehtud'&&!completing.has(item.key)).sort((a,b)=>(b.deadline||'').localeCompare(a.deadline||'')),
    upcomingDone=item=>item.relatedEvent?item.relatedEvent.date>=today:!!item.deadline&&item.deadline>=today,
    doneTasks=doneAll.filter((item,i)=>i<3||upcomingDone(item)||searchPinned.has(item.key));
   doneTasks.forEach(item=>taskCard(item,$('doneTasks')));
