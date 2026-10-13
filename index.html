@@ -551,6 +551,11 @@ html,body{overscroll-behavior-y:contain}
 .cal-track{display:flex;align-items:flex-start;transform:translateX(-100%);will-change:transform}
 .cal-track>.cal-grid{flex:0 0 100%;min-width:0;box-sizing:border-box}
 .cal-pane-blocked{visibility:hidden}
+/* Kuu nimi liigub kalendri rööpaga kaasa */
+.cal-title-box{flex:1;min-width:0;overflow:hidden}
+.cal-title-track{display:flex;transform:translateX(-100%)}
+.cal-title-track>*{flex:0 0 100%;min-width:0;text-align:center;font-size:18px;margin:0;white-space:nowrap}
+.cal-title-side{font:inherit;font-size:18px;color:inherit;font-weight:inherit}
 </style>
 <style>
 .login-overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:24px;background:color-mix(in srgb,var(--bg) 55%,transparent);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
@@ -1215,7 +1220,10 @@ function renderCalendar(){
  const title=document.createElement('h2');title.className='cal-title';title.textContent=calMonthLabel(calMonth);title.setAttribute('aria-live','polite');
  const go=delta=>()=>calStep(delta);
  const prev=mk('‹','Eelmine kuu',go(-1));prev.disabled=calShift(calMonth,-1)<calMinMonth();
- head.append(prev,title,mk('›','Järgmine kuu',go(1)));
+ const titleBox=document.createElement('div');titleBox.className='cal-title-box';const titleTrack=document.createElement('div');titleTrack.className='cal-title-track';
+ const sideTitle=month=>{const h=document.createElement('h2');h.className='cal-title-side';h.setAttribute('aria-hidden','true');h.textContent=month<calMinMonth()?'':calMonthLabel(month);return h;};
+ titleTrack.append(sideTitle(calShift(calMonth,-1)),title,sideTitle(calShift(calMonth,1)));titleBox.append(titleTrack);
+ head.append(prev,titleBox,mk('›','Järgmine kuu',go(1)));
  const jump=mk('Täna','Mine tänase päeva juurde',()=>{calMonth=today.slice(0,7);calSel=today;renderCalendar();},'cal-today');
  jump.hidden=calMonth===today.slice(0,7)&&calSel===today;
  head.append(jump,mk('×','Sulge kalender',closeCalendar,'cal-close'));sheet.append(head);
@@ -1257,26 +1265,30 @@ function renderCalendar(){
   if(i===0&&month<minMonth)pane.className+=' cal-pane-blocked';if(i!==1){pane.setAttribute('aria-hidden','true');pane.setAttribute('inert','');}return pane;});
  track.append(...panes);viewport.append(track);
  {let sx=null,sy=null,t0=0,dx=0,mode=null;
-  const resetTrack=()=>{track.style.transition='';track.style.transform='';};
+  const move=(value,animated)=>{const ratio=(titleBox.offsetWidth||220)/(viewport.offsetWidth||342);
+   track.style.transition=animated?animated:'none';titleTrack.style.transition=animated?animated:'none';
+   track.style.transform=value.grid;titleTrack.style.transform=value.title(ratio);};
+  const home={grid:'translateX(-100%)',title:()=>'translateX(-100%)'};
+  const resetTrack=()=>{track.style.transition='';track.style.transform='';titleTrack.style.transition='';titleTrack.style.transform='';};
   viewport.addEventListener('touchstart',event=>{if(event.touches.length!==1){sx=null;return;}sx=event.touches[0].clientX;sy=event.touches[0].clientY;t0=Date.now();dx=0;mode=null;});
   viewport.addEventListener('touchmove',event=>{
    if(sx===null)return;const t=event.touches[0],mx=t.clientX-sx,my=t.clientY-sy;
-   if(mode===null&&(Math.abs(mx)>8||Math.abs(my)>8))mode=Math.abs(mx)>Math.abs(my)*1.2?'x':'y';
+   if(mode===null&&(Math.abs(mx)>14||Math.abs(my)>14))mode=Math.abs(mx)>Math.abs(my)*1.8?'x':'y';
    if(mode!=='x')return;
    dx=mx>0&&prevM<minMonth?mx*0.25:mx;
-   track.style.transition='none';track.style.transform='translateX(calc(-100% + '+dx+'px))';if(event.cancelable)event.preventDefault();
+   move({grid:'translateX(calc(-100% + '+dx+'px))',title:ratio=>'translateX(calc(-100% + '+(dx*ratio)+'px))'},null);if(event.cancelable)event.preventDefault();
   },{passive:false});
   viewport.addEventListener('touchend',event=>{
    if(sx===null)return;const t=event.changedTouches&&event.changedTouches[0];
    const total=t?t.clientX-sx:dx,vertical=t?t.clientY-sy:0,was=mode,width=viewport.offsetWidth||360;sx=null;mode=null;dx=0;
    if(!(was==='x'||(was===null&&Math.abs(total)>=50&&Math.abs(total)>=1.5*Math.abs(vertical))))return;
-   const fast=Math.abs(total)/Math.max(1,Date.now()-t0)>0.5&&Math.abs(total)>30;
-   const go=(Math.abs(total)>width*0.25||fast)?(total<0?1:-1):0;
-   if(!go||(go<0&&prevM<minMonth)){track.style.transition='transform .22s cubic-bezier(.2,.8,.2,1)';track.style.transform='translateX(-100%)';setTimeout(resetTrack,230);return;}
-   track.style.transition='transform .24s cubic-bezier(.2,.8,.2,1)';track.style.transform='translateX('+(go>0?'-200%':'0%')+')';
+   const fast=Math.abs(total)/Math.max(1,Date.now()-t0)>0.8&&Math.abs(total)>60;
+   const go=(Math.abs(total)>width*0.35||fast)?(total<0?1:-1):0;
+   if(!go||(go<0&&prevM<minMonth)){move(home,'transform .22s cubic-bezier(.2,.8,.2,1)');setTimeout(resetTrack,230);return;}
+   move({grid:'translateX('+(go>0?'-200%':'0%')+')',title:()=>'translateX('+(go>0?'-200%':'0%')+')'},'transform .24s cubic-bezier(.2,.8,.2,1)');
    setTimeout(()=>calStep(go,{silent:true}),240);
   });
-  viewport.addEventListener('touchcancel',()=>{if(sx===null)return;sx=null;mode=null;dx=0;track.style.transition='transform .2s ease';track.style.transform='translateX(-100%)';setTimeout(resetTrack,210);});}
+  viewport.addEventListener('touchcancel',()=>{if(sx===null)return;sx=null;mode=null;dx=0;move(home,'transform .2s ease');setTimeout(resetTrack,210);});}
  if(calAnim){panes[1].classList.add('cal-slide-'+calAnim);calAnim='';}
  sheet.append(viewport);
  if(typeof requestAnimationFrame==='function')requestAnimationFrame(()=>{if(panes[1].offsetHeight)viewport.style.height=panes[1].offsetHeight+'px';});
