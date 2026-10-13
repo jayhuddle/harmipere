@@ -536,6 +536,10 @@ html,body{overscroll-behavior-y:contain}
 .agenda-day small{font-size:12px;font-weight:550;letter-spacing:0;text-transform:none;color:var(--soft)}
 .overdue-label{color:var(--danger)}
 #savedWeek>.saved-card{margin:8px 0}
+/* Kalendrinupu peitumine kerimisel */
+.cal-fab{transition:transform .28s cubic-bezier(.2,.8,.2,1),opacity .22s ease,box-shadow .2s ease}
+.cal-fab.fab-hidden{transform:translateY(110px) scale(.85);opacity:0;pointer-events:none}
+@media (prefers-reduced-motion:reduce){.cal-fab{transition:opacity .15s ease}.cal-fab.fab-hidden{transform:none}}
 </style>
 <style>
 .login-overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:24px;background:color-mix(in srgb,var(--bg) 55%,transparent);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
@@ -1387,6 +1391,21 @@ $('searchInput').onkeydown=event=>{if(event.key==='Enter'){event.preventDefault(
 })();
 // Ekraani laius ületab/alandab mobiilipiiri: nädala plokk joonistatakse uue paigutusega.
 if(typeof window!=='undefined'&&window.matchMedia){try{window.matchMedia('(max-width:740px)').addEventListener('change',()=>{if(savedOverview)renderOverview();});}catch(_){}}
+// Kalendrinupp peitub alla kerides (ei kata kaarte) ja ilmub üles kerides või lehe ülaosas tagasi.
+(function(){
+ if(typeof window==='undefined'||typeof window.addEventListener!=='function')return;
+ let lastY=window.scrollY||0,ticking=false;
+ window.addEventListener('scroll',()=>{
+  if(ticking)return;ticking=true;
+  requestAnimationFrame(()=>{
+   const y=window.scrollY||0,fab=$('calendarButton');ticking=false;
+   if(!fab||!fab.classList)return;
+   if(y<120||y<lastY-6)fab.classList.remove('fab-hidden');
+   else if(y>lastY+6)fab.classList.add('fab-hidden');
+   if(Math.abs(y-lastY)>6||y<120)lastY=y;
+  });
+ },{passive:true});
+})();
 function status(text, error=false){updateRefine();$('status').textContent=text;$('status').classList.toggle('error',error);}
 function resetResult(){result=null;sourceSnapshot=null;$('results').hidden=true;$('cards').replaceChildren();}
 function setBusy(value){busy=value;['analyze','pick','camera','cameraFile','text','person','personOther','sourceDate','files'].forEach(id=>$(id).disabled=value);$('analyze').innerHTML=value?'Töötlen…':'Sisesta info'+"<svg class=\"enter-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M10 4h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-8\"/><path d=\"M3 12h11.5\"/><path d=\"M11.3 8.8l3.2 3.2-3.2 3.2\"/></svg>";renderImages();}
