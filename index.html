@@ -179,10 +179,6 @@ section>.month-divider:first-of-type,h2+div>.month-divider:first-child{margin-to
 .saved-card a,.hint a{color:var(--accent)}
 /* Nimetagid: erksad täidetud värvid, sama värv mõlemas teemas */
 .saved-person{background:var(--tag-other-bg);color:var(--tag-other);border-radius:6px;padding:3px 8px;letter-spacing:.2px;min-width:48px;justify-content:center;text-align:center}
-.saved-person.person-otto{background:linear-gradient(135deg,#38bdf8,#0284c7);color:#fff;box-shadow:0 3px 10px rgba(14,165,233,.35)}
-.saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,.35)}
-.saved-person.person-elle{background:linear-gradient(135deg,#f472b6,#db2777);color:#fff;box-shadow:0 3px 10px rgba(236,72,153,.35)}
-.saved-person.person-pere{background:linear-gradient(135deg,#7e22ce,#581c87);color:#fff;box-shadow:0 3px 10px rgba(107,33,168,.38)}
 /* Teemanupp */
 .header-tools{display:flex;align-items:center;gap:10px}
 .theme-toggle{width:40px;height:40px;padding:0;display:inline-flex;align-items:center;justify-content:center;border-radius:12px;background:var(--glass);color:var(--ink);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
@@ -255,13 +251,8 @@ section>.month-divider:first-of-type,h2+div>.month-divider:first-child{margin-to
 .chip{display:inline-flex;align-items:center;gap:7px;min-height:36px;padding:7px 14px;border-radius:999px;font-size:14px;font-weight:650;background:var(--glass-strong);border:1px solid var(--stroke);color:var(--ink)}
 .chip:before{content:'';width:9px;height:9px;border-radius:50%;background:var(--chip,var(--muted))}
 .chip-all:before{display:none}
-.chip-otto{--chip:#0ea5e9;--chip-bg:linear-gradient(135deg,#38bdf8,#0284c7)}
-.chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
-.chip-elle{--chip:#ec4899;--chip-bg:linear-gradient(135deg,#f472b6,#db2777)}
-.chip-pere{--chip:#7e22ce;--chip-bg:linear-gradient(135deg,#7e22ce,#581c87)}
 .chip[aria-pressed="true"]{color:#fff;border-color:transparent;background:var(--chip-bg,linear-gradient(135deg,var(--accent),var(--accent-2)));box-shadow:0 4px 12px color-mix(in srgb,var(--chip,var(--accent)) 35%,transparent)}
 .chip[aria-pressed="true"]:before{background:#fff}
-.chip-eia[aria-pressed="true"]{color:#422c00}.chip-eia[aria-pressed="true"]:before{background:#422c00}
 .week-section{margin:0 0 26px}
 .week-section h2{font-size:20px;margin:0 0 2px}
 @media(min-width:741px){#savedWeek{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:24px;align-items:start}#savedWeek>.empty{grid-column:1/-1}.week-col-label{display:none}}
@@ -556,6 +547,25 @@ html,body{overscroll-behavior-y:contain}
 .cal-title-track{display:flex;transform:translateX(-100%)}
 .cal-title-track>*{flex:0 0 100%;min-width:0;text-align:center;font-size:18px;margin:0;white-space:nowrap}
 .cal-title-side{font:inherit;font-size:18px;color:inherit;font-weight:inherit}
+/* Kalendri päiserida on lohistatav (sulgemine), nupud jäävad klõpsatavaks */
+.cal-head{touch-action:none}
+/* Asukoha kõrval tagasihoidlik Waze ikoon (ilma kastita): tekstile lähedal, nööpnaela tipp samal joonel lühikeste tähtede alumise servaga (baseline) */
+.location-link{position:relative;display:inline-block;vertical-align:baseline;margin-left:5px;color:var(--soft);text-decoration:none;border:0;background:none;line-height:0;-webkit-tap-highlight-color:transparent}
+.location-link svg{display:block;width:14px;height:14px;margin-bottom:-1.2px}
+.location-link:before{content:'';position:absolute;inset:-9px -8px}
+@media (hover:hover){.location-link:hover{color:var(--accent)}}
+.location-link:active{color:var(--accent)}
+.location-link:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 35%,transparent);border-radius:4px}
+/* Inimesed (genereeritud work/people.json põhjal) */
+.saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
+.chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
+.chip-eia[aria-pressed="true"]{color:#422c00}.chip-eia[aria-pressed="true"]:before{background:#422c00}
+.saved-person.person-otto{background:linear-gradient(135deg,#38bdf8,#0284c7);color:#fff;box-shadow:0 3px 10px rgba(14,165,233,0.35)}
+.chip-otto{--chip:#0ea5e9;--chip-bg:linear-gradient(135deg,#38bdf8,#0284c7)}
+.saved-person.person-elle{background:linear-gradient(135deg,#f472b6,#db2777);color:#fff;box-shadow:0 3px 10px rgba(236,72,153,0.35)}
+.chip-elle{--chip:#ec4899;--chip-bg:linear-gradient(135deg,#f472b6,#db2777)}
+.saved-person.person-pere{background:linear-gradient(135deg,#7e22ce,#581c87);color:#fff;box-shadow:0 3px 10px rgba(107,33,168,0.38)}
+.chip-pere{--chip:#7e22ce;--chip-bg:linear-gradient(135deg,#7e22ce,#581c87)}
 </style>
 <style>
 .login-overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:24px;background:color-mix(in srgb,var(--bg) 55%,transparent);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
@@ -693,7 +703,9 @@ body:after{content:'';position:absolute;top:0;left:0;right:0;height:180px;z-inde
  async function call(action,arg){
   if(!/^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(config.api||''))throw new Error('Äpi ühendus pole seadistatud (config.js).');
   let response;
-  try{response=await fetch(config.api,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({action,arg,session}),credentials:'omit',redirect:'follow'});}
+  const body=JSON.stringify({action,arg,session});
+  // keepalive: väike päring (nt "märgi tehtuks") lõpetatakse ka siis, kui äpp samal hetkel suletakse
+  try{response=await fetch(config.api,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body,keepalive:body.length<60000,credentials:'omit',redirect:'follow'});}
   catch(_){throw new Error('Ühendus ebaõnnestus. Kontrolli internetti ja proovi uuesti.');}
   let data;try{data=await response.json();}catch(_){throw new Error('Server ei vastanud. Proovi hetke pärast uuesti.');}
   if(data&&data.auth){saveSession(null);const error=new Error(data.error||'Logi uuesti sisse.');error.auth=true;throw error;}
@@ -745,6 +757,14 @@ body:after{content:'';position:absolute;top:0;left:0;right:0;height:180px;z-inde
 <script src="https://accounts.google.com/gsi/client" async onload="pereGisLoaded()"></script>
 <script>
 const $ = id => document.getElementById(id);
+const PEOPLE=[{"id":"Eia-Liisa","short":"Eia","slug":"eia","color":"#f59e0b","family":false},{"id":"Otto Johan","short":"Otto","slug":"otto","color":"#0ea5e9","family":false},{"id":"Elle-Riin","short":"Elle","slug":"elle","color":"#ec4899","family":false},{"id":"Kogu pere","short":"Pere","slug":"pere","color":"#7e22ce","family":true}];
+const personKnown=PEOPLE.map(p=>p.id);
+const personBy=id=>PEOPLE.find(p=>p.id===id)||null;
+function shortPerson(person){const p=personBy(person);return p?p.short:person;}
+function canonicalPerson(value){const p=PEOPLE.find(x=>x.short===value||x.id===value);return p?p.id:(value||'');}
+const personSlug=id=>{const p=personBy(id);return p?p.slug:'other';};
+const personColor=id=>{const p=personBy(id);return p?p.color:'#64748b';};
+const isFamilyPerson=id=>{const p=personBy(id);return !!(p&&p.family);};
 let images = [], result = null, sourceSnapshot = null, busy = false, loadingImages = false, inheritedPeople = new WeakSet();
 const labels = {event:'Sündmus',task:'Ülesanne',invoice:'Arve',info:'Teade'};
 let savedOverview=null,overviewLoading=false;
@@ -757,7 +777,7 @@ function placeKey(value){return String(value||'').toLowerCase().normalize('NFD')
 function updateRefine(){const node=$('refineSummary');if(!node)return;const p=$('person'),who=p.value==='__other__'?($('personOther').value.trim()||'muu'):p.value?shortPerson(p.value):'kelle kohta';const d=$('sourceDate').value;node.textContent='· '+who+' · '+(!d||d===tallinnToday()?'teate kp':shortDate(d));renderPersonPicker();}
 function renderPersonPicker(){const box=$('personPicker'),select=$('person');if(!box)return;box.replaceChildren();
  [...select.options].forEach(option=>{const chip=document.createElement('button');chip.type='button';
-  const color=option.value&&option.value!=='__other__'?({'Otto Johan':'otto','Eia-Liisa':'eia','Elle-Riin':'elle','Kogu pere':'pere'}[option.value]||'other'):'all';
+  const color=option.value&&option.value!=='__other__'?personSlug(option.value):'all';
   chip.className='chip chip-'+color;chip.textContent=option.value===''?'Tuvasta':option.value==='__other__'?'Muu':option.textContent;
   chip.setAttribute('aria-pressed',String(select.value===option.value));chip.disabled=busy;
   chip.onclick=()=>{if(select.value===option.value)return;select.value=option.value;select.onchange();updateRefine();};box.append(chip);});}
@@ -780,7 +800,7 @@ function normalizeTime(value){const text=String(value||'').trim(),digits=text.re
  if(Number(h)>23||Number(m)>59)return String(value);return h.padStart(2,'0')+':'+m;}
 function showResultsCard(){setTimeout(()=>{const target=$('results').hidden?$('inputView'):$('results');target.scrollIntoView({behavior:'smooth',block:'start'});},80);}
 function syncPersonOptions(items){
- const select=$('overviewPerson'),selected=select.value,known=['Eia-Liisa','Otto Johan','Elle-Riin','Kogu pere'];
+ const select=$('overviewPerson'),selected=select.value,known=personKnown;
  select.replaceChildren();
  const all=document.createElement('option');all.value='';all.textContent='Kõik pereliikmed';select.append(all);
  [...new Set(known.concat((items||[]).map(item=>item.person).filter(Boolean)))].forEach(person=>{const option=document.createElement('option');option.value=person;option.textContent=shortPerson(person);select.append(option);});
@@ -871,10 +891,9 @@ function loadOverview(){
   if(window.pereSplashReady)window.pereSplashReady();renderOverview();overviewStatus(overviewNotice||(data.limited?'Kuvatud on viimased 1000 salvestatud kirjet.':''));overviewNotice='';
  }).withFailureHandler(error=>{if(window.pereSplashReady)window.pereSplashReady();overviewLoading=false;$('refreshOverview').disabled=false;overviewStatus((error.message||'Pereinfo laadimine ebaõnnestus.')+(savedOverview?' Kuvatud on viimati laaditud andmed.':''),true);}).pereListSaved();
 }
-function shortPerson(person){return {'Eia-Liisa':'Eia','Otto Johan':'Otto','Elle-Riin':'Elle','Kogu pere':'Pere'}[person]||person;}
 function savedPersonTag(parent,person){
  const name=canonicalPerson(String(person||'').trim());
- const color={'Otto Johan':'otto','Eia-Liisa':'eia','Elle-Riin':'elle','Kogu pere':'pere'}[name]||'other';
+ const color=personSlug(name);
  return savedText(parent,'span',shortPerson(name)||'Määramata','saved-person person-'+color);
 }
 function displayDate(date){return date?new Intl.DateTimeFormat('et-EE',{day:'2-digit',month:'2-digit',year:'numeric'}).format(new Date(date+'T12:00:00')):'';}
@@ -901,6 +920,21 @@ document.addEventListener('click',event=>{if(activeCancelMenu&&!activeCancelMenu
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&activeCancelMenu){event.preventDefault();activeCancelMenu.close(true);}});
 // Pere ülevaade (asendab Index-enne-klaasi.html renderOverview funktsiooni; build-glass-index.cjs paneb selle sisse).
 // "See nädal" (täna + 6 päeva, üle tähtaja ülesanded ülal), allpool kuude kaupa ülejäänu ilma kordusteta.
+// Asukoha tekst jääb samaks; selle kõrval on tagasihoidlik nööpnaela ikoon (ilma kastita), mis avab Waze navigeerimise.
+const pinIcon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/></svg>';
+const wazeUrl=location=>'https://waze.com/ul?q='+encodeURIComponent(String(location).trim())+'&navigate=yes';
+function savedLocation(parent,location,prefix){
+ const p=document.createElement('p');p.className='saved-meta';
+ if(prefix)p.append(document.createTextNode(prefix+(location?' · ':'')));
+ if(location){
+  p.append(document.createTextNode(location));
+  const link=document.createElement('a');link.className='location-link';link.href=wazeUrl(location);link.target='_blank';link.rel='noopener noreferrer';
+  link.title='Ava Wazes';link.setAttribute('aria-label','Ava Wazes: '+location);link.innerHTML=pinIcon;
+  link.onclick=event=>event.stopPropagation();
+  p.append(link);
+ }
+ parent.append(p);return p;
+}
 const searchPinned=new Set();
 // Tehtuks märgitud ülesanne jääb 5 s kaardile (linnuke + maha tõmmatud pealkiri), siis peidetakse; võta tagasi enne seda.
 const completing=new Map();
@@ -975,7 +1009,7 @@ function eventConflicts(events){
  for(let i=0;i<timed.length;i++)for(let j=i+1;j<timed.length;j++){
   const a=timed[i],b=timed[j];
   if(a.e.date!==b.e.date||!(a.s<b.end&&b.s<a.end))continue;
-  const same=!!(a.person&&b.person&&(a.person===b.person||a.person==='Kogu pere'||b.person==='Kogu pere'));
+  const same=!!(a.person&&b.person&&(a.person===b.person||isFamilyPerson(a.person)||isFamilyPerson(b.person)));
   if(!same&&a.place&&a.place===b.place)continue;
   [[a,b],[b,a]].forEach(([x,y])=>{if(!result.has(x.e.key))result.set(x.e.key,[]);result.get(x.e.key).push(y.e.title+' '+y.e.time+(y.e.endTime?'–'+y.e.endTime:''));});
  }
@@ -991,12 +1025,13 @@ function showUndo(message,commit,undo){
  pendingUndo=entry;timer=setTimeout(()=>entry.flush(),5000);
 }
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&pendingUndo)pendingUndo.flush();});
+if(typeof window!=='undefined'&&typeof window.addEventListener==='function')window.addEventListener('pagehide',()=>{if(pendingUndo)pendingUndo.flush();});
 function renderPersonChips(){
- const select=$('overviewPerson'),box=$('personChips'),order={'Eia-Liisa':1,'Otto Johan':2,'Elle-Riin':3,'Kogu pere':4};
+ const select=$('overviewPerson'),box=$('personChips'),order=Object.fromEntries(PEOPLE.map((p,i)=>[p.id,i+1]));
  box.replaceChildren();
  [...select.options].sort((a,b)=>(a.value?order[canonicalPerson(a.value)]||5:0)-(b.value?order[canonicalPerson(b.value)]||5:0)).forEach(option=>{
   const chip=document.createElement('button');chip.type='button';
-  const color=option.value?({'Otto Johan':'otto','Eia-Liisa':'eia','Elle-Riin':'elle','Kogu pere':'pere'}[canonicalPerson(option.value)]||'other'):'all';
+  const color=option.value?personSlug(canonicalPerson(option.value)):'all';
   chip.className='chip chip-'+color;chip.textContent=option.value?shortPerson(option.value):'Kõik';
   chip.setAttribute('aria-pressed',String(select.value===option.value));
   chip.onclick=()=>{select.value=option.value;renderOverview();};box.append(chip);
@@ -1069,7 +1104,7 @@ function renderOverview(){
   const heading=document.createElement('div');heading.className='saved-event-heading';
   savedText(heading,'h3',item.title);savedPersonTag(heading,item.person);card.append(heading);
   savedText(card,'p',(item.date===today?'Täna · ':item.date===tomorrow?'Homme · ':'')+shortDay(item.date)+(item.time?' · '+item.time+(item.endTime?'–'+item.endTime:''):' · kogu päev'),'saved-deadline');
-  if(item.location)savedText(card,'p',item.location,'saved-meta');
+  if(item.location)savedLocation(card,item.location);
   if(conflicts.has(item.key))savedText(card,'p','⚠ Kattub: '+conflicts.get(item.key).join('; '),'saved-conflict');
   savedNotes(card,item);
   const last=card.lastElementChild||card.children[card.children.length-1],footer=document.createElement('div'),content=document.createElement('div');footer.className='saved-event-footer';content.append(last);
@@ -1156,7 +1191,6 @@ function calOff(date){
  const holiday=eeHolidays(Number(date.slice(0,4))).get(date)||'',school=(calSchoolBreaks().find(item=>date>=item.from&&date<=item.to)||{}).name||'';
  return {holiday,school};
 }
-const calPersonColor={'Otto Johan':'#0ea5e9','Eia-Liisa':'#f59e0b','Elle-Riin':'#ec4899','Kogu pere':'#7e22ce'};
 // Möödunud üritusi näidatakse ainult kalendris, kuni 18 kuud tagasi.
 const CAL_PAST_MONTHS=18;
 const calMinMonth=()=>calShift(savedOverview.today.slice(0,7),-CAL_PAST_MONTHS);
@@ -1175,9 +1209,14 @@ function calStep(delta,options){
  const next=calShift(calMonth,delta);if(next<calMinMonth())return;
  calMonth=next;calSel=next===savedOverview.today.slice(0,7)?savedOverview.today:next+'-01';calAnim=options&&options.silent?'':(delta>0?'next':'prev');renderCalendar();
 }
+// Dialoogi ajaks on taust pealt "inert" (Tab ei pääse välja, ekraanilugeja ei lähe taustale).
+function setBackgroundInert(isInert){
+ ['inputView','overviewView','mailView'].forEach(id=>{const el=$(id);if(el)el.inert=isInert;});
+ if(typeof document.querySelector==='function')['header','.view-nav'].forEach(sel=>{const el=document.querySelector(sel);if(el)el.inert=isInert;});
+}
 function openCalendar(){
  if(!savedOverview)return;
- calOpen=true;calMonth=savedOverview.today.slice(0,7);calSel=savedOverview.today;
+ calOpen=true;setBackgroundInert(true);calMonth=savedOverview.today.slice(0,7);calSel=savedOverview.today;
  $('calSheet').style.transform='';$('calSheet').style.transition='';$('calSheet').style.animation='';$('calScrim').style.opacity='';$('calScrim').style.transition='';
  $('calOverlay').hidden=false;renderCalendar();
  const close=$('calSheet').querySelector&&$('calSheet').querySelector('.cal-close');if(close&&close.focus)close.focus();
@@ -1188,7 +1227,7 @@ function openCalendarAt(date){
  if(!calOpen)openCalendar();
  calMonth=date.slice(0,7);calSel=date;renderCalendar();
 }
-function closeCalendar(){calOpen=false;$('calOverlay').hidden=true;if($('calendarButton').focus)$('calendarButton').focus();}
+function closeCalendar(){calOpen=false;if(!searchOpen)setBackgroundInert(false);$('calOverlay').hidden=true;if($('calendarButton').focus)$('calendarButton').focus();}
 function focusItemKey(key){
  const card=overviewEventCards.get(key)||overviewTaskCards.get(key);
  closeCalendar();
@@ -1207,13 +1246,15 @@ function renderCalendar(){
  const bar=document.createElement('span');bar.className='cal-grab-bar';grab.append(bar);
  let startY=null,startT=0,dragY=0;
  const resetSheet=()=>{sheet.style.transition='';sheet.style.transform='';sheet.style.animation='';$('calScrim').style.opacity='';$('calScrim').style.transition='';};
- grab.addEventListener('touchstart',event=>{startY=event.touches[0].clientY;startT=Date.now();dragY=0;sheet.style.animation='none';sheet.style.transition='none';});
- grab.addEventListener('touchmove',event=>{if(startY===null)return;dragY=Math.max(0,event.touches[0].clientY-startY);sheet.style.transform='translateY('+dragY+'px)';$('calScrim').style.opacity=String(Math.max(0,1-dragY/400));if(event.cancelable)event.preventDefault();});
- grab.addEventListener('touchend',()=>{
+ const dragStart=event=>{startY=event.touches[0].clientY;startT=Date.now();dragY=0;sheet.style.animation='none';sheet.style.transition='none';};
+ grab.addEventListener('touchstart',dragStart);
+ const dragMove=event=>{if(startY===null)return;dragY=Math.max(0,event.touches[0].clientY-startY);sheet.style.transform='translateY('+dragY+'px)';$('calScrim').style.opacity=String(Math.max(0,1-dragY/400));if(event.cancelable)event.preventDefault();};
+ const dragEnd=()=>{
   if(startY===null)return;const dy=dragY,fast=dy/Math.max(1,Date.now()-startT)>0.6;startY=null;dragY=0;
   if(dy>90||(fast&&dy>30)){sheet.style.transition='transform .22s ease';sheet.style.transform='translateY(110%)';$('calScrim').style.transition='opacity .22s ease';$('calScrim').style.opacity='0';setTimeout(()=>{closeCalendar();resetSheet();},230);}
   else{sheet.style.transition='transform .2s ease';sheet.style.transform='translateY(0)';setTimeout(resetSheet,210);}
- });
+ };
+ grab.addEventListener('touchmove',dragMove);grab.addEventListener('touchend',dragEnd);
  sheet.append(grab);
  const head=document.createElement('div');head.className='cal-head';
  const mk=(label,aria,onclick,className='')=>{const button=document.createElement('button');button.type='button';button.className='cal-nav '+className;button.textContent=label;button.setAttribute('aria-label',aria);button.onclick=onclick;return button;};
@@ -1227,10 +1268,11 @@ function renderCalendar(){
  const jump=mk('Täna','Mine tänase päeva juurde',()=>{calMonth=today.slice(0,7);calSel=today;renderCalendar();},'cal-today');
  jump.hidden=calMonth===today.slice(0,7)&&calSel===today;
  head.append(jump,mk('×','Sulge kalender',closeCalendar,'cal-close'));sheet.append(head);
+ head.addEventListener('touchstart',dragStart);head.addEventListener('touchmove',dragMove);head.addEventListener('touchend',dragEnd);
  const weekdays=document.createElement('div');weekdays.className='cal-weekdays';['E','T','K','N','R','L','P'].forEach(name=>savedText(weekdays,'span',name));sheet.append(weekdays);
  const pad2=n=>String(n).padStart(2,'0');
  const makeDots=(date,entry)=>{const dots=document.createElement('span');dots.className='cal-dots';
-  (date<today?entry.events.slice(0,3).map(()=>'#94a3b8'):[...new Set(entry.events.map(item=>calPersonColor[canonicalPerson(item.person)]||'#64748b'))].slice(0,3)).forEach(color=>{const dot=document.createElement('i');dot.className='cal-dot';dot.style.background=color;dots.append(dot);});
+  (date<today?entry.events.slice(0,3).map(()=>'#94a3b8'):[...new Set(entry.events.map(item=>personColor(canonicalPerson(item.person))))].slice(0,3)).forEach(color=>{const dot=document.createElement('i');dot.className='cal-dot';dot.style.background=color;dots.append(dot);});
   if(entry.tasks.length){const task=document.createElement('i');task.className='cal-task';dots.append(task);}return dots;};
  // Ühe kuu ruudustik (naabrikuu päevad hallilt servades)
  const buildGrid=month=>{
@@ -1307,7 +1349,7 @@ function renderCalendar(){
   const heading=document.createElement('div');heading.className='saved-event-heading';
   savedText(heading,'h3',item.title+(item.kind==='invoice'&&item.amount?' · '+item.amount+' '+item.currency:''));savedPersonTag(heading,item.person);card.append(heading);
   if(item.kind==='event'){
-   savedText(card,'p',(item.time?item.time+(item.endTime?'–'+item.endTime:''):'kogu päev')+(item.location?' · '+item.location:''),'saved-meta');
+   savedLocation(card,item.location,item.time?item.time+(item.endTime?'–'+item.endTime:''):'kogu päev');
    if(conflicts.has(item.key))savedText(card,'p','⚠ Kattub: '+conflicts.get(item.key).join('; '),'saved-conflict');
    if(past&&item.notes)savedText(card,'p',item.notes.length>200?item.notes.slice(0,200)+'…':item.notes,'saved-meta');
   }else savedText(card,'p','Tähtaeg'+(item.deadline<today?' · üle tähtaja':item.deadline===today?' · täna':''),'saved-deadline'+(item.deadline<today?' overdue':item.deadline===today?' today':''));
@@ -1386,10 +1428,10 @@ function renderSearch(){
 }
 function openSearch(){
  if(!savedOverview||searchOpen)return;
- searchOpen=true;$('searchOverlay').hidden=false;$('searchInput').value='';renderSearch();
+ searchOpen=true;setBackgroundInert(true);$('searchOverlay').hidden=false;$('searchInput').value='';renderSearch();
  if($('searchInput').focus)$('searchInput').focus();
 }
-function closeSearch(){if(!searchOpen)return;searchOpen=false;$('searchOverlay').hidden=true;}
+function closeSearch(){if(!searchOpen)return;searchOpen=false;if(!calOpen)setBackgroundInert(false);$('searchOverlay').hidden=true;}
 // Kaart võib olla filtri või kokkuvolditud tehtud-loendi taga: eemalda takistus ja kerge kaardini.
 function revealItem(key){
  if(!overviewEventCards.get(key)&&!overviewTaskCards.get(key)){
@@ -1413,7 +1455,7 @@ $('searchInput').onkeydown=event=>{if(event.key==='Enter'){event.preventDefault(
   if(calOpen||searchOpen||working)return true;
   const login=document.getElementById('loginOverlay');if(login&&!login.hidden)return true;
   if(document.getElementById('splash'))return true;
-  const tag=target&&target.closest?target.closest('textarea,select,input'):null;return !!tag;
+  const tag=target&&target.closest?target.closest('textarea,select,input,details,.editing,#personChips'):null;return !!tag;
  };
  function place(dist){node.style.transform='translateY('+(dist-60)+'px)';node.style.opacity=String(Math.min(1,dist/40));icon().style.transform='rotate('+Math.min(180,Math.round(dist/THRESH*180))+'deg)';}
  function reset(){node.classList.add('anim');node.classList.remove('ready','spin');node.style.transform='translateY(-60px)';node.style.opacity='0';icon().style.transform='';setTimeout(()=>node.classList.remove('anim'),300);}
@@ -1474,7 +1516,6 @@ function alignCalendarButton(){
 }
 // Paigutus võib nihkuda ka pärast joonistamist (fondid, andmed, teated): jälgi lehe suuruse muutust ja proovi uuesti mõne korra.
 if(typeof ResizeObserver==='function'&&typeof document!=='undefined'&&document.body){try{new ResizeObserver(()=>alignCalendarButton()).observe(document.body);}catch(_){}}
-if(typeof setTimeout==='function'){[150,600,1500,3500].forEach(ms=>setTimeout(alignCalendarButton,ms));}
 if(typeof window!=='undefined'&&typeof window.addEventListener==='function'){window.addEventListener('resize',alignCalendarButton);if(typeof document!=='undefined'&&document.fonts&&document.fonts.ready)document.fonts.ready.then(alignCalendarButton);}
 function status(text, error=false){updateRefine();$('status').textContent=text;$('status').classList.toggle('error',error);}
 function resetResult(){result=null;sourceSnapshot=null;$('results').hidden=true;$('cards').replaceChildren();}
@@ -1483,15 +1524,35 @@ function sourcePerson(){return $('person').value==='__other__' ? $('personOther'
 $('person').onchange=()=>{$('personOther').hidden=$('person').value!=='__other__';$('personOther').value='';resetResult();if(!$('personOther').hidden)$('personOther').focus();};
 $('personOther').oninput=resetResult;
 function readFile(file){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve({name:file.name,mime:file.type,size:file.size,url:r.result,data:String(r.result).split(',')[1]});r.onerror=()=>reject(new Error('Pildi lugemine ebaõnnestus.'));r.readAsDataURL(file);});}
+// Fotode pakkimine enne üleslaadimist (asendab addFiles funktsiooni; build-glass-index.cjs paneb sisse).
+// Telefoni foto on sageli 5–9 MB: kuni 25 MB originaali lubatakse ja pakitakse ~2000 px JPEG-iks (kvaliteet 0,82, valge taust läbipaistvusele).
+// PDF-i ei puututa (piir 4 MB). Kui pakkimine ebaõnnestub või tulemus pole väiksem, kasutatakse originaali.
+const MAX_RAW_IMAGE=25*1024*1024,MAX_PACKED=4*1024*1024,MAX_TOTAL=8*1024*1024;
+async function prepareFile(file){
+ if(file.type==='application/pdf'||file.size<=1.5*1024*1024||typeof createImageBitmap!=='function')return readFile(file);
+ try{
+  const bitmap=await createImageBitmap(file),scale=Math.min(1,2000/Math.max(bitmap.width,bitmap.height));
+  const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(bitmap.width*scale));canvas.height=Math.max(1,Math.round(bitmap.height*scale));
+  const context=canvas.getContext('2d');context.fillStyle='#fff';context.fillRect(0,0,canvas.width,canvas.height);context.drawImage(bitmap,0,0,canvas.width,canvas.height);
+  if(bitmap.close)bitmap.close();
+  const url=canvas.toDataURL('image/jpeg',0.82),data=url.split(',')[1],size=Math.floor(data.length*0.75);
+  if(!(size<file.size))return readFile(file);
+  return {name:file.name.replace(/\.[A-Za-z0-9]+$/,'')+'.jpg',mime:'image/jpeg',size,url,data};
+ }catch(_){return readFile(file);}
+}
 async function addFiles(files){
  if(busy||loadingImages)return;loadingImages=true;$('analyze').disabled=true;
  try{
   const list=Array.from(files);if(!list.length)return;
   if(images.length+list.length>3)throw new Error('Lisa kuni kolm faili.');
   if(list.some(f=>!['image/png','image/jpeg','image/webp','application/pdf'].includes(f.type)))throw new Error('Toetatud on PNG, JPG, WebP ja PDF.');
-  if(list.some(f=>f.size>4*1024*1024))throw new Error('Ühe pildi piir on 4 MB.');
-  if([...images,...list].reduce((n,f)=>n+f.size,0)>8*1024*1024)throw new Error('Piltide kogumahu piir on 8 MB.');
-  const loaded=await Promise.all(list.map(readFile));images.push(...loaded);resetResult();renderImages();status('Fail lisatud. Võid juurde kirjutada selgituse.');
+  if(list.some(f=>f.type==='application/pdf'&&f.size>MAX_PACKED))throw new Error('PDF piir on 4 MB.');
+  if(list.some(f=>f.type!=='application/pdf'&&f.size>MAX_RAW_IMAGE))throw new Error('Ühe pildi piir on 25 MB.');
+  if(list.some(f=>f.type!=='application/pdf'&&f.size>1.5*1024*1024))status('Pakin pilti…');
+  const loaded=await Promise.all(list.map(prepareFile));
+  if(loaded.some(f=>f.size>MAX_PACKED))throw new Error('Pilt on ka pärast pakkimist üle 4 MB. Proovi väiksemat.');
+  if([...images,...loaded].reduce((n,f)=>n+f.size,0)>MAX_TOTAL)throw new Error('Piltide kogumahu piir on 8 MB.');
+  images.push(...loaded);resetResult();renderImages();status('Fail lisatud. Võid juurde kirjutada selgituse.');
  }catch(e){status(e.message,true);}finally{loadingImages=false;$('analyze').disabled=busy;$('files').value='';}
 }
 function renderImages(){
@@ -1520,10 +1581,9 @@ $('analyze').onclick=()=>{
  google.script.run.withSuccessHandler(data=>{setBusy(false);result=data;renderResult();status('Eelvaade valmis. Kontrolli tuvastatud infot.');$('results').scrollIntoView({behavior:'smooth',block:'start'});})
  .withFailureHandler(error=>{setBusy(false);status(error.message||'Töötlus ebaõnnestus. Proovi uuesti.',true);}).pereAnalyze(request);
 };
-function canonicalPerson(value){return {Eia:'Eia-Liisa',Otto:'Otto Johan',Elle:'Elle-Riin',Pere:'Kogu pere'}[value]||value||'';}
 function setPersonWidget(wrap,value){
  const select=wrap.querySelector('select'),other=wrap.querySelector('input');
- const person=canonicalPerson(value),known=['Eia-Liisa','Otto Johan','Elle-Riin','Kogu pere'];
+ const person=canonicalPerson(value),known=personKnown;
  select.value=known.includes(person)?person:person?'__other__':'';
  other.hidden=select.value!=='__other__';other.value=other.hidden?'':person;
 }
@@ -1553,7 +1613,7 @@ function field(item,key,label,type='text',index=-1){
  const input=document.createElement(key==='person'?'select':type==='textarea'?'textarea':'input');input.id=id;input.dataset.key=key;if(input.tagName==='INPUT')input.type=type;
  if(type==='time'){input.type='text';input.inputMode='numeric';input.placeholder='hh:mm';input.maxLength=5;input.autocomplete='off';}
  if(key==='person'){
-  [['','Vali, kelle kohta'],['Eia-Liisa','Eia'],['Otto Johan','Otto'],['Elle-Riin','Elle'],['Kogu pere','Pere'],['__other__','Muu – sisesta']].forEach(([value,text])=>{const option=document.createElement('option');option.value=value;option.textContent=text;input.append(option);});
+  [['','Vali, kelle kohta'],...PEOPLE.map(p=>[p.id,p.short]),['__other__','Muu – sisesta']].forEach(([value,text])=>{const option=document.createElement('option');option.value=value;option.textContent=text;input.append(option);});
   const other=document.createElement('input');other.type='text';other.maxLength=80;other.placeholder='Sisesta nimi';other.setAttribute('aria-label','Muu nimi');
   wrap.dataset.personIndex=String(index);wrap.append(title,input,other);setPersonWidget(wrap,item.person);
   item.person=input.value==='__other__'?other.value.trim():input.value;
@@ -1583,17 +1643,43 @@ function linkEventPicker(item){
  else google.script.run.withSuccessHandler(data=>fill(data)).withFailureHandler(()=>{}).pereListSaved();
  return wrap;
 }
+// Seos juba salvestatud kirjega eelvaates: AI määrab matchStatus/updatesKey, server kontrollis need üle (pereMatch_).
+// Siin: leia olemasolev kirje, arvuta muutused (ainult väljad, mida eelvaates on ja mis erinevad) ja näita bännerit.
+function matchedExisting(item){
+ if(!item||!item.updatesKey||!['update','duplicate'].includes(item.matchStatus)||!savedOverview||!savedOverview.items)return null;
+ return savedOverview.items.find(entry=>entry.key===item.updatesKey&&entry.kind===item.kind)||null;
+}
+function matchChanges(item,existing){
+ const payload={},lines=[],same=(a,b)=>String(a||'').trim().toLowerCase()===String(b||'').trim().toLowerCase();
+ const add=(field,name,label,before,after,format)=>{const mine=String(after||'').trim();if(mine&&!same(mine,before)){payload[name]=mine;lines.push(label+': '+(before?format(String(before)):'—')+' → '+format(mine));}};
+ const plain=value=>value,day=value=>shortDay(value);
+ if(item.kind==='event'){
+  add('date','date','Kuupäev',existing.date,item.date,day);add('time','time','Algus',existing.time,item.time,plain);
+  add('end_time','endTime','Lõpp',existing.endTime,item.end_time,plain);add('location','location','Koht',existing.location,item.location,plain);
+ }else add('deadline','deadline','Tähtaeg',existing.deadline,item.deadline,day);
+ return {count:lines.length,payload:payload,lines:lines};
+}
+function matchBanner(item,existing,changes){
+ const box=document.createElement('div'),updating=changes.count>0&&item.matchStatus==='update';
+ box.className='match-banner '+(updating?'update':'dup');box.setAttribute('role','note');
+ const when=existing.date||existing.deadline;
+ savedText(box,'p',(updating?'↻ Uuendab olemasolevat: „':'ℹ Juba kirjas: „')+existing.title+'”'+(when?' ('+shortDay(when)+')':''),'match-title');
+ if(updating){const list=document.createElement('ul');changes.lines.forEach(line=>savedText(list,'li',line));box.append(list);}
+ return box;
+}
 function renderResult(){
  $('summary').textContent=result.summary;$('cards').replaceChildren();$('questions').replaceChildren();$('questions').hidden=!result.questions.length;
  inheritedPeople=new WeakSet();result.items.forEach(item=>{if(item.kind==='task'&&!item.person)inheritedPeople.add(item);});
  if(result.questions.length){const title=document.createElement('strong');title.textContent='Vajab täpsustamist';const ul=document.createElement('ul');result.questions.forEach(q=>{const li=document.createElement('li');li.textContent=q;ul.append(li);});$('questions').append(title,ul);}
  const eventIndices=result.items.map((item,index)=>item.kind==='event'?index:-1).filter(index=>index>=0);
- const pairedEventIndex=eventIndices.length===1?eventIndices[0]:-1;
+ const pairedEventIndex=eventIndices.length===1&&!matchedExisting(result.items[eventIndices[0]])?eventIndices[0]:-1;
  const relatedTasks=pairedEventIndex>=0?result.items.map((item,index)=>isConfirmationTask(item)||isPreparationTask(item,result.items[pairedEventIndex])?index:-1).filter(index=>index>=0):[];
  const pairedTaskIndex=relatedTasks.length===1?relatedTasks[0]:-1;
  result.items.forEach((item,index)=>{
   if(index===pairedTaskIndex)return;
   const card=document.createElement('article');card.className='item';const kind=document.createElement('div');kind.className='kind';kind.textContent=labels[item.kind];card.append(kind);
+  const existing=matchedExisting(item),firstChanges=existing?matchChanges(item,existing):null,updating=!!(existing&&item.matchStatus==='update'&&firstChanges.count>0);
+  if(existing)card.append(matchBanner(item,existing,firstChanges));
   const fields=[['title','Nimetus'],['person','Kelle kohta?']];
   if(item.kind==='event')fields.push(['date','Kuupäev','date'],['time','Algusaeg','time'],['end_date','Lõppkuupäev','date'],['end_time','Lõppaeg','time'],['location','Koht'],['recurrence','Kordumine']);
   if(['task','invoice'].includes(item.kind))fields.push(['deadline','Tähtaeg','date']);
@@ -1618,19 +1704,19 @@ function renderResult(){
    fields.append(row,field(task,'notes','Märkused','textarea',pairedTaskIndex));section.append(fields);
    card.append(section);
   }
-  const save=document.createElement('button');save.type='button';save.className='primary';save.textContent='Salvesta '+labels[item.kind].toLowerCase();
+  const save=document.createElement('button');save.type='button';save.className='primary';save.textContent=updating?'Uuenda olemasolevat '+labels[item.kind].toLowerCase():existing?'Salvesta ikkagi uuesti':'Salvesta '+labels[item.kind].toLowerCase();
   if(['Automaatselt lisatud','Juba olemas','Ebaoluline','Käsitsi lisatud'].includes(sourceSnapshot?.mailStatus)){save.disabled=true;save.textContent='Juba töödeldud';}
   const state=document.createElement('p');state.className='save-state';state.setAttribute('role','status');
   const startSave=()=>{
    if(!sourceSnapshot?.text.trim()&&!sourceSnapshot?.images.length){state.textContent='Salvestamiseks lisa algne tekst, pilt või PDF.';state.classList.add('error');return;}
-   save.disabled=true;state.textContent='Salvestan…';state.classList.remove('error');
-   const runner=google.script.run.withSuccessHandler(res=>{const done=document.createElement('div');done.className='saved-confirm';savedText(done,'div',labels[item.kind],'kind');savedText(done,'h3',item.title||'(nimetu)');const line=document.createElement('p');line.className='saved-confirm-line';savedText(line,'strong',res.status==='duplicate'?'Juba olemas ✓':'Salvestatud ✓');line.append(document.createTextNode(' · '));const view=document.createElement('button');view.type='button';view.className='link-button';view.textContent='Ava ülevaates';view.onclick=()=>showView('overview');line.append(view);done.append(line);if(res.message)savedText(done,'p',res.message,'hint');savedImages(done,res.imageUrls);card.className='item item-saved';card.replaceChildren(done);clearInputIfDone();})
+   save.disabled=true;state.textContent=updating?'Uuendan…':'Salvestan…';state.classList.remove('error');
+   const runner=google.script.run.withSuccessHandler(res=>{const done=document.createElement('div');done.className='saved-confirm';savedText(done,'div',labels[item.kind],'kind');savedText(done,'h3',item.title||'(nimetu)');const line=document.createElement('p');line.className='saved-confirm-line';savedText(line,'strong',updating?'Uuendatud ✓':res.status==='duplicate'?'Juba olemas ✓':'Salvestatud ✓');line.append(document.createTextNode(' · '));const view=document.createElement('button');view.type='button';view.className='link-button';view.textContent='Ava ülevaates';view.onclick=()=>showView('overview');line.append(view);done.append(line);if(res.message)savedText(done,'p',res.message,'hint');savedImages(done,res.imageUrls);if(updating&&res.item){Object.assign(existing,res.item);writeCache('pere-overview',savedOverview);renderOverview();loadOverview();}card.className='item item-saved';card.replaceChildren(done);clearInputIfDone();})
     .withFailureHandler(e=>{state.textContent=e.message||'Salvestamine ebaõnnestus.';state.classList.add('error');save.disabled=false;});
-   if(paired)runner.pereSaveBundle({event:item,eventIndex:index,task:result.items[pairedTaskIndex],taskIndex:pairedTaskIndex,source:sourceSnapshot});
+   if(updating){const now=matchChanges(item,existing);if(!now.count){state.textContent='Muutusi pole: kõik väljad on juba samad.';state.classList.add('error');save.disabled=false;return;}runner.pereUpdateSaved({key:existing.key,changes:now.payload});}else if(paired)runner.pereSaveBundle({event:item,eventIndex:index,task:result.items[pairedTaskIndex],taskIndex:pairedTaskIndex,source:sourceSnapshot});
    else runner.pereSaveOne({item,index,source:sourceSnapshot,linkEventKey:item.linkEventKey||''});
   };
   save.onclick=()=>{
-   if(item.kind==='event'&&item.time&&!item.end_time&&!item.allDay&&!item.end_date){
+   if(!updating&&item.kind==='event'&&item.time&&!item.end_time&&!item.allDay&&!item.end_date){
     const [h,m]=item.time.split(':').map(Number),total=h*60+m+60,wrap=total>=1440,endMin=total%1440;
     const endTime=String(Math.floor(endMin/60)).padStart(2,'0')+':'+String(endMin%60).padStart(2,'0');
     state.classList.remove('error');state.replaceChildren();savedText(state,'span','Lõppaega pole. Salvesta kestusega 1 h ('+item.time+'–'+endTime+')? ');
