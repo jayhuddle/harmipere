@@ -1113,6 +1113,7 @@ function renderOverview(){
  later.forEach(item=>{const group=monthLabel(item.date);if(group!==eventGroup){monthDivider($('savedEvents'),group);eventGroup=group;}eventCard(item,$('savedEvents'));});
  if(!later.length)savedText($('savedEvents'),'p','Hilisemaid üritusi pole selles vaates.','empty');
  if(calOpen)renderCalendar();
+ if(typeof requestAnimationFrame==='function')requestAnimationFrame(alignCalendarButton);
 }
 
 // ---- Kuuvaade: alt tulev paneel (kalendriikoon Pere ülevaate päises) ----
@@ -1413,6 +1414,18 @@ if(typeof window!=='undefined'&&window.matchMedia){try{window.matchMedia('(max-w
   });
  },{passive:true});
 })();
+// Arvutis: kalendrinupu kesktelg täpselt nimekiipide (Kõik/Eia/…) kesktelje kõrgusele, mõõdetuna (ei sõltu fondist ega paigutusest).
+function alignCalendarButton(){
+ const fab=$('calendarButton'),chips=$('personChips');
+ if(!fab||!chips||!fab.style||typeof chips.getBoundingClientRect!=='function')return;
+ const desktop=typeof window!=='undefined'&&typeof window.matchMedia==='function'&&window.matchMedia('(min-width:741px)').matches;
+ if(!desktop){fab.style.top='';return;}
+ const chip=(typeof chips.querySelector==='function'&&chips.querySelector('.chip'))||chips,box=chip.getBoundingClientRect();
+ if(!box.height)return;
+ const half=(typeof fab.getBoundingClientRect==='function'&&fab.getBoundingClientRect().height||62)/2;
+ fab.style.top=Math.round(box.top+box.height/2+(window.scrollY||0)-half)+'px';
+}
+if(typeof window!=='undefined'&&typeof window.addEventListener==='function'){window.addEventListener('resize',alignCalendarButton);if(typeof document!=='undefined'&&document.fonts&&document.fonts.ready)document.fonts.ready.then(alignCalendarButton);}
 function status(text, error=false){updateRefine();$('status').textContent=text;$('status').classList.toggle('error',error);}
 function resetResult(){result=null;sourceSnapshot=null;$('results').hidden=true;$('cards').replaceChildren();}
 function setBusy(value){busy=value;['analyze','pick','camera','cameraFile','text','person','personOther','sourceDate','files'].forEach(id=>$(id).disabled=value);$('analyze').innerHTML=value?'Töötlen…':'Sisesta info'+"<svg class=\"enter-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M10 4h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-8\"/><path d=\"M3 12h11.5\"/><path d=\"M11.3 8.8l3.2 3.2-3.2 3.2\"/></svg>";renderImages();}
