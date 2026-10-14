@@ -632,6 +632,8 @@ h1{line-height:1.05}
 }
 /* Arvuti ilma külgribata: kalendri ujuv nupp on kiipide real paremas servas, otsingunupp jääb selle kõrvale vasakule (ei kattu) */
 @media(min-width:741px){body:not(.cal-docked) #overviewView .overview-filters{padding-right:132px}body:not(.cal-docked) #overviewView .overview-filters>.search-toggle{right:74px}}
+/* Arvuti: Ülesanded/Üritused veerud täpselt "See nädal" kaartidega samas laiuses ja joonel (raami serv 1.5px + sisevahe 18px) */
+@media(min-width:741px){#overviewView .overview-grid{column-gap:24px;padding:0 19.5px}}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
