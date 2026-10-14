@@ -634,6 +634,9 @@ h1{line-height:1.05}
 @media(min-width:741px){body:not(.cal-docked) #overviewView .overview-filters{padding-right:132px}body:not(.cal-docked) #overviewView .overview-filters>.search-toggle{right:74px}}
 /* Arvuti: Ülesanded/Üritused veerud täpselt "See nädal" kaartidega samas laiuses ja joonel (raami serv 1.5px + sisevahe 18px) */
 @media(min-width:741px){#overviewView .overview-grid{column-gap:24px;padding:0 19.5px}}
+/* Mikrofon hõljub tekstikasti nurgas: tekst kasutab kogu laiust (nagu enne), tühja kasti näidistekst ei tekita kerimisriba */
+.text-wrap textarea{padding-right:11px}
+.text-wrap textarea:placeholder-shown{overflow:hidden}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
@@ -778,14 +781,19 @@ body:after{content:'';position:absolute;top:0;left:0;right:0;height:180px;z-inde
  let session=null,gisReady=false,buttonShown=false;
  try{session=localStorage.getItem(KEY);}catch(_){}
  function saveSession(value){session=value;try{value?localStorage.setItem(KEY,value):localStorage.removeItem(KEY);}catch(_){}}
- async function call(action,arg){
+ async function call(action,arg,retry=true){
   if(!/^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(config.api||''))throw new Error('Äpi ühendus pole seadistatud (config.js).');
   let response;
   const body=JSON.stringify({action,arg,session});
   // keepalive: väike päring (nt "märgi tehtuks") lõpetatakse ka siis, kui äpp samal hetkel suletakse
   try{response=await fetch(config.api,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body,keepalive:body.length<60000,credentials:'omit',redirect:'follow'});}
   catch(_){throw new Error('Ühendus ebaõnnestus. Kontrolli internetti ja proovi uuesti.');}
-  let data;try{data=await response.json();}catch(_){throw new Error('Server ei vastanud. Proovi hetke pärast uuesti.');}
+  // Google vastab mõnikord JSON-i asemel HTML-veaga (ajutine tõrge): lugemispäringuid proovitakse 1,5 s pärast korra uuesti; viimane vigane vastus jääb diagnoosiks meelde.
+  let data,text='';try{text=await response.text();data=JSON.parse(text);}catch(_){
+   try{localStorage.setItem('pere-last-bad-response',JSON.stringify({at:new Date().toISOString(),action,status:response.status,text:text.slice(0,300)}));}catch(__){}
+   if(retry&&/^pere(List|Profile)/.test(action)){await new Promise(done=>setTimeout(done,1500));return call(action,arg,false);}
+   throw new Error('Server ei vastanud. Proovi hetke pärast uuesti.');
+  }
   if(data&&data.auth){saveSession(null);const error=new Error(data.error||'Logi uuesti sisse.');error.auth=true;throw error;}
   if(!data||!data.ok)throw new Error((data&&data.error)||'Toiming ebaõnnestus.');
   return data.data;
@@ -994,7 +1002,7 @@ function loadOverview(){
   overviewLoading=false;$('refreshOverview').disabled=false;savedOverview=data;writeCache('pere-overview',data);
   syncPersonOptions(data.items);
   if(window.pereSplashReady)window.pereSplashReady();renderOverview();overviewStatus(overviewNotice||(data.limited?'Kuvatud on viimased 1000 salvestatud kirjet.':''));overviewNotice='';
- }).withFailureHandler(error=>{if(window.pereSplashReady)window.pereSplashReady();overviewLoading=false;$('refreshOverview').disabled=false;overviewStatus((error.message||'Pereinfo laadimine ebaõnnestus.')+(savedOverview?' Kuvatud on viimati laaditud andmed.':''),true);}).pereListSaved();
+ }).withFailureHandler(error=>{if(window.pereSplashReady)window.pereSplashReady();overviewLoading=false;$('refreshOverview').disabled=false;overviewStatus((error.message||'Pereinfo laadimine ebaõnnestus.')+(savedOverview?' Kuvatud on viimati laaditud andmed.':''),!savedOverview);}).pereListSaved();
 }
 function savedPersonTag(parent,person){
  const name=canonicalPerson(String(person||'').trim());
