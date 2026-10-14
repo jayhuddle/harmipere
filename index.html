@@ -586,13 +586,13 @@ html,body{overscroll-behavior-y:contain}
 .mic-button:not(.listening),:root[data-theme="dark"] .mic-button:not(.listening){background:var(--glass-strong);border:1px solid var(--stroke);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.04)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .mic-button:not(.listening){background:var(--glass-strong);border:1px solid var(--stroke);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.04)}}
 /* Ülevaate päis: alapealkiri täpselt samas kõrguses ja suuruses nagu Sisesta lehel (luubi nupp ei lükka seda alla); kiibid ja nädala plokk veidi kõrgemal */
-#overviewView .search-toggle{margin-bottom:-6.6px}
+#overviewView .overview-top{position:relative}
+#overviewView .overview-top>.search-toggle{position:absolute;right:2px;top:17px;margin:0}
 #overviewView>.intro{margin:15px 0 8px}
 #overviewView .overview-filters{margin:0 0 6px}
 /* Kiireloomulisus ühe kanalina: ainult tähtaja teksti värv; kaardil pole värvilist vasakut serva, kuma ega tooni */
 .saved-card.due-soon,.saved-card.due-today,.saved-card.due-overdue{background:var(--glass);border-color:var(--stroke);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),var(--shadow)}
 #overviewView .week-section{margin-top:-8px}
-@media(min-width:741px){#overviewView .search-toggle{margin-bottom:-14.5px}}
 /* Kuupäeva/tähtaja rida: keskmise paksusega ja pehmema värviga, et pealkiri jääks ainsaks rasvaseks; kiireloomulisus säilib värvi ja veidi tugevama paksusega */
 .saved-deadline{font-weight:500;color:color-mix(in srgb,var(--ink) 78%,var(--muted))}
 .saved-deadline.overdue,.saved-deadline.today,.saved-deadline.tomorrow{font-weight:600}
@@ -606,6 +606,9 @@ html,body{overscroll-behavior-y:contain}
  .cal-overlay.docked .cal-scrim,.cal-overlay.docked .cal-grab,.cal-overlay.docked .cal-close{display:none}
  .cal-overlay.docked .cal-sheet{max-width:none;width:100%;max-height:calc(100vh - 48px);border-radius:26px;border-bottom:1px solid var(--stroke);animation:none;box-shadow:var(--shadow)}
 }
+/* Arvuti: ülevaate pealkiri on väiksem kui Sisesta lehel, seepärast tõstame alampealkirja samale kõrgusele */
+@media(min-width:741px){#overviewView>.intro{margin-top:7.4px}}
+@media(min-width:741px){#overviewView .overview-top>.search-toggle{top:29px}}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
