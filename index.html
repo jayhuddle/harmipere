@@ -599,16 +599,30 @@ html,body{overscroll-behavior-y:contain}
 .saved-deadline.overdue{color:var(--danger)}.saved-deadline.today,.saved-deadline.tomorrow{color:var(--warn)}
 /* Arvuti: laial ekraanil (≥1280 px) on kalender ülevaate kõrval alati nähtaval külgribana, kitsamal tagasi ikoon + hüpikpaneel */
 @media(min-width:1280px){
- body.cal-docked{padding-right:372px}
+ body.cal-docked #overviewView{position:relative;padding-right:calc((100% - 22px)/3 + 22px)}
  body.cal-docked:not(:has(#searchOverlay:not([hidden]))){overflow:auto}
  body.cal-docked .cal-fab{display:none}
- .cal-overlay.docked{position:fixed;inset:auto;top:24px;right:16px;width:340px;display:block;z-index:60}
+ .cal-overlay.docked{position:absolute;inset:auto;top:var(--cal-top,0px);bottom:0;right:0;width:calc((100% - 22px)/3);display:block;z-index:5}
  .cal-overlay.docked .cal-scrim,.cal-overlay.docked .cal-grab,.cal-overlay.docked .cal-close{display:none}
- .cal-overlay.docked .cal-sheet{max-width:none;width:100%;max-height:calc(100vh - 48px);border-radius:26px;border-bottom:1px solid var(--stroke);animation:none;box-shadow:var(--shadow)}
+ .cal-overlay.docked .cal-sheet{position:sticky;top:24px;max-width:none;width:100%;max-height:calc(100vh - 48px);border-radius:26px;border-bottom:1px solid var(--stroke);animation:none;box-shadow:var(--shadow)}
 }
-/* Arvuti: ülevaate pealkiri on väiksem kui Sisesta lehel, seepärast tõstame alampealkirja samale kõrgusele */
-@media(min-width:741px){#overviewView>.intro{margin-top:7.4px}}
-@media(min-width:741px){#overviewView .overview-top>.search-toggle{top:29px}}
+/* Arvuti: ülevaate pealkiri sama suur kui Sisesta lehel, nii on alampealkiri samal kõrgusel */
+@media(min-width:741px){#overviewView .overview-top h1{font-size:clamp(28px,4vw,40px)}#overviewView>.intro{margin-top:3px}}
+@media(min-width:741px){#overviewView .overview-top>.search-toggle{top:31px}}
+/* "See nädal" punktiirraam: ülemine vahe sõnani sama, mis viimase kaardi alt raamini */
+.week-section{padding-top:15px}
+@media(max-width:740px){.week-section{padding-top:7px}}
+/* Kahele reale minevad pealkirjad ja tekstid: veidi tihedam reavahe */
+.saved-card h3{line-height:1.25}
+.intro{line-height:1.45}
+.panel h2,.week-section h2{line-height:1.2}
+h1{line-height:1.05}
+/* Kompaktsemad ülesannete ja ürituste kaardid (koos tihedama reavahega) */
+.saved-card{padding-top:12px;padding-bottom:12px}
+.saved-card .saved-deadline,.saved-card .saved-meta{margin:4px 0;line-height:1.4}
+.saved-card .saved-notes{line-height:1.4}
+.saved-card details{margin-top:10px}
+.saved-card .saved-related{margin:5px 0}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
@@ -1245,7 +1259,7 @@ function renderOverview(){
 // ---- Kuuvaade: alt tulev paneel (kalendriikoon Pere ülevaate päises) ----
 let calOpen=false,calMonth='',calSel='';
 // Laial ekraanil (alates 1280 px) on kalender ülevaate kõrval alati nähtaval külgribana; kitsamal aknal on tagasi ikoon ja hüpikpaneel.
-let calDockOn=false;
+let calDockOn=false,calDockHome=null;
 const calDockWide=()=>typeof window!=='undefined'&&typeof window.matchMedia==='function'&&window.matchMedia('(min-width:1280px)').matches;
 // Eesti riigipühad (arvutatud igaks aastaks) ja koolivaheajad (tabel, uuenda igal õppeaastal: hm.ee koolivaheajad; suvevaheaega ei märgita).
 const EE_SCHOOL_BREAKS=[
@@ -1315,10 +1329,20 @@ function closeCalendar(force){
  if(calDockOn&&force!==true)return;
  calOpen=false;if(!searchOpen)setBackgroundInert(false);$('calOverlay').hidden=true;if(force!==true&&$('calendarButton').focus)$('calendarButton').focus();
 }
+// Külgribana asub kalender ülevaate sees ("See nädal" kasti kõrval, ülemine serv punktiirraamiga samal joonel); hüpikpaneelina tagasi lehe lõpus.
+function placeCalDock(){
+ if(!calDockOn)return;
+ const week=document.querySelector&&document.querySelector('#overviewView .week-section');
+ const top=week&&week.offsetParent===$('overviewView')?week.offsetTop:0;
+ if($('calOverlay').style&&$('calOverlay').style.setProperty)$('calOverlay').style.setProperty('--cal-top',top+'px');
+}
 function syncCalDock(){
  const want=calDockWide()&&!!savedOverview&&!$('overviewView').hidden;
- if(want===calDockOn)return;
+ if(want===calDockOn){placeCalDock();return;}
  calDockOn=want;if(document.body&&document.body.classList)document.body.classList.toggle('cal-docked',want);$('calOverlay').classList.toggle('docked',want);
+ const overlay=$('calOverlay');if(!calDockHome)calDockHome=overlay.parentNode;const home=want?$('overviewView'):calDockHome;
+ if(home&&home.appendChild&&overlay.parentNode!==home)home.appendChild(overlay);
+ placeCalDock();
  if(want){if(calOpen){if(!searchOpen)setBackgroundInert(false);renderCalendar();}else openCalendar();}
  else if(calOpen)closeCalendar(true);
 }
