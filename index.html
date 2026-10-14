@@ -558,6 +558,34 @@ html,body{overscroll-behavior-y:contain}
 .location-link:focus-visible{outline:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 35%,transparent);border-radius:4px}
 /* E-kirjade märk indigo (pole nii kriitiline kui Pere punane märk) */
 #mailCount.nav-count{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;box-shadow:0 2px 8px color-mix(in srgb,var(--accent) 45%,transparent)}
+/* Häälsisestus: mikrofoninupp tekstikasti alumises nurgas */
+.text-wrap{position:relative}
+.text-wrap textarea{padding-right:58px}
+.mic-button{position:absolute;right:10px;bottom:10px;width:42px;height:42px;padding:0;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:var(--accent);background:var(--glass-strong);border:1px solid var(--stroke);box-shadow:0 4px 14px color-mix(in srgb,var(--accent) 22%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.mic-button[hidden]{display:none}
+.mic-button svg{width:21px;height:21px}
+.mic-button:active{transform:scale(.93)}
+.mic-button.listening{color:#fff;background:linear-gradient(135deg,var(--accent),var(--accent-2));border-color:transparent;animation:mic-pulse 1.4s ease-out infinite}
+@keyframes mic-pulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 55%,transparent)}100%{box-shadow:0 0 0 16px transparent}}
+@media (prefers-reduced-motion:reduce){.mic-button.listening{animation:none}}
+/* Mikrofon ootel samas tumedas toonis nagu "Pildista" / "Lisa pildid" nuppude tekst; indigo alles kuulates */
+.mic-button{color:var(--ink);box-shadow:0 3px 10px rgba(20,22,52,.10)}
+.mic-button.listening{color:#fff}
+/* Mikrofon: kerge indigo klaas (kalendrinupu vaimus), mitte täidetud nagu alumine menüü; täisindigo alles kuulates */
+.mic-button{color:var(--accent);background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 16%,var(--glass-strong)),color-mix(in srgb,var(--accent-2) 12%,var(--glass-strong)));border:1px solid color-mix(in srgb,var(--accent) 34%,transparent);box-shadow:0 5px 16px color-mix(in srgb,var(--accent) 22%,transparent),inset 0 1px 0 rgba(255,255,255,.55)}
+.mic-button.listening{color:#fff;background:linear-gradient(135deg,color-mix(in srgb,var(--accent) 88%,transparent),color-mix(in srgb,var(--accent-2) 84%,transparent));border-color:rgba(255,255,255,.4)}
+/* Kuulamise olek otse kastis (olekuriba jääb telefonis menüü taha): indigo äärevalgus + "Kuulan…" silt */
+.text-wrap.listening textarea{border-color:color-mix(in srgb,var(--accent) 60%,transparent);background:linear-gradient(180deg,color-mix(in srgb,var(--accent) 7%,var(--glass-field)),var(--glass-field));box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 16%,transparent)}
+.text-wrap.listening:after{content:'Kuulan…';position:absolute;left:14px;bottom:14px;font-size:12px;font-weight:700;color:var(--accent);padding-left:14px;background:radial-gradient(circle at 5px 50%,var(--accent) 0 3.5px,transparent 4px) no-repeat;animation:mic-blink 1.2s ease-in-out infinite;pointer-events:none}
+@keyframes mic-blink{0%,100%{opacity:1}50%{opacity:.45}}
+@media (prefers-reduced-motion:reduce){.text-wrap.listening:after{animation:none}}
+/* Mikrofon ootel: valge klaasring (indigo ikoon jääb), indigo gradient alles kuulates */
+.mic-button:not(.listening){background:linear-gradient(135deg,rgba(255,255,255,.92),rgba(255,255,255,.62));border-color:rgba(255,255,255,.85);box-shadow:0 5px 16px rgba(20,22,52,.12),inset 0 1px 0 #fff}
+:root[data-theme="dark"] .mic-button:not(.listening){background:linear-gradient(135deg,rgba(255,255,255,.2),rgba(255,255,255,.08));border-color:rgba(255,255,255,.22);box-shadow:0 5px 16px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.18)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .mic-button:not(.listening){background:linear-gradient(135deg,rgba(255,255,255,.2),rgba(255,255,255,.08));border-color:rgba(255,255,255,.22);box-shadow:0 5px 16px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.18)}}
+/* Rahulik välimus: mikker ootel on täpselt sama mis "Pildista" / "Lisa pildid" nupud (sama klaas, sama tume ikoon, sama vari); indigo ainult kuulates */
+.mic-button:not(.listening),:root[data-theme="dark"] .mic-button:not(.listening){background:var(--glass-strong);border:1px solid var(--stroke);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.04)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .mic-button:not(.listening){background:var(--glass-strong);border:1px solid var(--stroke);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.04)}}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
@@ -663,7 +691,7 @@ body:after{content:'';position:absolute;top:0;left:0;right:0;height:180px;z-inde
 <div class="layout">
 <section class="panel" aria-label="Lisa pereinfo">
 <label for="text">Teade, kutse või sinu enda märkus</label>
-<textarea id="text" maxlength="20000" placeholder="Kleebi siia tekst või kuvatõmmis…&#10;&#10;Näiteks: Palun tellige jalgpallivorm 20.10.2026 hiljemalt. Hind 35 eurot."></textarea>
+<div class="text-wrap"><textarea id="text" maxlength="20000" placeholder="Kleebi siia tekst või kuvatõmmis…&#10;&#10;Näiteks: Palun tellige jalgpallivorm 20.10.2026 hiljemalt. Hind 35 eurot."></textarea><button id="micButton" class="mic-button" type="button" aria-label="Räägi (eesti keeles)" title="Räägi (eesti keeles)" aria-pressed="false" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M9 21h6"/></svg></button></div>
 
 <div id="drop" class="drop"><div class="image-actions"><button id="pick" type="button">+ Lisa pildid / PDF</button><button id="camera" type="button" title="Pildista kutset"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 6h4l2-3h4l2 3h4a1 1 0 0 1 1 1v13H3V7a1 1 0 0 1 1-1Z"/><circle cx="12" cy="13" r="4"/></svg>Pildista</button></div><input id="files" type="file" accept="image/png,image/jpeg,image/webp,application/pdf" multiple hidden><input id="cameraFile" type="file" accept="image/*" capture="environment" hidden><p class="hint">Või lohista siia / kleebi Ctrl+V.<br>Kuni 3 faili · PNG, JPG, WebP, PDF · kuni 4 MB fail, kokku 8 MB</p><div id="images" class="images"></div></div>
 <details id="refine" class="refine"><summary><span class="refine-title">Täpsusta</span> <span id="refineSummary" class="refine-summary"></span></summary><div class="row"><div><label for="person">Kelle kohta?</label><div id="personPicker" class="person-chips" role="group" aria-label="Kelle kohta"></div><select id="person" hidden><option value="">Tuvasta sisust</option><option value="Eia-Liisa">Eia</option><option value="Otto Johan">Otto</option><option value="Elle-Riin">Elle</option><option value="Kogu pere">Pere</option><option value="__other__">Muu – sisesta</option></select><input id="personOther" type="text" maxlength="80" placeholder="Sisesta nimi" aria-label="Muu nimi" hidden></div>
@@ -1696,6 +1724,39 @@ function senderNote(hint){
 function savedPersons(){
  return [...new Set((result&&result.items||[]).filter(entry=>['event','task','invoice'].includes(entry.kind)).map(entry=>canonicalPerson(String(entry.person||'').trim())).filter(Boolean))];
 }
+// Häälsisestus: mikrofoninupp tekstikasti nurgas. Kõnetuvastus eesti keeles (Chrome/Android Web Speech API), tekst läheb tekstikasti, kuhu saab seda enne töötlemist parandada.
+// Nupp peidetakse, kui brauser kõnetuvastust ei toeta.
+let voice=null,voiceBase='',voiceFinal='';
+const voiceApi=()=>typeof window!=='undefined'&&(window.SpeechRecognition||window.webkitSpeechRecognition)||null;
+function voiceErrorText(code){
+ return {'not-allowed':'Mikrofoni luba puudub. Luba see brauseri seadetest (lukuikoon aadressiribal).','service-not-allowed':'Mikrofoni luba puudub. Luba see brauseri seadetest.','no-speech':'Midagi ei kuulnud. Proovi uuesti ja räägi veidi valjemini.','audio-capture':'Mikrofoni ei leitud.','network':'Kõnetuvastus vajab internetiühendust.','language-not-supported':'Eesti keel pole selles brauseris kõnetuvastuseks toetatud.'}[code]||'Kõnetuvastus ebaõnnestus. Proovi uuesti.';
+}
+function setVoiceUi(listening){
+ const button=$('micButton');if(!button)return;
+ button.classList.toggle('listening',listening);button.setAttribute('aria-pressed',String(listening));
+ const wrap=button.parentElement;if(wrap&&wrap.classList)wrap.classList.toggle('listening',listening);
+ button.setAttribute('aria-label',listening?'Lõpeta rääkimine':'Räägi (eesti keeles)');button.title=listening?'Lõpeta rääkimine':'Räägi (eesti keeles)';
+}
+function stopVoice(){if(voice){try{voice.stop();}catch(_){}}}
+function startVoice(){
+ const Api=voiceApi();if(!Api||voice)return;
+ if(busy||loadingImages)return;
+ const rec=new Api();rec.lang='et-EE';rec.continuous=true;rec.interimResults=true;rec.maxAlternatives=1;
+ const field=$('text');voiceBase=field.value.trim();voiceFinal='';
+ const show=interim=>{const spoken=(voiceFinal+' '+interim).replace(/\s+/g,' ').trim();field.value=(voiceBase&&spoken?voiceBase+' ':voiceBase)+spoken;field.dispatchEvent(new Event('input'));};
+ rec.onresult=event=>{let interim='';for(let i=event.resultIndex;i<event.results.length;i++){const part=event.results[i][0].transcript;if(event.results[i].isFinal)voiceFinal+=' '+part;else interim+=part;}show(interim);};
+ rec.onerror=event=>{if(event.error!=='aborted')status(voiceErrorText(event.error),true);};
+ rec.onend=()=>{voice=null;setVoiceUi(false);if(field.value.trim()&&field.value.trim()!==voiceBase&&!$('status').classList.contains('error'))status('Valmis. Vaata tekst üle ja vajuta „Sisesta info”.');};
+ try{rec.start();voice=rec;setVoiceUi(true);status('Kuulan… räägi rahulikult. Vajuta mikrofoni uuesti, kui oled valmis.');}
+ catch(_){voice=null;setVoiceUi(false);status('Kõnetuvastust ei saanud käivitada. Proovi uuesti.',true);}
+}
+function initVoice(){
+ const button=$('micButton');if(!button)return;
+ if(!voiceApi()){button.hidden=true;return;}
+ button.hidden=false;button.onclick=()=>{if(voice)stopVoice();else startVoice();};
+}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')stopVoice();});
+initVoice();
 function renderResult(){
  $('summary').textContent=result.summary;$('cards').replaceChildren();$('questions').replaceChildren();$('questions').hidden=!result.questions.length;
  inheritedPeople=new WeakSet();result.items.forEach(item=>{if(item.kind==='task'&&!item.person)inheritedPeople.add(item);});
