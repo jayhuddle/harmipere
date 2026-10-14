@@ -597,12 +597,13 @@ html,body{overscroll-behavior-y:contain}
 .saved-deadline{font-weight:500;color:color-mix(in srgb,var(--ink) 78%,var(--muted))}
 .saved-deadline.overdue,.saved-deadline.today,.saved-deadline.tomorrow{font-weight:600}
 .saved-deadline.overdue{color:var(--danger)}.saved-deadline.today,.saved-deadline.tomorrow{color:var(--warn)}
-/* Arvuti: laial ekraanil (≥1280 px) on kalender ülevaate kõrval alati nähtaval külgribana, kitsamal tagasi ikoon + hüpikpaneel */
-@media(min-width:1280px){
- body.cal-docked #overviewView{position:relative;padding-right:calc((100% - 22px)/3 + 22px)}
+/* Arvuti: laial ekraanil (≥1460 px) on kalender "See nädal" kasti kõrval sisualast paremal; kogu leht on kõigil vahelehtedel ühtmoodi vasakule nihutatud (menüü ei hüppa). Kitsamal tagasi ikoon + hüpikpaneel */
+@media(min-width:1460px){
+ body{padding-right:359px}
+ body.cal-docked #overviewView{position:relative}
  body.cal-docked:not(:has(#searchOverlay:not([hidden]))){overflow:auto}
  body.cal-docked .cal-fab{display:none}
- .cal-overlay.docked{position:absolute;inset:auto;top:var(--cal-top,0px);bottom:0;right:0;width:calc((100% - 22px)/3);display:block;z-index:5}
+ .cal-overlay.docked{position:absolute;inset:auto;top:var(--cal-top,0px);bottom:0;left:calc(100% + 22px);width:337px;display:block;z-index:5}
  .cal-overlay.docked .cal-scrim,.cal-overlay.docked .cal-grab,.cal-overlay.docked .cal-close{display:none}
  .cal-overlay.docked .cal-sheet{position:sticky;top:24px;max-width:none;width:100%;max-height:calc(100vh - 48px);border-radius:26px;border-bottom:1px solid var(--stroke);animation:none;box-shadow:var(--shadow)}
 }
@@ -623,6 +624,14 @@ h1{line-height:1.05}
 .saved-card .saved-notes{line-height:1.4}
 .saved-card details{margin-top:10px}
 .saved-card .saved-related{margin:5px 0}
+/* Arvuti: otsingunupp kiipide real paremal, vertikaalselt keskel; õhulisemad vahed alampealkiri → kiibid → See nädal */
+@media(min-width:741px){
+ #overviewView .overview-filters{position:relative;padding-right:60px;margin:20px 0 30px}
+ #overviewView .overview-filters>.search-toggle{position:absolute;right:2px;top:50%;transform:translateY(-50%);margin:0}
+ #overviewView .week-section{margin-top:0}
+}
+/* Arvuti ilma külgribata: kalendri ujuv nupp on kiipide real paremas servas, otsingunupp jääb selle kõrvale vasakule (ei kattu) */
+@media(min-width:741px){body:not(.cal-docked) #overviewView .overview-filters{padding-right:132px}body:not(.cal-docked) #overviewView .overview-filters>.search-toggle{right:74px}}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
@@ -1258,9 +1267,9 @@ function renderOverview(){
 
 // ---- Kuuvaade: alt tulev paneel (kalendriikoon Pere ülevaate päises) ----
 let calOpen=false,calMonth='',calSel='';
-// Laial ekraanil (alates 1280 px) on kalender ülevaate kõrval alati nähtaval külgribana; kitsamal aknal on tagasi ikoon ja hüpikpaneel.
+// Laial ekraanil (alates 1460 px) on kalender ülevaate kõrval alati nähtaval külgribana; kitsamal aknal on tagasi ikoon ja hüpikpaneel.
 let calDockOn=false,calDockHome=null;
-const calDockWide=()=>typeof window!=='undefined'&&typeof window.matchMedia==='function'&&window.matchMedia('(min-width:1280px)').matches;
+const calDockWide=()=>typeof window!=='undefined'&&typeof window.matchMedia==='function'&&window.matchMedia('(min-width:1460px)').matches;
 // Eesti riigipühad (arvutatud igaks aastaks) ja koolivaheajad (tabel, uuenda igal õppeaastal: hm.ee koolivaheajad; suvevaheaega ei märgita).
 const EE_SCHOOL_BREAKS=[
  {from:'2026-10-26',to:'2026-11-01',name:'Sügisvaheaeg'},{from:'2026-12-21',to:'2027-01-03',name:'Jõuluvaheaeg'},
@@ -1478,7 +1487,15 @@ function renderCalendar(){
  if(!list.length)savedText(sheet,'p','Sel päeval pole midagi kirjas.','empty');
 }
 $('calendarButton').onclick=openCalendar;$('calScrim').onclick=()=>closeCalendar();
-if(typeof window!=='undefined'&&window.addEventListener)window.addEventListener('resize',syncCalDock);
+// Arvutis on otsingunupp inimeste kiipidega samal real (paremal, vertikaalselt keskel); telefonis pealkirja kõrval.
+function placeSearchToggle(){
+ const button=$('searchButton'),filters=document.querySelector&&document.querySelector('#overviewView .overview-filters'),top=document.querySelector&&document.querySelector('#overviewView .overview-top');
+ if(!button||!filters||!top||!filters.appendChild)return;
+ const wide=typeof window!=='undefined'&&typeof window.matchMedia==='function'&&window.matchMedia('(min-width:741px)').matches;
+ const home=wide?filters:top;if(button.parentNode!==home)home.appendChild(button);
+}
+placeSearchToggle();
+if(typeof window!=='undefined'&&window.addEventListener){window.addEventListener('resize',syncCalDock);window.addEventListener('resize',placeSearchToggle);}
 if(typeof MutationObserver==='function')new MutationObserver(syncCalDock).observe($('overviewView'),{attributes:true,attributeFilter:['hidden']});
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&searchOpen){event.preventDefault();closeSearch();}else if(event.key==='Escape'&&calOpen){event.preventDefault();closeCalendar();}
  else if(calOpen&&!searchOpen&&!event.ctrlKey&&!event.metaKey&&!event.altKey&&(event.key==='ArrowLeft'||event.key==='PageUp'||event.key==='ArrowRight'||event.key==='PageDown')){event.preventDefault();calStep(event.key==='ArrowLeft'||event.key==='PageUp'?-1:1);}});
