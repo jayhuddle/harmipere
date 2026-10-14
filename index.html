@@ -546,7 +546,6 @@ html,body{overscroll-behavior-y:contain}
 .cal-title-box{flex:1;min-width:0;overflow:hidden}
 .cal-title-track{display:flex;transform:translateX(-100%)}
 .cal-title-track>*{flex:0 0 100%;min-width:0;text-align:center;font-size:18px;margin:0;white-space:nowrap}
-.cal-title-side{font:inherit;font-size:18px;color:inherit;font-weight:inherit}
 /* Kalendri päiserida on lohistatav (sulgemine), nupud jäävad klõpsatavaks */
 .cal-head{touch-action:none}
 /* Asukoha kõrval tagasihoidlik Waze ikoon (ilma kastita): tekstile lähedal, nööpnaela tipp samal joonel lühikeste tähtede alumise servaga (baseline) */
@@ -878,8 +877,18 @@ function loadMailBadge(){
  if(!window.google?.script?.run)return;mailBadgeAt=Date.now();
  google.script.run.withSuccessHandler(data=>updateMailBadge(data&&data.items)).withFailureHandler(()=>{}).pereListMail();
 }
+// Avamisel (ja tagasi tulles) käivitab äpp taustal sama mis "Värskenda": korjab uued kirjad, sorteerib Jüri Gmaili, töötleb ootel kirjad ja uuendab märgi.
+// Piir: kuni kord 10 minutis (ka seadmete vahel mäletatakse); ebaõnnestumise korral uuesti 5 min pärast; vaikne (vead ei näidata).
+let mailBgAt=0;
+function refreshMailInBackground(){
+ if(!window.google?.script?.run||mailLoading)return;
+ const last=Math.max(mailBgAt,Number(readCache('pere-mail-bg'))||0);
+ if(Date.now()-last<600000)return;
+ mailBgAt=Date.now();writeCache('pere-mail-bg',mailBgAt);
+ google.script.run.withSuccessHandler(data=>{updateMailBadge(data&&data.items);loadOverview();}).withFailureHandler(()=>{mailBgAt=Date.now()-300000;}).pereRefreshMail();
+}
 {const cached=readCache('pere-mail-count');if(typeof cached==='number'&&cached>0)setMailBadge(cached);}
-document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&Date.now()-mailBadgeAt>90000)loadMailBadge();});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){if(Date.now()-mailBadgeAt>90000)loadMailBadge();refreshMailInBackground();}});
 function loadMail(collect=false){
  collect=collect===true;
  if(mailLoading)return;
@@ -1830,7 +1839,7 @@ function renderResult(){
 ['change','input'].forEach(type=>{$('person').addEventListener(type,updateRefine);$('personOther').addEventListener(type,updateRefine);$('sourceDate').addEventListener(type,updateRefine);});
 $('refine').addEventListener('toggle',()=>{if($('refine').open&&!$('sourceDate').value)$('sourceDate').value=tallinnToday();updateRefine();});
 updateRefine();
-if(window.google?.script?.run){loadOverview();if(typeof setTimeout==='function')setTimeout(loadMailBadge,900);}
+if(window.google?.script?.run){loadOverview();if(typeof setTimeout==='function'){setTimeout(loadMailBadge,900);setTimeout(refreshMailInBackground,2500);}}
 </script>
 <script>
 window.pereSharing=new URLSearchParams(location.search).has('share');
