@@ -900,7 +900,7 @@ body:after{content:'';position:absolute;top:0;left:0;right:0;height:180px;z-inde
 <section id="mailView" hidden aria-label="Perepostkasti kirjad"><div class="overview-top"><h1>E-kirjad</h1><button id="refreshMail" class="icon-button" type="button" aria-label="Värskenda" title="Värskenda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg></button></div><p class="saved-meta">Automaatika lisab selged uued sündmused ja ülesanded. Siin saad üle vaadata ebaselge info ja töötluse tulemused. „Peida” jätab Gmaili kirja alles.</p><div class="overview-filters"><label><input id="showProcessedMail" type="checkbox">Näita ka automaatselt töödeldud kirju</label></div><p id="mailStatus" class="status" role="status" aria-live="polite"></p><div id="mailCards"></div></section>
 <footer>Kuni 40 töötluskatset päevas · AI tulemus vajab ülevaatamist · <button type="button" class="logout-link" onclick="pereLogout()">Logi välja</button><span id="diagWrap" hidden> · <button type="button" class="logout-link" onclick="pereDiag()">Veateave</button></span></footer><script>(function(){const KEY='pere-last-bad-response';function read(){try{return localStorage.getItem(KEY);}catch(_){return null;}}
  function sync(){const wrap=document.getElementById('diagWrap');if(wrap)wrap.hidden=!read();}
- window.pereDiag=async()=>{const raw=read();if(!raw)return;let text=raw;try{const d=JSON.parse(raw);text='Aeg: '+d.at+'\nToiming: '+d.action+'\nHTTP: '+d.status+'\nVastus: '+d.text;}catch(_){}
+ window.pereDiag=async()=>{const raw=read();if(!raw)return;let text=raw;try{const d=JSON.parse(raw);text='Aeg: '+d.at+'\nToiming: '+d.action+'\nHTTP: '+d.status+(d.attempt?'\nKatse: '+d.attempt+'/3':'')+'\nKordus aitas: '+(d.recovered?'jah (tõrget ei olnud näha)':'ei / teadmata')+'\nVastus: '+d.text;}catch(_){}
   let copied=false;try{await navigator.clipboard.writeText(text);copied=true;}catch(_){}
   if(window.confirm(text+'\n\n'+(copied?'Kopeeritud lõikelauale. ':'')+'Kustutan selle veateabe?')){try{localStorage.removeItem(KEY);}catch(_){}sync();}};
  window.pereDiagSync=sync;sync();document.addEventListener('visibilitychange',sync);})();</script>
@@ -916,17 +916,26 @@ body:after{content:'';position:absolute;top:0;left:0;right:0;height:180px;z-inde
  let session=null,gisReady=false,buttonShown=false;
  try{session=localStorage.getItem(KEY);}catch(_){}
  function saveSession(value){session=value;try{value?localStorage.setItem(KEY,value):localStorage.removeItem(KEY);}catch(_){}}
- async function send(action,arg,retry=true){
+ async function send(action,arg,retry=true,attempt=1){
   if(!/^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(config.api||''))throw new Error('Äpi ühendus pole seadistatud (config.js).');
   let response;
   const body=JSON.stringify({action,arg,session});
   // keepalive: väike päring (nt "märgi tehtuks") lõpetatakse ka siis, kui äpp samal hetkel suletakse
   try{response=await fetch(config.api,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body,keepalive:body.length<60000,credentials:'omit',redirect:'follow'});}
   catch(_){const error=new Error('Ühendus ebaõnnestus. Kontrolli internetti ja proovi uuesti.');error.network=true;throw error;}
-  // Google vastab mõnikord JSON-i asemel HTML-veaga (ajutine tõrge): lugemispäringuid proovitakse 1,5 s pärast korra uuesti; viimane vigane vastus jääb diagnoosiks meelde.
+  // Google vastab mõnikord JSON-i asemel HTML-veaga (ajutine tõrge, nt 404 "unable to open the file"): lugemispäringuid proovitakse
+  // kuni 2 korda uuesti (1,5 s ja 4 s pärast); viimane vigane vastus jääb diagnoosiks meelde koos märkega, kas kordus aitas.
   let data,text='';try{text=await response.text();data=JSON.parse(text);}catch(_){
-   try{localStorage.setItem('pere-last-bad-response',JSON.stringify({at:new Date().toISOString(),action,status:response.status,text:text.slice(0,300)}));}catch(__){}if(window.pereDiagSync)window.pereDiagSync();
-   if(retry&&/^pere(List|Profile)/.test(action)){await new Promise(done=>setTimeout(done,1500));return send(action,arg,false);}
+   const record={at:new Date().toISOString(),action,status:response.status,attempt,text:text.slice(0,300)};
+   const remember=()=>{try{localStorage.setItem('pere-last-bad-response',JSON.stringify(record));}catch(__){}if(window.pereDiagSync)window.pereDiagSync();};
+   remember();
+   if(retry&&attempt<3&&/^pere(List|Profile)/.test(action)){
+    await new Promise(done=>setTimeout(done,attempt===1?1500:4000));
+    const value=await send(action,arg,true,attempt+1);
+    // Õnnestus pärast kordust: märgi viimasele (sisemisele) vigasele kirjele, et kasutaja tõrget ei näinud.
+    if(attempt===1){try{const last=JSON.parse(localStorage.getItem('pere-last-bad-response')||'null')||record;last.recovered=true;localStorage.setItem('pere-last-bad-response',JSON.stringify(last));}catch(__){}if(window.pereDiagSync)window.pereDiagSync();}
+    return value;
+   }
    throw new Error('Server ei vastanud. Proovi hetke pärast uuesti.');
   }
   if(data&&data.auth){saveSession(null);const error=new Error(data.error||'Logi uuesti sisse.');error.auth=true;throw error;}
