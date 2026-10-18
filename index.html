@@ -763,6 +763,10 @@ header{view-transition-name:pere-header}
 .mail-quick-label{margin:0 0 var(--s2);font-weight:650;font-size:14px;color:var(--ink)}
 .mail-quick .save-state{margin:var(--s2) 0 0}
 .mail-quick .save-state:empty{display:none}
+/* Arvuti (741–1359 px): ujuv kalendrinupp sisuala parema servaga samal joonel (sisuala 960 − 24 sisevahe), mitte sellest väljas */
+@media(min-width:741px){.cal-fab{right:max(24px,calc(50% - 456px))}}
+/* Otsingunupp ujuva kalendrinupu kõrval 16px vahega */
+@media(min-width:741px){body:not(.cal-docked) #overviewView .overview-filters{padding-right:150px}body:not(.cal-docked) #overviewView .overview-filters>.search-toggle{right:85px}}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
