@@ -597,8 +597,8 @@ html,body{overscroll-behavior-y:contain}
 .saved-deadline{font-weight:500;color:color-mix(in srgb,var(--ink) 78%,var(--muted))}
 .saved-deadline.overdue,.saved-deadline.today,.saved-deadline.tomorrow{font-weight:600}
 .saved-deadline.overdue{color:var(--danger)}.saved-deadline.today,.saved-deadline.tomorrow{color:var(--warn)}
-/* Arvuti: laial ekraanil (≥1460 px) on kalender "See nädal" kasti kõrval sisualast paremal; kogu leht on kõigil vahelehtedel ühtmoodi vasakule nihutatud (menüü ei hüppa). Kitsamal tagasi ikoon + hüpikpaneel */
-@media(min-width:1460px){
+/* Arvuti: laial ekraanil (≥1360 px) on kalender "See nädal" kasti kõrval sisualast paremal; kogu leht on kõigil vahelehtedel ühtmoodi vasakule nihutatud (menüü ei hüppa). Kitsamal tagasi ikoon + hüpikpaneel */
+@media(min-width:1360px){
  body{padding-right:359px}
  body.cal-docked #overviewView{position:relative}
  body.cal-docked:not(:has(#searchOverlay:not([hidden]))){overflow:auto}
@@ -645,6 +645,9 @@ h1{line-height:1.05}
 .saved-deadline.now-line:before{content:'';width:8px;height:8px;border-radius:50%;background:var(--accent);flex:none;animation:now-pulse 1.8s ease-out infinite}
 @keyframes now-pulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 55%,transparent)}100%{box-shadow:0 0 0 8px transparent}}
 @media (prefers-reduced-motion:reduce){.saved-deadline.now-line:before{animation:none}}
+/* Arvuti: kitsam sisuala (960 px, enne 1080) — kaardid pole laial ekraanil liiga laiad; kalendri külgriba mahub nüüd alates 1360 px aknast */
+header,main{max-width:960px}
+.cal-fab{right:max(16px,calc(50% - 480px))}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
@@ -789,23 +792,57 @@ body:after{content:'';position:absolute;top:0;left:0;right:0;height:180px;z-inde
  let session=null,gisReady=false,buttonShown=false;
  try{session=localStorage.getItem(KEY);}catch(_){}
  function saveSession(value){session=value;try{value?localStorage.setItem(KEY,value):localStorage.removeItem(KEY);}catch(_){}}
- async function call(action,arg,retry=true){
+ async function send(action,arg,retry=true){
   if(!/^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(config.api||''))throw new Error('Äpi ühendus pole seadistatud (config.js).');
   let response;
   const body=JSON.stringify({action,arg,session});
   // keepalive: väike päring (nt "märgi tehtuks") lõpetatakse ka siis, kui äpp samal hetkel suletakse
   try{response=await fetch(config.api,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body,keepalive:body.length<60000,credentials:'omit',redirect:'follow'});}
-  catch(_){throw new Error('Ühendus ebaõnnestus. Kontrolli internetti ja proovi uuesti.');}
+  catch(_){const error=new Error('Ühendus ebaõnnestus. Kontrolli internetti ja proovi uuesti.');error.network=true;throw error;}
   // Google vastab mõnikord JSON-i asemel HTML-veaga (ajutine tõrge): lugemispäringuid proovitakse 1,5 s pärast korra uuesti; viimane vigane vastus jääb diagnoosiks meelde.
   let data,text='';try{text=await response.text();data=JSON.parse(text);}catch(_){
    try{localStorage.setItem('pere-last-bad-response',JSON.stringify({at:new Date().toISOString(),action,status:response.status,text:text.slice(0,300)}));}catch(__){}
-   if(retry&&/^pere(List|Profile)/.test(action)){await new Promise(done=>setTimeout(done,1500));return call(action,arg,false);}
+   if(retry&&/^pere(List|Profile)/.test(action)){await new Promise(done=>setTimeout(done,1500));return send(action,arg,false);}
    throw new Error('Server ei vastanud. Proovi hetke pärast uuesti.');
   }
   if(data&&data.auth){saveSession(null);const error=new Error(data.error||'Logi uuesti sisse.');error.auth=true;throw error;}
   if(!data||!data.ok)throw new Error((data&&data.error)||'Toiming ebaõnnestus.');
   return data.data;
  }
+ // Ilma ühenduseta "märgi tehtuks / ava uuesti": märge jääb seadmesse ootele (sama ülesande kohta ainult viimane) ja saadetakse,
+ // kui ühendus taastub (online-sündmus, äpi avamine, enne iga lugemispäringut). Toiming seab oleku, nii et kordamine on ohutu.
+ const OUTBOX='pere-outbox',QUEUEABLE={pereSetTaskDone:true};
+ function outbox(){try{const list=JSON.parse(localStorage.getItem(OUTBOX)||'[]');return Array.isArray(list)?list:[];}catch(_){return [];}}
+ function saveOutbox(list){try{list.length?localStorage.setItem(OUTBOX,JSON.stringify(list)):localStorage.removeItem(OUTBOX);}catch(_){}}
+ function queueOffline(action,arg){
+  const key=arg&&arg.key,list=outbox().filter(job=>!(job.action===action&&job.arg&&job.arg.key===key));
+  list.push({id:Date.now()+'-'+Math.random().toString(36).slice(2,8),action,arg});saveOutbox(list.slice(-50));
+  return {status:arg&&arg.done?'Tehtud':'Avatud',queued:true};
+ }
+ let flushing=null;
+ function flushOutbox(){
+  if(flushing)return flushing;
+  if(!session||!outbox().length)return Promise.resolve(0);
+  flushing=(async()=>{
+   let sent=0;
+   for(const job of outbox()){
+    try{await send(job.action,job.arg,false);sent++;}
+    catch(error){if(error.network||error.auth)break;}
+    saveOutbox(outbox().filter(other=>other.id!==job.id));
+   }
+   if(sent&&typeof window.pereOutboxSent==='function')window.pereOutboxSent(sent);
+   return sent;
+  })().finally(()=>{flushing=null;});
+  return flushing;
+ }
+ async function call(action,arg,retry=true){
+  if(QUEUEABLE[action]&&typeof navigator!=='undefined'&&navigator.onLine===false)return queueOffline(action,arg);
+  if(/^pere(List|Profile)/.test(action))await flushOutbox().catch(()=>0);
+  try{return await send(action,arg,retry);}
+  catch(error){if(error.network&&QUEUEABLE[action])return queueOffline(action,arg);throw error;}
+ }
+ if(typeof window.addEventListener==='function')window.addEventListener('online',()=>{flushOutbox().catch(()=>0);});
+ window.perePendingCount=()=>outbox().length;
  function enqueue(job){queue.push(job);showLogin();}
  function runner(ok,fail){return new Proxy({},{get(_,name){
   if(name==='withSuccessHandler')return handler=>runner(handler,fail);
@@ -952,6 +989,17 @@ function refreshMailInBackground(){
  mailBgAt=Date.now();writeCache('pere-mail-bg',mailBgAt);
  google.script.run.withSuccessHandler(data=>{updateMailBadge(data&&data.items);loadOverview();}).withFailureHandler(()=>{mailBgAt=Date.now()-300000;}).pereRefreshMail();
 }
+// Avamine: kõigepealt ülevaade (server saadab kaasa ootel kirjade arvu, nii et eraldi päringut pole vaja), alles seejärel taustal kirjade värskendus — päringud ei jookse korraga.
+// Vanem server mailCount-i ei saada: siis küsitakse märk eraldi nagu varem.
+let mailStartPending=false;
+function mailAfterOverview(data){
+ const count=data&&typeof data.mailCount==='number'?data.mailCount:null;
+ if(count!==null){setMailBadge(count);writeCache('pere-mail-count',count);mailBadgeAt=Date.now();}
+ if(!mailStartPending)return;mailStartPending=false;
+ if(typeof setTimeout!=='function')return;
+ if(count===null)setTimeout(loadMailBadge,0);
+ setTimeout(refreshMailInBackground,1500);
+}
 {const cached=readCache('pere-mail-count');if(typeof cached==='number'&&cached>0)setMailBadge(cached);}
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){if(Date.now()-mailBadgeAt>90000)loadMailBadge();refreshMailInBackground();}});
 function loadMail(collect=false){
@@ -1007,10 +1055,10 @@ function loadOverview(){
  if(!savedOverview){const cached=readCache('pere-overview');if(cached){cached.today=tallinnToday();savedOverview=cached;syncPersonOptions(cached.items);renderOverview();if(window.pereSplashReady)window.pereSplashReady();}}
  overviewStatus(savedOverview?'':'Laadin pereinfot…');
  google.script.run.withSuccessHandler(data=>{
-  overviewLoading=false;$('refreshOverview').disabled=false;savedOverview=data;writeCache('pere-overview',data);
+  overviewLoading=false;$('refreshOverview').disabled=false;savedOverview=data;writeCache('pere-overview',data);mailAfterOverview(data);
   syncPersonOptions(data.items);
   if(window.pereSplashReady)window.pereSplashReady();renderOverview();overviewStatus(overviewNotice||(data.limited?'Kuvatud on viimased 1000 salvestatud kirjet.':''));overviewNotice='';
- }).withFailureHandler(error=>{if(window.pereSplashReady)window.pereSplashReady();overviewLoading=false;$('refreshOverview').disabled=false;overviewStatus((error.message||'Pereinfo laadimine ebaõnnestus.')+(savedOverview?' Kuvatud on viimati laaditud andmed.':''),!savedOverview);}).pereListSaved();
+ }).withFailureHandler(error=>{if(window.pereSplashReady)window.pereSplashReady();overviewLoading=false;$('refreshOverview').disabled=false;overviewStatus((error.message||'Pereinfo laadimine ebaõnnestus.')+(savedOverview?' Kuvatud on viimati laaditud andmed.':''),!savedOverview);mailAfterOverview(null);}).pereListSaved();
 }
 function savedPersonTag(parent,person){
  const name=canonicalPerson(String(person||'').trim());
@@ -1219,12 +1267,12 @@ function renderOverview(){
   complete.onclick=()=>{
    if(completing.has(item.key)){if(pendingUndo)pendingUndo.cancel();return;}
    if(item.status==='Tehtud'){complete.disabled=true;
-    google.script.run.withSuccessHandler(response=>{item.status=response.status;renderOverview();overviewStatus('Ülesanne on uuesti avatud.');})
+    google.script.run.withSuccessHandler(response=>{item.status=response.status;renderOverview();overviewStatus(response.queued?offlineNote():'Ülesanne on uuesti avatud.');if(response.queued)cacheOverview();})
      .withFailureHandler(error=>{complete.disabled=false;overviewStatus(error.message||'Ülesande muutmine ebaõnnestus.',true);}).pereSetTaskDone({key:item.key,done:false});return;}
    item.status='Tehtud';completing.set(item.key,Date.now());renderOverview();overviewStatus('');
    showUndo('„'+item.title+'” märgitud tehtuks.',()=>{
     completing.delete(item.key);renderOverview();
-    google.script.run.withSuccessHandler(response=>{item.status=response.status;renderOverview();})
+    google.script.run.withSuccessHandler(response=>{item.status=response.status;renderOverview();if(response.queued){overviewStatus(offlineNote());cacheOverview();}})
      .withFailureHandler(error=>{item.status='Avatud';renderOverview();overviewStatus(error.message||'Ülesande muutmine ebaõnnestus.',true);}).pereSetTaskDone({key:item.key,done:true});
    },()=>{completing.delete(item.key);item.status='Avatud';renderOverview();});
   };
@@ -1302,9 +1350,9 @@ function renderOverview(){
 
 // ---- Kuuvaade: alt tulev paneel (kalendriikoon Pere ülevaate päises) ----
 let calOpen=false,calMonth='',calSel='';
-// Laial ekraanil (alates 1460 px) on kalender ülevaate kõrval alati nähtaval külgribana; kitsamal aknal on tagasi ikoon ja hüpikpaneel.
+// Laial ekraanil (alates 1360 px) on kalender ülevaate kõrval alati nähtaval külgribana; kitsamal aknal on tagasi ikoon ja hüpikpaneel.
 let calDockOn=false,calDockHome=null;
-const calDockWide=()=>typeof window!=='undefined'&&typeof window.matchMedia==='function'&&window.matchMedia('(min-width:1460px)').matches;
+const calDockWide=()=>typeof window!=='undefined'&&typeof window.matchMedia==='function'&&window.matchMedia('(min-width:1360px)').matches;
 // Eesti riigipühad (arvutatud igaks aastaks) ja koolivaheajad (tabel, uuenda igal õppeaastal: hm.ee koolivaheajad; suvevaheaega ei märgita).
 const EE_SCHOOL_BREAKS=[
  {from:'2026-10-26',to:'2026-11-01',name:'Sügisvaheaeg'},{from:'2026-12-21',to:'2027-01-03',name:'Jõuluvaheaeg'},
@@ -1697,6 +1745,10 @@ function refreshEventPhases(){
 }
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refreshEventPhases();});
 if(typeof setInterval==='function')setInterval(()=>{if(document.visibilityState==='visible')refreshEventPhases();},60000);
+// Ilma ühenduseta tehtud märge (PWA hoiab seda ootel): teade + vahemälu uuendus, et äpp näitaks õiget olekut ka uuesti avades; kui märked on ära saadetud, laetakse ülevaade värskelt.
+function offlineNote(){return 'Ühendus puudub. Märge saadetakse, kui ühendus taastub.';}
+function cacheOverview(){if(savedOverview&&typeof writeCache==='function')writeCache('pere-overview',savedOverview);}
+if(typeof window!=='undefined')window.pereOutboxSent=()=>{if(typeof loadOverview==='function')loadOverview();};
 function status(text, error=false){updateRefine();$('status').textContent=text;$('status').classList.toggle('error',error);}
 function resetResult(){result=null;sourceSnapshot=null;$('results').hidden=true;$('cards').replaceChildren();}
 function setBusy(value){busy=value;['analyze','pick','camera','cameraFile','text','person','personOther','sourceDate','files'].forEach(id=>$(id).disabled=value);$('analyze').innerHTML=value?'Töötlen…':'Sisesta info'+"<svg class=\"enter-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M10 4h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-8\"/><path d=\"M3 12h11.5\"/><path d=\"M11.3 8.8l3.2 3.2-3.2 3.2\"/></svg>";renderImages();}
@@ -1963,7 +2015,7 @@ function renderResult(){
 ['change','input'].forEach(type=>{$('person').addEventListener(type,updateRefine);$('personOther').addEventListener(type,updateRefine);$('sourceDate').addEventListener(type,updateRefine);});
 $('refine').addEventListener('toggle',()=>{if($('refine').open&&!$('sourceDate').value)$('sourceDate').value=tallinnToday();updateRefine();});
 updateRefine();
-if(window.google?.script?.run){loadOverview();if(typeof setTimeout==='function'){setTimeout(loadMailBadge,900);setTimeout(refreshMailInBackground,2500);}}
+if(window.google?.script?.run){mailStartPending=true;loadOverview();}
 </script>
 <script>
 window.pereSharing=new URLSearchParams(location.search).has('share');
