@@ -637,6 +637,14 @@ h1{line-height:1.05}
 /* Mikrofon hõljub tekstikasti nurgas: tekst kasutab kogu laiust (nagu enne), tühja kasti näidistekst ei tekita kerimisriba */
 .text-wrap textarea{padding-right:11px}
 .text-wrap textarea:placeholder-shown{overflow:hidden}
+/* Ürituse aeg: läbi = tuhmim, käib praegu = esile (aktsentvärvi serv ja helendus ümber kogu kaardi, "Praegu" aktsendivärvis tuksuva täpiga) */
+.saved-event-card.event-past{opacity:.5;filter:saturate(.55)}
+.saved-event-card.event-past:hover,.saved-event-card.event-past:focus-within{opacity:.85}
+.saved-event-card.event-now{border-color:color-mix(in srgb,var(--accent) 55%,transparent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 14%,transparent),var(--shadow)}
+.saved-deadline.now-line{color:var(--accent);font-weight:650;display:flex;align-items:center;gap:7px}
+.saved-deadline.now-line:before{content:'';width:8px;height:8px;border-radius:50%;background:var(--accent);flex:none;animation:now-pulse 1.8s ease-out infinite}
+@keyframes now-pulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 55%,transparent)}100%{box-shadow:0 0 0 8px transparent}}
+@media (prefers-reduced-motion:reduce){.saved-deadline.now-line:before{animation:none}}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
@@ -1158,7 +1166,22 @@ function focusEvent(rel){
  const details=card.closest&&card.closest('details');if(details)details.open=true;
  card.scrollIntoView({behavior:'smooth',block:'center'});card.classList.add('flash');setTimeout(()=>card.classList.remove('flash'),1800);
 }
+// Ürituse olek praeguse Tallinna aja järgi: 'past' = juba lõppenud, 'now' = käib praegu, '' = tulemas (või tänane kogupäeva üritus).
+// Lõpuaja puudumisel loetakse kestuseks 1 tund; mitmepäevane üritus käib kogu vahemiku.
+function tallinnNow(){return new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Tallinn',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(new Date()).replace('T',' ');}
+function eventPhase(item,now){
+ if(!item||item.kind!=='event'||!item.date)return '';
+ const nowDate=now.slice(0,10),endDate=item.endDate&&item.endDate>item.date?item.endDate:item.date;
+ if(!item.time){if(endDate<nowDate)return 'past';if(item.date>nowDate)return '';return item.date<nowDate||endDate>nowDate?'now':'';}
+ const start=item.date+' '+item.time;let end;
+ if(item.endTime)end=endDate+' '+item.endTime;
+ else if(endDate>item.date)end=endDate+' 23:59';
+ else{const [h,m]=item.time.split(':').map(Number),mins=Math.min(h*60+m+60,23*60+59);end=item.date+' '+String(Math.floor(mins/60)).padStart(2,'0')+':'+String(mins%60).padStart(2,'0');}
+ if(now>=end)return 'past';if(now>=start)return 'now';return '';
+}
+let overviewPhases=new Map();
 function renderOverview(){
+ overviewPhases=new Map();
  if(activeCancelMenu)activeCancelMenu.close();
  if(!savedOverview)return;
  const today=savedOverview.today,tomorrow=addDays(today,1),weekEnd=addDays(today,6);
@@ -1213,10 +1236,12 @@ function renderOverview(){
  }
  function eventCard(item,parent){
   if(editing(item,parent))return;
-  const card=document.createElement('article');card.className='saved-card saved-event-card';overviewEventCards.set(item.key,card);
+  const phase=eventPhase(item,tallinnNow());overviewPhases.set(item.key,phase);
+  const card=document.createElement('article');card.className='saved-card saved-event-card'+(phase?' event-'+phase:'');overviewEventCards.set(item.key,card);
   const heading=document.createElement('div');heading.className='saved-event-heading';
   savedText(heading,'h3',item.title);savedPersonTag(heading,item.person);card.append(heading);
-  savedText(card,'p',(item.date===today?'Täna · ':item.date===tomorrow?'Homme · ':'')+shortDay(item.date)+(item.time?' · '+item.time+(item.endTime?'–'+item.endTime:''):' · kogu päev'),'saved-deadline');
+  if(phase==='now')savedText(card,'p','Praegu'+(item.endTime?' · kuni '+item.endTime:item.time?' · algas '+item.time:''),'saved-deadline now-line');
+  else savedText(card,'p',(phase==='past'&&item.date===today?'Toimus täna · ':item.date===today?'Täna · ':item.date===tomorrow?'Homme · ':'')+shortDay(item.date)+(item.time?' · '+item.time+(item.endTime?'–'+item.endTime:''):' · kogu päev'),'saved-deadline');
   if(item.location)savedLocation(card,item.location);
   if(conflicts.has(item.key))savedText(card,'p','⚠ Kattub: '+conflicts.get(item.key).join('; '),'saved-conflict');
   savedNotes(card,item);
@@ -1664,6 +1689,14 @@ function alignCalendarButton(){
 // Paigutus võib nihkuda ka pärast joonistamist (fondid, andmed, teated): jälgi lehe suuruse muutust ja proovi uuesti mõne korra.
 if(typeof ResizeObserver==='function'&&typeof document!=='undefined'&&document.body){try{new ResizeObserver(()=>alignCalendarButton()).observe(document.body);}catch(_){}}
 if(typeof window!=='undefined'&&typeof window.addEventListener==='function'){window.addEventListener('resize',alignCalendarButton);if(typeof document!=='undefined'&&document.fonts&&document.fonts.ready)document.fonts.ready.then(alignCalendarButton);}
+
+// Ürituse olek (läbi / praegu) arvutatakse ülevaate joonistamisel ehk äpi avamisel; äppi tagasi tulles kontrollitakse uuesti ja joonistatakse ainult siis, kui mõne ürituse olek muutus (mitte muutmise ega tehtuks märkimise ajal). Kui äpp on lahti ja ekraanil, kontrollitakse lisaks kord minutis; peidetud äpis mitte.
+function refreshEventPhases(){
+ if(!savedOverview||overviewEditing||completing.size||$('overviewView').hidden)return;
+ const now=tallinnNow();for(const [key,phase] of overviewPhases){const item=savedOverview.items.find(x=>x.key===key);if(item&&eventPhase(item,now)!==phase){renderOverview();return;}}
+}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refreshEventPhases();});
+if(typeof setInterval==='function')setInterval(()=>{if(document.visibilityState==='visible')refreshEventPhases();},60000);
 function status(text, error=false){updateRefine();$('status').textContent=text;$('status').classList.toggle('error',error);}
 function resetResult(){result=null;sourceSnapshot=null;$('results').hidden=true;$('cards').replaceChildren();}
 function setBusy(value){busy=value;['analyze','pick','camera','cameraFile','text','person','personOther','sourceDate','files'].forEach(id=>$(id).disabled=value);$('analyze').innerHTML=value?'Töötlen…':'Sisesta info'+"<svg class=\"enter-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M10 4h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-8\"/><path d=\"M3 12h11.5\"/><path d=\"M11.3 8.8l3.2 3.2-3.2 3.2\"/></svg>";renderImages();}
