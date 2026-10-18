@@ -648,6 +648,17 @@ h1{line-height:1.05}
 /* Arvuti: kitsam sisuala (960 px, enne 1080) — kaardid pole laial ekraanil liiga laiad; kalendri külgriba mahub nüüd alates 1360 px aknast */
 header,main{max-width:960px}
 .cal-fab{right:max(16px,calc(50% - 480px))}
+/* Animatsioonid (work/motion.js): märgi põrge, Pere nupu põrge, salvestamise täpp, lehevahetuse ja filtreerimise üleminekud */
+@keyframes badge-bump{0%{transform:scale(1)}40%{transform:scale(1.38)}100%{transform:scale(1)}}
+.nav-count.bump{animation:badge-bump .4s cubic-bezier(.2,1.4,.4,1)}
+@keyframes tab-bump{0%{transform:scale(1)}40%{transform:scale(1.08)}100%{transform:scale(1)}}
+.view-nav button.bump{animation:tab-bump .38s cubic-bezier(.2,1.4,.4,1)}
+.fly-dot{position:fixed;z-index:200;width:16px;height:16px;border-radius:50%;pointer-events:none;background:linear-gradient(135deg,var(--accent),var(--accent-2));box-shadow:0 4px 14px color-mix(in srgb,var(--accent) 50%,transparent)}
+.view-nav{view-transition-name:pere-nav}
+header{view-transition-name:pere-header}
+::view-transition-group(*){animation-duration:.28s;animation-timing-function:cubic-bezier(.4,0,.2,1)}
+::view-transition-old(root),::view-transition-new(root){animation-duration:.16s}
+@media (prefers-reduced-motion:reduce){.nav-count.bump,.view-nav button.bump{animation:none}::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none}}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
@@ -953,7 +964,64 @@ $('themeToggle').onclick=()=>{
  themeMode={auto:'light',light:'dark',dark:'auto'}[themeMode];applyTheme(themeMode);
  try{if(themeMode==='auto')localStorage.removeItem('pere-theme');else localStorage.setItem('pere-theme',themeMode);}catch(_){}
 };
+// Animatsioonid: lehevahetus, kiipidega filtreerimine, märgi põrge, tehtud ülesande lahkumine, salvestamise "lend" Pere nupu poole.
+// Kõik lülituvad välja, kui seadmes on "vähenda liikumist"; kui brauser View Transitions'it ei toeta, toimub muutus lihtsalt ilma animatsioonita.
+function reducedMotion(){return typeof window!=='undefined'&&typeof window.matchMedia==='function'&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;}
+function canTransition(){return !reducedMotion()&&typeof document!=='undefined'&&typeof document.startViewTransition==='function';}
+// Märgi põrge: ainult siis, kui arv muutus (mitte esimesel näitamisel) ja märk on nähtav.
+function bumpNode(node){
+ if(!node||!node.classList||typeof node.classList.remove!=='function'||node.hidden||reducedMotion())return;
+ node.classList.remove('bump');void node.offsetWidth;node.classList.add('bump');
+}
+function setBadgeText(node,text){if(!node)return;const before=node.textContent;node.textContent=text;if(before&&before!==text)bumpNode(node);}
+// Lehevahetus: kiire ristsulandus (menüü ja päis jäävad paigale).
 function showView(view){
+ const target=typeof $==='function'&&$(view+'View');
+ if(!canTransition()||busy||loadingImages||!target||!target.hidden){showViewNow(view);return;}
+ quiet(document.startViewTransition(()=>showViewNow(view)));
+}
+// Vahele jäetud või katkestatud üleminek (nt äpp läks taustale) ei ole viga: muutus tehakse ikkagi, lihtsalt ilma animatsioonita.
+function quiet(transition){if(transition){[transition.ready,transition.finished,transition.updateCallbackDone].forEach(promise=>promise&&promise.catch(()=>{}));}return transition;}
+// Kiipidega filtreerimine: kaardid liiguvad uutele kohtadele (iga kaart saab ülemineku ajaks oma nime; kordused jäetakse nimeta).
+function nameCards(on){
+ if(typeof document==='undefined'||!document.querySelectorAll)return;
+ const seen=new Set();
+ document.querySelectorAll('#overviewView .saved-card').forEach(card=>{
+  const key=card.dataset&&card.dataset.key;
+  if(on&&key&&!seen.has(key)){seen.add(key);card.style.viewTransitionName='card-'+key.slice(0,24);}else card.style.viewTransitionName='';
+ });
+}
+function filterWithMotion(update){
+ if(!canTransition()){update();return;}
+ nameCards(true);
+ try{const transition=quiet(document.startViewTransition(()=>{update();nameCards(true);}));transition.finished.catch(()=>{}).then(()=>nameCards(false));}
+ catch(_){nameCards(false);update();}
+}
+// Tehtud ülesanne lahkub: kaart tõmbub sujuvalt kokku, seejärel joonistatakse ülevaade uuesti.
+function collapseCard(card,done){
+ let called=false;const finish=()=>{if(!called){called=true;done();}};
+ if(!card||typeof card.animate!=='function'||reducedMotion()||!card.offsetHeight){finish();return;}
+ const style=getComputedStyle(card);card.style.overflow='hidden';
+ const animation=card.animate([
+  {height:card.offsetHeight+'px',opacity:.78,marginTop:style.marginTop,marginBottom:style.marginBottom,paddingTop:style.paddingTop,paddingBottom:style.paddingBottom},
+  {height:'0px',opacity:0,marginTop:'0px',marginBottom:'0px',paddingTop:'0px',paddingBottom:'0px'}],{duration:280,easing:'cubic-bezier(.4,0,.2,1)',fill:'forwards'});
+ animation.onfinish=finish;setTimeout(finish,600);
+}
+// Salvestamine: väike täpp lendab salvestatud kaardilt Pere nupu poole, nupp teeb põrke.
+function flyToPere(from){
+ const tab=typeof $==='function'&&$('overviewTab');
+ if(!tab||!from||!from.getBoundingClientRect||reducedMotion()||typeof document==='undefined'||!document.body||typeof document.body.animate!=='function')return;
+ const a=from.getBoundingClientRect(),b=tab.getBoundingClientRect();if(!b.width||!a.width)return;
+ const x0=a.left+a.width/2,y0=a.top+Math.min(a.height/2,48),dx=b.left+b.width/2-x0,dy=b.top+b.height/2-y0;
+ const dot=document.createElement('div');dot.className='fly-dot';dot.style.left=x0+'px';dot.style.top=y0+'px';document.body.append(dot);
+ const lift=Math.min(-60,dy*.25);
+ const animation=dot.animate([
+  {transform:'translate(-50%,-50%) scale(1)',opacity:1},
+  {transform:'translate(calc(-50% + '+(dx*.45)+'px),calc(-50% + '+(Math.min(0,dy)*.45+lift)+'px)) scale(.9)',opacity:1,offset:.45},
+  {transform:'translate(calc(-50% + '+dx+'px),calc(-50% + '+dy+'px)) scale(.4)',opacity:.85}],{duration:650,easing:'cubic-bezier(.45,0,.25,1)'});
+ animation.onfinish=()=>{dot.remove();bumpNode(tab);};
+}
+function showViewNow(view){
  if(busy||loadingImages)return;
  $('inputView').hidden=view!=='input';$('overviewView').hidden=view!=='overview';$('mailView').hidden=view!=='mail';
  ['input','overview','mail'].forEach(name=>$(name+'Tab').setAttribute('aria-pressed',String(view===name)));
@@ -968,7 +1036,7 @@ function mailStatus(message,error=false){$('mailStatus').textContent=message;$('
 let mailBadgeAt=0;
 function setMailBadge(count){
  const badge=$('mailCount'),tab=$('mailTab');if(!badge||!tab)return;
- badge.textContent=String(count);badge.hidden=!count;
+ badge.hidden=!count;setBadgeText(badge,String(count));
  tab.setAttribute('aria-label','E-kirjad'+(count?' · '+count+(count===1?' kiri ootab':' kirja ootab')+' ülevaatamist':''));
 }
 function updateMailBadge(items){
@@ -1203,7 +1271,7 @@ function renderPersonChips(){
   const color=option.value?personSlug(canonicalPerson(option.value)):'all';
   chip.className='chip chip-'+color;chip.textContent=option.value?shortPerson(option.value):'Kõik';
   chip.setAttribute('aria-pressed',String(select.value===option.value));
-  chip.onclick=()=>{select.value=option.value;renderOverview();};box.append(chip);
+  chip.onclick=()=>{if(select.value===option.value)return;filterWithMotion(()=>{select.value=option.value;renderOverview();});};box.append(chip);
  });
 }
 function focusEvent(rel){
@@ -1236,7 +1304,7 @@ function renderOverview(){
  $('overviewDate').textContent=displayEventDate(today);
  const isTask=item=>['task','invoice'].includes(item.kind);
  const urgent=savedOverview.items.filter(item=>isTask(item)&&item.status!=='Tehtud'&&item.deadline&&item.deadline<=tomorrow).length;
- $('urgentCount').textContent=String(urgent);$('urgentCount').hidden=!urgent;
+ $('urgentCount').hidden=!urgent;setBadgeText($('urgentCount'),String(urgent));
  $('overviewTab').setAttribute('aria-label','Pere ülevaade'+(urgent?' · '+urgent+' kiiret ülesannet':''));
  renderPersonChips();
  const person=$('overviewPerson').value,items=savedOverview.items.filter(item=>!person||item.person===person);
@@ -1249,7 +1317,7 @@ function renderOverview(){
  function taskCard(item,parent){
   if(editing(item,parent))return;
   const due=item.status!=='Tehtud'&&item.deadline?(item.deadline<today?'due-overdue':item.deadline===today?'due-today':item.deadline===tomorrow?'due-soon':''):'';
-  const card=document.createElement('article');card.className='saved-card'+(item.status==='Tehtud'?' done':'')+(completing.has(item.key)?' completing':'')+(due?' '+due:'');overviewTaskCards.set(item.key,card);
+  const card=document.createElement('article');card.className='saved-card'+(item.status==='Tehtud'?' done':'')+(completing.has(item.key)?' completing':'')+(due?' '+due:'');if(card.dataset)card.dataset.key=item.key;overviewTaskCards.set(item.key,card);
   const body=document.createElement('div');body.className='task-body';const main=document.createElement('div');main.className='task-main';
   const heading=document.createElement('div');heading.className='saved-event-heading';
   const titleText=item.title+(item.kind==='invoice'&&item.amount?' · '+item.amount+' '+item.currency:''),h3=document.createElement('h3');
@@ -1271,8 +1339,8 @@ function renderOverview(){
      .withFailureHandler(error=>{complete.disabled=false;overviewStatus(error.message||'Ülesande muutmine ebaõnnestus.',true);}).pereSetTaskDone({key:item.key,done:false});return;}
    item.status='Tehtud';completing.set(item.key,Date.now());renderOverview();overviewStatus('');
    showUndo('„'+item.title+'” märgitud tehtuks.',()=>{
-    completing.delete(item.key);renderOverview();
-    google.script.run.withSuccessHandler(response=>{item.status=response.status;renderOverview();if(response.queued){overviewStatus(offlineNote());cacheOverview();}})
+    collapseCard(overviewTaskCards.get(item.key),()=>{completing.delete(item.key);renderOverview();});
+    google.script.run.withSuccessHandler(response=>{item.status=response.status;if(!completing.has(item.key))renderOverview();if(response.queued){overviewStatus(offlineNote());cacheOverview();}})
      .withFailureHandler(error=>{item.status='Avatud';renderOverview();overviewStatus(error.message||'Ülesande muutmine ebaõnnestus.',true);}).pereSetTaskDone({key:item.key,done:true});
    },()=>{completing.delete(item.key);item.status='Avatud';renderOverview();});
   };
@@ -1285,7 +1353,7 @@ function renderOverview(){
  function eventCard(item,parent){
   if(editing(item,parent))return;
   const phase=eventPhase(item,tallinnNow());overviewPhases.set(item.key,phase);
-  const card=document.createElement('article');card.className='saved-card saved-event-card'+(phase?' event-'+phase:'');overviewEventCards.set(item.key,card);
+  const card=document.createElement('article');card.className='saved-card saved-event-card'+(phase?' event-'+phase:'');if(card.dataset)card.dataset.key=item.key;overviewEventCards.set(item.key,card);
   const heading=document.createElement('div');heading.className='saved-event-heading';
   savedText(heading,'h3',item.title);savedPersonTag(heading,item.person);card.append(heading);
   if(phase==='now')savedText(card,'p','Praegu'+(item.endTime?' · kuni '+item.endTime:item.time?' · algas '+item.time:''),'saved-deadline now-line');
@@ -1986,7 +2054,7 @@ function renderResult(){
   const startSave=()=>{
    if(!sourceSnapshot?.text.trim()&&!sourceSnapshot?.images.length){state.textContent='Salvestamiseks lisa algne tekst, pilt või PDF.';state.classList.add('error');return;}
    save.disabled=true;state.textContent=updating?'Uuendan…':'Salvestan…';state.classList.remove('error');
-   const runner=google.script.run.withSuccessHandler(res=>{const done=document.createElement('div');done.className='saved-confirm';savedText(done,'div',labels[item.kind],'kind');savedText(done,'h3',item.title||'(nimetu)');const line=document.createElement('p');line.className='saved-confirm-line';savedText(line,'strong',updating?'Uuendatud ✓':res.status==='duplicate'?'Juba olemas ✓':'Salvestatud ✓');line.append(document.createTextNode(' · '));const view=document.createElement('button');view.type='button';view.className='link-button';view.textContent='Ava ülevaates';view.onclick=()=>showView('overview');line.append(view);done.append(line);if(res.message)savedText(done,'p',res.message,'hint');savedImages(done,res.imageUrls);if(updating&&res.item){Object.assign(existing,res.item);writeCache('pere-overview',savedOverview);renderOverview();loadOverview();}card.className='item item-saved';card.replaceChildren(done);clearInputIfDone();})
+   const runner=google.script.run.withSuccessHandler(res=>{const done=document.createElement('div');done.className='saved-confirm';savedText(done,'div',labels[item.kind],'kind');savedText(done,'h3',item.title||'(nimetu)');const line=document.createElement('p');line.className='saved-confirm-line';savedText(line,'strong',updating?'Uuendatud ✓':res.status==='duplicate'?'Juba olemas ✓':'Salvestatud ✓');line.append(document.createTextNode(' · '));const view=document.createElement('button');view.type='button';view.className='link-button';view.textContent='Ava ülevaates';view.onclick=()=>showView('overview');line.append(view);done.append(line);if(res.message)savedText(done,'p',res.message,'hint');savedImages(done,res.imageUrls);if(updating&&res.item){Object.assign(existing,res.item);writeCache('pere-overview',savedOverview);renderOverview();loadOverview();}flyToPere(card);card.className='item item-saved';card.replaceChildren(done);clearInputIfDone();})
     .withFailureHandler(e=>{state.textContent=e.message||'Salvestamine ebaõnnestus.';state.classList.add('error');save.disabled=false;});
    if(updating){const now=matchChanges(item,existing);if(!now.count){state.textContent='Muutusi pole: kõik väljad on juba samad.';state.classList.add('error');save.disabled=false;return;}runner.pereUpdateSaved({key:existing.key,changes:now.payload});}else if(paired)runner.pereSaveBundle({event:item,eventIndex:index,task:result.items[pairedTaskIndex],taskIndex:pairedTaskIndex,source:sourceSnapshot});
    else runner.pereSaveOne({item,index,source:sourceSnapshot,linkEventKey:item.linkEventKey||''});
