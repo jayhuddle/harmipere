@@ -758,6 +758,11 @@ header{view-transition-name:pere-header}
 @media(max-width:740px) and (prefers-color-scheme:dark){:root:not([data-theme="light"]) .view-nav{background:rgba(36,38,68,.64);border-color:rgba(255,255,255,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 10px 30px rgba(0,0,0,.45)}}
 /* Menüü nupu nurk kontsentriline: 24 (riba) − 7 (sisevahe + ääris) = 17 */
 @media(max-width:740px){.view-nav button{border-radius:17px}}
+/* E-kirja kiirlahendus: lapse kiibid kaardil */
+.mail-quick{margin:var(--s3) 0 var(--s1);padding:var(--s3);border-radius:16px;background:color-mix(in srgb,var(--accent) 7%,transparent);border:1px solid color-mix(in srgb,var(--accent) 22%,transparent)}
+.mail-quick-label{margin:0 0 var(--s2);font-weight:650;font-size:14px;color:var(--ink)}
+.mail-quick .save-state{margin:var(--s2) 0 0}
+.mail-quick .save-state:empty{display:none}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
@@ -1186,6 +1191,7 @@ function loadMail(collect=false){
    if(item.status){const kind=item.status==='Vajab ülevaatamist'?'review':item.status==='Uus'?'new':item.status==='Töötlemisel'?'working':/viga/i.test(item.status)?'error':'done';const pill=savedText(card,'span',item.status==='Uus'?'Töötlemata':item.status,'mail-status mail-status-'+kind);if(card.prepend)card.prepend(pill);}
    if(item.note)savedText(card,'p',item.note,'saved-notes');
    if(item.warnings)savedText(card,'p',item.warnings,'error');
+   if(item.quick==='person'&&item.status==='Vajab ülevaatamist')card.append(mailQuickPick(card,item,()=>{loadMailBadge();loadOverview();}));
    const actions=document.createElement('div');actions.className='actions';
    const open=document.createElement('button');open.type='button';open.className='primary';open.textContent=item.status==='Vajab ülevaatamist'?'Vaata üle':processed.includes(item.status)?'Vaata allikat':'Töötle';
    const hide=document.createElement('button');hide.type='button';hide.textContent='Peida';
@@ -2065,6 +2071,33 @@ function syncPersonChips(wrap){
  const select=wrap&&wrap.querySelector&&wrap.querySelector('select'),box=wrap&&wrap.querySelector&&wrap.querySelector('.person-pick');if(!select||!box)return;
  box.querySelectorAll('button').forEach(chip=>chip.setAttribute('aria-pressed',String(chip.dataset.value===select.value)));
 }
+// E-kirja kiirlahendus: kui AI ei teadnud ainult seda, kelle kohta kiri käib (server: quick='person'), saab lapse valida otse kaardil;
+// server salvestab kirja juba tehtud AI tulemuse automaatika reeglitega. Kui midagi muud on ebaselge, jääb "Vaata üle".
+function mailQuickPick(card,item,onDone){
+ const box=document.createElement('div');box.className='mail-quick';
+ savedText(box,'p','Kelle kohta? Vali ja salvesta kohe:','mail-quick-label');
+ const chips=document.createElement('div');chips.className='person-pick';chips.setAttribute('role','group');chips.setAttribute('aria-label','Kelle kohta');
+ const state=document.createElement('p');state.className='save-state';state.setAttribute('role','status');
+ PEOPLE.forEach(person=>{
+  const chip=document.createElement('button');chip.type='button';chip.className='chip chip-'+person.slug;chip.textContent=person.short;
+  chip.onclick=()=>{
+   chips.querySelectorAll('button').forEach(button=>{button.disabled=true;button.setAttribute('aria-pressed',String(button===chip));});
+   state.classList.remove('error');state.textContent='Salvestan…';
+   google.script.run.withSuccessHandler(res=>{
+    const done=document.createElement('div');done.className='saved-confirm';
+    const line=document.createElement('p');line.className='saved-confirm-line';
+    savedText(line,'strong',(res.saved?'Salvestatud ✓':'Juba olemas ✓'));line.append(document.createTextNode(' · '+person.short+' · '+(res.titles||[]).join(', ')+' '));
+    const view=document.createElement('button');view.type='button';view.className='link-button';view.textContent='Ava ülevaates';view.onclick=()=>showView('overview');line.append(view);
+    done.append(line);card.replaceChildren(done);card.className='saved-card mail-card';if(onDone)onDone();
+   }).withFailureHandler(error=>{
+    state.textContent=error.message||'Salvestamine ebaõnnestus.';state.classList.add('error');
+    chips.querySelectorAll('button').forEach(button=>{button.disabled=false;button.removeAttribute('aria-pressed');});
+   }).pereMailResolve({id:item.id,person:person.id});
+  };
+  chips.append(chip);
+ });
+ box.append(chips,state);return box;
+}
 // "Ära salvesta": kaart loetakse käsitletuks (kui kõik kaardid on käsitletud, tühjeneb sisestus ja e-kiri märgitakse töödelduks); "Võta tagasi" taastab kaardi.
 function dismissButton(card,item){
  const button=document.createElement('button');button.type='button';button.className='item-dismiss';button.textContent='Ära salvesta';
@@ -2245,7 +2278,9 @@ if(window.pereSharing)(async()=>{
   if(meta.text){$('text').value=($('text').value.trim()?$('text').value+'\n\n':'')+meta.text;resetResult();}
   if(files.length){await addFiles(files);if(!images.length)return;}
   if(!files.length&&!meta.text){status('Jagatud sisu oli tühi.',true);return;}
-  status((meta.skipped?'Lisatud esimesed 3 faili. ':'')+'Jagatud sisu on lisatud. Vali vajadusel „Kelle kohta?” ja vajuta „Sisesta info”.');
+  // Sisselogituna käivitub AI kohe (ei pea "Sisesta info" vajutama); tulemus tuleb tavalise eelvaatena üle vaatamiseks, midagi ei salvestata ise.
+  if(window.pereHasSession&&pereHasSession()){status((meta.skipped?'Lisatud esimesed 3 faili. ':'')+'Jagatud sisu on lisatud, töötlen…');$('analyze').click();}
+  else status((meta.skipped?'Lisatud esimesed 3 faili. ':'')+'Jagatud sisu on lisatud. Vali vajadusel „Kelle kohta?” ja vajuta „Sisesta info”.');
  }catch(_){status('Jagatud sisu lisamine ebaõnnestus. Lisa see käsitsi.',true);}
 })();
 </script>
