@@ -835,6 +835,79 @@ details:not(.refine)[open]>summary:before{transform:rotate(90deg)}
 .week-section,:root[data-theme="dark"] .week-section{background:none;position:relative;isolation:isolate}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .week-section{background:none}}
 .week-section:before{content:'';position:absolute;z-index:-1;left:0;right:0;top:var(--week-line,22px);bottom:0;border-radius:16px;background:color-mix(in srgb,var(--accent) 5%,transparent);pointer-events:none}
+/* "See nädal" alumine punktiir ära; 12px vahe tooni lõpus jääb */
+.week-section:after{border-top:0}
+/* Arvutis: päis on akna laiune kleepuv riba; logo vasakul, vaated keskel, otsing ja teema paremal */
+@media(min-width:741px){
+ body.nav-top{padding-top:92px}
+ body.nav-top>header,:root[data-theme="dark"] body.nav-top>header{position:fixed;top:0;left:0;right:0;z-index:60;margin:0;padding:8px 24px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:16px;background:var(--glass-strong);-webkit-backdrop-filter:blur(26px) saturate(185%);backdrop-filter:blur(26px) saturate(185%);border-bottom:1px solid var(--stroke);box-shadow:0 6px 24px rgba(20,22,52,.08)}
+ body.nav-top>header .view-nav,:root[data-theme="dark"] body.nav-top>header .view-nav{margin:0;padding:0;background:none;border:0;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none;display:grid;grid-template-columns:repeat(3,minmax(110px,150px));gap:6px}
+ body.nav-top>header .view-nav button{min-height:48px}
+ body.nav-top>header .header-tools{justify-self:end}
+ body.nav-top .header-tools>.search-toggle{position:static;transform:none;margin:0}
+ body.nav-top #overviewView .overview-filters,body.nav-top:not(.cal-docked) #overviewView .overview-filters{padding-right:0}
+}
+@media(min-width:741px){body.nav-top>header .brand-name{white-space:nowrap;font-size:22px}body.nav-top>header .brand-icon{width:36px;height:36px}}
+/* Ribal otsing ja teema tagasihoidlikud: läbipaistev taust, ääriseta, vaigistatud värv; hover õrn lilla */
+@media(min-width:741px){
+ body.nav-top>header .header-tools>.theme-toggle,:root[data-theme="dark"] body.nav-top>header .header-tools>.theme-toggle{background:transparent;border-color:transparent;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none;color:var(--muted)}
+ body.nav-top>header .header-tools>.theme-toggle:hover{background:color-mix(in srgb,var(--accent) 8%,transparent);color:var(--accent)}
+}
+/* Riba alati servast servani (päisel oli max-width 960px) */
+@media(min-width:741px){body.nav-top>header,:root[data-theme="dark"] body.nav-top>header{max-width:none;width:auto}}
+/* Vaatenupud ribal kindla laiusega (ei veni koos ekraaniga) */
+@media(min-width:741px){body.nav-top>header .view-nav,:root[data-theme="dark"] body.nav-top>header .view-nav{grid-template-columns:repeat(3,92px)}body.nav-top>header .view-nav button{min-height:44px}}
+/* LinkedIni stiilis päis: sisu sisuala laiuses (riba ise servast servani); vasakul logo + otsinguväli,
+   paremal vaated ikoon+silt, aktiivne = joon all (mitte indigo nupp); teema viimane. */
+@media(min-width:741px){
+ body.nav-top{padding-top:76px}
+ body.nav-top>header,:root[data-theme="dark"] body.nav-top>header{display:flex;align-items:stretch;gap:12px;height:60px;padding:0 max(24px,calc(50% - 456px))}
+ body.nav-top.cal-docked>header,:root[data-theme="dark"] body.nav-top.cal-docked>header{padding:0 max(24px,calc(50% - 645px))}
+ body.nav-top>header .brand{align-self:center}
+ body.nav-top>header>.search-toggle,:root[data-theme="dark"] body.nav-top>header>.search-toggle{align-self:center;position:static;transform:none;margin:0 0 0 8px;width:240px;height:38px;min-height:0;padding:0 14px;border-radius:19px;display:flex;align-items:center;justify-content:flex-start;gap:8px;background:color-mix(in srgb,var(--accent) 7%,transparent);border:1px solid transparent;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none;color:var(--muted);font-size:14px;font-weight:500}
+ body.nav-top>header>.search-toggle:after{content:'Otsi'}
+ body.nav-top>header>.search-toggle svg{width:17px;height:17px}
+ body.nav-top>header>.search-toggle:hover{border-color:color-mix(in srgb,var(--accent) 30%,transparent);background:color-mix(in srgb,var(--accent) 10%,transparent)}
+ body.nav-top>header .view-nav,:root[data-theme="dark"] body.nav-top>header .view-nav{margin-left:auto;display:flex;gap:0;align-self:stretch}
+ body.nav-top>header .view-nav button,:root[data-theme="dark"] body.nav-top>header .view-nav button{position:relative;width:84px;min-height:0;height:100%;padding:6px 0 0;border-radius:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:0;background:transparent;box-shadow:none;color:var(--muted);border-bottom:2px solid transparent}
+ body.nav-top>header .view-nav button svg{width:22px;height:22px}
+ body.nav-top>header .view-nav button:after{font-size:12px;font-weight:500;line-height:1}
+ body.nav-top>header #inputTab:after{content:'Sisesta'}
+ body.nav-top>header #overviewTab:after{content:'Pere'}
+ body.nav-top>header #mailTab:after{content:'E-kirjad'}
+ body.nav-top>header .view-nav button:hover{background:transparent;color:var(--ink)}
+ body.nav-top>header .view-nav button[aria-pressed="true"],:root[data-theme="dark"] body.nav-top>header .view-nav button[aria-pressed="true"]{background:transparent;box-shadow:none;color:var(--ink);border-bottom-color:var(--ink)}
+ body.nav-top>header .view-nav .nav-count{top:6px;right:22px;min-width:18px;height:18px;font-size:10px;border-width:2px}
+ body.nav-top>header .header-tools{align-self:center;padding-left:12px;margin-left:4px;border-left:1px solid var(--stroke)}
+}
+@media(min-width:741px) and (prefers-color-scheme:dark){:root:not([data-theme="light"]) body.nav-top>header .view-nav button{background:transparent;box-shadow:none}:root:not([data-theme="light"]) body.nav-top>header .view-nav button[aria-pressed="true"]{background:transparent;box-shadow:none}}
+/* Otsing väiksem ja vaadetest paremal; aktiivne vaade indigo taustaga (mitte alamjoon) */
+@media(min-width:741px){
+ body.nav-top>header>.search-toggle,:root[data-theme="dark"] body.nav-top>header>.search-toggle{width:150px;height:34px;padding:0 12px;margin:0 0 0 12px;font-size:13px;border-radius:17px}
+ body.nav-top>header>.search-toggle svg{width:15px;height:15px}
+ body.nav-top>header .view-nav{gap:4px;align-items:center}
+ body.nav-top>header .view-nav button,:root[data-theme="dark"] body.nav-top>header .view-nav button{height:50px;padding:4px 0 0;border-radius:14px;border-bottom:0}
+ body.nav-top>header .view-nav button:not([aria-pressed="true"]):hover{background:color-mix(in srgb,var(--accent) 8%,transparent)}
+ body.nav-top>header .view-nav button[aria-pressed="true"],:root[data-theme="dark"] body.nav-top>header .view-nav button[aria-pressed="true"]{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;box-shadow:0 6px 18px color-mix(in srgb,var(--accent) 35%,transparent)}
+ body.nav-top>header .view-nav .nav-count{top:3px}
+}
+@media(min-width:741px) and (prefers-color-scheme:dark){:root:not([data-theme="light"]) body.nav-top>header .view-nav button[aria-pressed="true"]{background:linear-gradient(135deg,var(--accent),var(--accent-2));box-shadow:0 6px 18px color-mix(in srgb,var(--accent) 35%,transparent)}}
+/* Vaated keskel (1fr auto 1fr); paremal otsing + teema; logo vasakul */
+@media(min-width:741px){
+ body.nav-top>header,:root[data-theme="dark"] body.nav-top>header{display:grid;grid-template-columns:1fr auto 1fr;align-items:center}
+ body.nav-top>header .view-nav,:root[data-theme="dark"] body.nav-top>header .view-nav{margin:0;height:100%}
+ body.nav-top>header .header-tools{justify-self:end;padding-left:0;margin-left:0;border-left:0;gap:12px}
+ body.nav-top>header .header-tools>.search-toggle,:root[data-theme="dark"] body.nav-top>header .header-tools>.search-toggle{position:static;transform:none;margin:0;width:150px;height:34px;min-height:0;padding:0 12px;border-radius:17px;display:flex;align-items:center;justify-content:flex-start;gap:8px;background:color-mix(in srgb,var(--accent) 7%,transparent);border:1px solid transparent;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none;color:var(--muted);font-size:13px;font-weight:500}
+ body.nav-top>header .header-tools>.search-toggle:after{content:'Otsi'}
+ body.nav-top>header .header-tools>.search-toggle svg{width:15px;height:15px}
+ body.nav-top>header .header-tools>.search-toggle:hover{border-color:color-mix(in srgb,var(--accent) 30%,transparent);background:color-mix(in srgb,var(--accent) 10%,transparent);color:var(--muted)}
+}
+@media(min-width:741px){body.nav-top>header .view-nav,:root[data-theme="dark"] body.nav-top>header .view-nav{display:flex;flex-wrap:nowrap;height:auto;align-self:center}body.nav-top>header .view-nav button{flex:none}}
+@media(min-width:741px){body.nav-top>header .view-nav,:root[data-theme="dark"] body.nav-top>header .view-nav{width:max-content}}
+/* Vaated paremal, otsingu ja teema kõrval (mitte keskel) */
+@media(min-width:741px){body.nav-top>header,:root[data-theme="dark"] body.nav-top>header{grid-template-columns:1fr auto auto;column-gap:28px}}
+/* Sisu 24px riba alt (oli 44px) */
+@media(min-width:741px){body.nav-top{padding-top:56px}}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
@@ -1881,12 +1954,18 @@ function renderCalendar(){
  if(!list.length)savedText(sheet,'p','Sel päeval pole midagi kirjas.','empty');
 }
 $('calendarButton').onclick=openCalendar;$('calScrim').onclick=()=>closeCalendar();
-// Arvutis on otsingunupp inimeste kiipidega samal real (paremal, vertikaalselt keskel); telefonis pealkirja kõrval.
+// Arvutis on päis akna laiune kleepuv riba: logo vasakul, vaated paremal, siis otsing ja teema. Telefonis on vaated all
+// ja otsingunupp pealkirja kõrval.
 function placeSearchToggle(){
- const button=$('searchButton'),filters=document.querySelector&&document.querySelector('#overviewView .overview-filters'),top=document.querySelector&&document.querySelector('#overviewView .overview-top');
- if(!button||!filters||!top||!filters.appendChild)return;
+ const button=$('searchButton'),top=document.querySelector&&document.querySelector('#overviewView .overview-top');
+ const nav=document.querySelector&&document.querySelector('.view-nav'),header=document.querySelector&&document.querySelector('header');
+ const tools=document.querySelector&&document.querySelector('.header-tools'),theme=$('themeToggle'),main=$('overviewView')&&$('overviewView').parentNode;
+ if(!button||!top||!nav||!header||!tools)return;
  const wide=typeof window!=='undefined'&&typeof window.matchMedia==='function'&&window.matchMedia('(min-width:741px)').matches;
- const home=wide?filters:top;if(button.parentNode!==home)home.appendChild(button);
+ if(wide){if(nav.parentNode!==header)header.insertBefore(nav,tools);if(button.parentNode!==tools)tools.insertBefore(button,theme);document.body.classList.add('nav-top');return;}
+ document.body.classList.remove('nav-top');
+ if(main&&nav.parentNode!==main)main.insertBefore(nav,main.firstChild);
+ if(button.parentNode!==top)top.appendChild(button);
 }
 placeSearchToggle();
 if(typeof window!=='undefined'&&window.addEventListener){window.addEventListener('resize',syncCalDock);window.addEventListener('resize',placeSearchToggle);}
@@ -1958,6 +2037,7 @@ function renderSearch(){
  if(budget<0)savedText(box,'p','…ja veel '+(-budget)+'. Täpsusta otsingut.','search-empty');
 }
 function openSearch(){
+ if($('overviewView').hidden&&$('overviewTab').click)$('overviewTab').click();
  if(!savedOverview||searchOpen)return;
  searchOpen=true;setBackgroundInert(true);$('searchOverlay').hidden=false;$('searchInput').value='';renderSearch();
  if($('searchInput').focus)$('searchInput').focus();
