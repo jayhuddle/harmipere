@@ -767,6 +767,14 @@ header{view-transition-name:pere-header}
 @media(min-width:741px){.cal-fab{right:max(24px,calc(50% - 456px))}}
 /* Otsingunupp ujuva kalendrinupu kõrval 16px vahega */
 @media(min-width:741px){body:not(.cal-docked) #overviewView .overview-filters{padding-right:150px}body:not(.cal-docked) #overviewView .overview-filters>.search-toggle{right:85px}}
+/* Ürituse kategooria ikoon rõnga kohal (sama suurus ja joon kui ülesande rõngal) */
+.task-main>.event-icon{flex:none;width:22px;height:22px;margin-top:2px;display:inline-flex;align-items:center;justify-content:center;color:color-mix(in srgb,var(--accent) 80%,var(--muted))}
+.task-main>.event-icon svg{width:21px;height:21px}
+.saved-event-card.event-past .event-icon{color:var(--muted)}
+/* Arvuti: "See nädal" kastis tulpade pealkirjad (Ülesanded / Üritused) väikeste siltidena nagu päeva- ja kuupealkirjad */
+@media(min-width:741px){
+ #savedWeek .week-col-label{display:block;margin:var(--s2) var(--s1) 0;font-size:12px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted)}
+}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
@@ -1279,6 +1287,50 @@ function savedNotes(card,item){const hasNotes=!!item.notes,hasFiles=!!(item.imag
 let activeCancelMenu=null;
 document.addEventListener('click',event=>{if(activeCancelMenu&&!activeCancelMenu.control.contains(event.target))activeCancelMenu.close();});
 document.addEventListener('keydown',event=>{if(event.key==='Escape'&&activeCancelMenu){event.preventDefault();activeCancelMenu.close(true);}});
+// Ürituse kategooria ikoon kaardi vasakul (seal, kus ülesandel on rõngas). Kategooria tuletatakse pealkirjast, kohast ja märkustest
+// märksõnade järgi (AI-d pole vaja); vaikimisi kalender. Järjekord on oluline: esimene sobiv võidab. Ikoonid: Lucide (ISC), joon 2px.
+// Kokkulepped: iga kontsert (ka laulustuudio, mudilaskoor, muusikakool) = noodid; lasteaia/kooli pidupäevad (isadepäeva hommikupuder) ja
+// kooli asjad (sh mudilaskoori proov) = seljakott; trenn ja kõik huviringid (sh ETV Laulustuudio, muusikakool) = karikas;
+// reis ja matk = mägi; pidupäev kodus ja külaskäik = süda.
+const EVENT_ICON_BODIES={
+ music:'<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>',
+ backpack:'<path d="M4 10a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><path d="M8 10h8"/><path d="M8 18h8"/><path d="M8 22v-6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v6"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/>',
+ cake:'<path d="M20 21v-8a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8"/><path d="M4 16s.5-1 2-1 2.5 2 4 2 2.5-2 4-2 2.5 2 4 2 2-1 2-1"/><path d="M2 21h20"/><path d="M7 8v3"/><path d="M12 8v3"/><path d="M17 8v3"/><path d="M7 4h.01"/><path d="M12 4h.01"/><path d="M17 4h.01"/>',
+ stethoscope:'<path d="M11 2v2"/><path d="M5 2v2"/><path d="M5 3H4a2 2 0 0 0-2 2v4a6 6 0 0 0 12 0V5a2 2 0 0 0-2-2h-1"/><path d="M8 15a6 6 0 0 0 12 0v-3"/><circle cx="20" cy="10" r="2"/>',
+ trophy:'<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>',
+ ticket:'<path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/>',
+ mountain:'<path d="m8 3 4 8 5-5 5 15H2L8 3z"/>',
+ heart:'<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>',
+ scissors:'<circle cx="6" cy="6" r="3"/><path d="M8.12 8.12 12 12"/><path d="M20 4 8.12 15.88"/><circle cx="6" cy="18" r="3"/><path d="M14.8 14.8 20 20"/>',
+ briefcase:'<path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/>',
+ utensils:'<path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>',
+ calendar:'<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/>'
+};
+const EVENT_ICONS=[
+ {name:'music',label:'Kontsert',re:/kontsert/},
+ {name:'backpack',label:'Kool / lasteaed',re:/isadepäev|emadepäev|vanavanemate päev|jõulupidu|kevadpidu|mardi|kadri|vastla/},
+ {name:'cake',label:'Sünnipäev',re:/sünnipäev|sunnipaev|juubel|\bpidu\b|peod?\b/},
+ {name:'stethoscope',label:'Tervis',re:/arst|kliinik|haigla|vaktsiin|analüüs|ortodont|füsio|silmakontroll|polikliinik/},
+ {name:'backpack',label:'Kool / lasteaed',re:/(?<!muusika|kunsti|spordi|tantsu|laulu|male|ujumis|keele)kool|lasteaed|lasteaia|lastevanem|õppetund|klassi|tunniplaan|eksam|kontrolltöö|rühma|mudilaskoor/},
+ {name:'trophy',label:'Trenn / huviring',re:/trenn|treening|jalgpall|korvpall|võrkpall|käsipall|tennis|ujumi|ujula|võistlus|turniir|\bsport|jooks|suusa|uisu|hoki|judo|karate|ratsu|staadion|spordi|huviring|\bring\b|stuudio|muusikakool|klaveri?tund|pillitund|laulutund|\bkoor|kunst|joonistam|käsitöö|robootika|\bmale\b|maletund|tants|ballett|näitering/},
+ {name:'ticket',label:'Etendus',re:/teater|teatri|etendus|\bkino|näitus|muuseum|tsirkus|lavastus|film/},
+ {name:'mountain',label:'Reis / matk',re:/\breis|lend\b|lennujaam|puhkus|matk|väljasõit|ekskursioon|laager|loodus|piknik|õppekäik/},
+ {name:'heart',label:'Pidupäev / külaskäik',re:/jõulud|jõuluõhtu|jaanipäev|jaanituli|aastavahetus|uusaasta|lihavõtted|ristsed|pulm|külla|külas|külaskäik|vanaema|vanaisa|vanavanem|sugula|tädi|onu\b|perepäev/},
+ {name:'scissors',label:'Juuksur',re:/juuksur|juukselõikus|soeng|ilusalong|maniküür/},
+ {name:'briefcase',label:'Töö',re:/\btöö|firmapidu|töökoosolek|konverents|seminar|koolitus/},
+ {name:'utensils',label:'Söök',re:/söök|lõuna|õhtusöök|brunch|restoran|kohvik|eine/}
+].map(icon=>({...icon,body:EVENT_ICON_BODIES[icon.name]}));
+const EVENT_ICON_DEFAULT={name:'calendar',label:'Üritus',body:EVENT_ICON_BODIES.calendar};
+function eventIconFor(item){
+ const text=[item&&item.title,item&&item.location,item&&item.notes].filter(Boolean).join(' ').toLowerCase();
+ return EVENT_ICONS.find(icon=>icon.re.test(text))||EVENT_ICON_DEFAULT;
+}
+function eventIconNode(item){
+ const icon=eventIconFor(item),span=document.createElement('span');
+ span.className='event-icon event-icon-'+icon.name;span.setAttribute('role','img');span.setAttribute('aria-label',icon.label);span.title=icon.label;
+ span.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+icon.body+'</svg>';
+ return span;
+}
 // Pere ülevaade (asendab Index-enne-klaasi.html renderOverview funktsiooni; build-glass-index.cjs paneb selle sisse).
 // "See nädal" (täna + 6 päeva, üle tähtaja ülesanded ülal), allpool kuude kaupa ülejäänu ilma kordusteta.
 // Asukoha tekst jääb samaks; selle kõrval on tagasihoidlik nööpnaela ikoon (ilma kastita), mis avab Waze navigeerimise.
@@ -1489,7 +1541,10 @@ function renderOverview(){
   savedNotes(card,item);
   const last=card.lastElementChild||card.children[card.children.length-1],footer=document.createElement('div'),content=document.createElement('div');footer.className='saved-event-footer';content.append(last);
   if(last&&last.className==='saved-deadline')footer.className+=' footer-plain';
-  const tools=document.createElement('div');tools.className='card-tools';tools.append(editButton(item));footer.append(content,tools);card.append(footer);parent.append(card);
+  const tools=document.createElement('div');tools.className='card-tools';tools.append(editButton(item));footer.append(content,tools);card.append(footer);
+  // Kategooria ikoon vasakule (nagu ülesande rõngas): kaardi sisu liigub ikooni kõrvale.
+  const main=document.createElement('div'),body=document.createElement('div');main.className='task-main event-main';body.className='task-body';
+  body.append(...[...card.children]);main.append(eventIconNode(item),body);card.replaceChildren(main);parent.append(card);
  }
  // See nädal: arvutis ülesanded vasakul (üle tähtaja ees) ja üritused paremal; mobiilis päevade kaupa segamini (üle tähtaja ülal; päeva sees ülesanded enne üritusi).
  const weekTasks=items.filter(item=>isTask(item)&&inWeek(item)).sort((a,b)=>a.deadline.localeCompare(b.deadline));
