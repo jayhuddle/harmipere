@@ -914,6 +914,51 @@ details:not(.refine)[open]>summary:before{transform:rotate(90deg)}
 @media(min-width:741px){body.nav-top .cal-overlay.docked .cal-sheet{top:100px;max-height:calc(100vh - 124px)}}
 /* Kerimisriba koht alati reserveeritud: lühikesel lehel (Sisesta, E-kirjad) ei nihku päis ega sisu */
 @media(min-width:741px){html{scrollbar-gutter:stable}}
+/* Arvutis: "See nädal" järel ühised kuuplokid (renderLaterMonths): pealkiri nagu See nädal, aga hall ja taustata */
+@media(min-width:741px){
+ #overviewView.later-merged #tasksSection>h2,#overviewView.later-merged #savedTasks,#overviewView.later-merged .overview-grid>section:nth-child(2){display:none}
+ .later-section{margin:0 0 var(--s5)}
+ .later-month+.later-month{margin-top:var(--s5)}
+ .later-head{display:flex;align-items:center;gap:10px;margin:0;font-size:20px;line-height:24px;min-height:24px;color:var(--ink)}
+ .later-head:after{content:'';flex:1;height:0;border-top:1.5px dashed color-mix(in srgb,var(--muted) 35%,transparent);margin-left:4px}
+ .later-count{display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:24px;padding:0 8px;margin-left:6px;border-radius:999px;font-size:14px;font-weight:700;color:var(--muted);background:color-mix(in srgb,var(--muted) 14%,transparent)}
+ .later-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:24px;align-items:start}
+ .later-section .week-col-label{display:block;margin:var(--s2) var(--s1) 0}
+}
+/* Tähtajata plokk "See nädal" järel, kokkuvolditav: kogu pealkirjarida on nupp, nool paremal punktiiri lõpus */
+@media(min-width:741px){
+ .later-undated .later-head{display:block}
+ .later-undated .later-head:after{display:none}
+ .later-toggle,:root[data-theme="dark"] .later-toggle{display:flex;align-items:center;gap:10px;width:100%;min-height:24px;margin:0;padding:0;border:0;background:none;box-shadow:none;font:inherit;color:inherit;text-align:left;cursor:pointer}
+ .later-toggle:after{content:'';flex:1;order:1;height:0;border-top:1.5px dashed color-mix(in srgb,var(--muted) 35%,transparent);margin-left:4px}
+ .later-toggle svg{order:2;width:18px;height:18px;color:var(--muted);transition:transform .2s ease}
+ .later-undated.open .later-toggle svg{transform:rotate(180deg)}
+ .later-toggle:hover .later-count{background:color-mix(in srgb,var(--muted) 22%,transparent)}
+ .later-toggle:hover,:root[data-theme="dark"] .later-toggle:hover{background:none;box-shadow:none}
+}
+/* Tähtajata: ilma punktiirita, nool kohe arvu kõrval */
+@media(min-width:741px){.later-toggle,:root[data-theme="dark"] .later-toggle{width:auto;display:inline-flex}.later-toggle:after{display:none}.later-toggle svg{order:0;margin-left:-2px}}
+/* Tähtajata nool: kinni = paremale, lahti = alla */
+@media(min-width:741px){.later-toggle svg{transform:rotate(-90deg)}.later-undated.open .later-toggle svg{transform:none}}
+/* Telefonis "Tähtajata" vahesildil punktiiri pole */
+.month-divider.undated-divider:after{display:none}
+.month-divider.undated-divider{color:var(--accent)}
+/* Arvutis Tähtajata arvumull nagu telefoni "Sisesta info" nupp: helelilla klaas, lilla tekst ja äär; tumedas tugevam */
+@media(min-width:741px){
+ .later-undated .later-count{background:color-mix(in srgb,var(--accent) 14%,var(--glass-strong));color:var(--accent);border:1px solid color-mix(in srgb,var(--accent) 40%,transparent)}
+ .later-toggle:hover .later-count{background:color-mix(in srgb,var(--accent) 20%,var(--glass-strong))}
+ :root[data-theme="dark"] .later-undated .later-count{background:color-mix(in srgb,var(--accent) 30%,var(--glass-strong));color:#d9d5ff;border-color:color-mix(in srgb,var(--accent) 75%,transparent)}
+}
+@media(min-width:741px) and (prefers-color-scheme:dark){:root:not([data-theme="light"]) .later-undated .later-count{background:color-mix(in srgb,var(--accent) 30%,var(--glass-strong));color:#d9d5ff;border-color:color-mix(in srgb,var(--accent) 75%,transparent)}}
+/* Tähtajata mull ilma ääriseta */
+@media(min-width:741px){.later-undated .later-count,:root[data-theme="dark"] .later-undated .later-count{border:0}}
+@media(min-width:741px) and (prefers-color-scheme:dark){:root:not([data-theme="light"]) .later-undated .later-count{border:0}}
+/* Tähtajata mull tumedam (heledas 24%, tumedas 42% lillat) */
+@media(min-width:741px){.later-undated .later-count{background:color-mix(in srgb,var(--accent) 24%,var(--glass-strong))}.later-toggle:hover .later-count{background:color-mix(in srgb,var(--accent) 30%,var(--glass-strong))}:root[data-theme="dark"] .later-undated .later-count{background:color-mix(in srgb,var(--accent) 42%,var(--glass-strong))}}
+@media(min-width:741px) and (prefers-color-scheme:dark){:root:not([data-theme="light"]) .later-undated .later-count{background:color-mix(in srgb,var(--accent) 42%,var(--glass-strong))}}
+/* Tähtajata mull veel esiletõstetum: tugevam lilla toon, tumedam lilla number */
+@media(min-width:741px){.later-undated .later-count{background:color-mix(in srgb,var(--accent) 36%,var(--glass-strong));color:color-mix(in srgb,var(--accent) 80%,#000)}.later-toggle:hover .later-count{background:color-mix(in srgb,var(--accent) 44%,var(--glass-strong))}:root[data-theme="dark"] .later-undated .later-count{background:color-mix(in srgb,var(--accent) 58%,var(--glass-strong));color:#fff}}
+@media(min-width:741px) and (prefers-color-scheme:dark){:root:not([data-theme="light"]) .later-undated .later-count{background:color-mix(in srgb,var(--accent) 58%,var(--glass-strong));color:#fff}}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
@@ -1721,7 +1766,8 @@ function renderOverview(){
  let taskGroup=null;
  tasks.forEach(item=>{
   const group=item.deadline?monthLabel(item.deadline):'Tähtajata';
-  if(group!==taskGroup){monthDivider($('savedTasks'),group);taskGroup=group;}
+  if(group!==taskGroup){monthDivider($('savedTasks'),group);taskGroup=group;
+   const line=$('savedTasks').lastElementChild;if(!item.deadline&&line&&line.classList)line.classList.add('undated-divider');}
   taskCard(item,$('savedTasks'));
  });
  if(!tasks.length)savedText($('savedTasks'),'p',items.some(item=>isTask(item)&&inWeek(item))?'Lähemad ülesanded on „See nädal” all.':items.some(isTask)?'Kõik selle vaate ülesanded on tehtud.':'Ülesandeid pole veel salvestatud.','empty');
@@ -1731,9 +1777,50 @@ function renderOverview(){
  let eventGroup=null;
  later.forEach(item=>{const group=monthLabel(item.date);if(group!==eventGroup){monthDivider($('savedEvents'),group);eventGroup=group;}eventCard(item,$('savedEvents'));});
  if(!later.length)savedText($('savedEvents'),'p','Hilisemaid üritusi pole selles vaates.','empty');
+ renderLaterMonths(tasks,later,taskCard,eventCard);
  if(calOpen)renderCalendar();
  syncCalDock();
  if(typeof requestAnimationFrame==='function')requestAnimationFrame(alignCalendarButton);
+}
+
+// Arvutis "See nädal" järel kuude kaupa ühised plokid: kuu pealkiri (hall arv + punktiir, taustata) üle mõlema tulba,
+// vasakul selle kuu ülesanded, paremal üritused (tulbad samad mis "See nädal" all, silte ei korrata).
+// Telefonis jäävad eraldi "Ülesanded" ja "Üritused" loendid.
+let undatedOpen=false;try{undatedOpen=localStorage.getItem('pere-undated-open')==='1';}catch(e){}
+function renderLaterMonths(tasks,later,taskCard,eventCard){
+ const view=$('overviewView'),grid=view&&view.querySelector&&view.querySelector('.overview-grid');if(!grid||!grid.parentNode)return;
+ let box=$('savedLater');
+ const wide=typeof window!=='undefined'&&window.matchMedia&&!window.matchMedia('(max-width:740px)').matches;
+ if(!wide){if(box)box.hidden=true;if(view.classList)view.classList.remove('later-merged');return;}
+ if(!box){box=document.createElement('section');box.id='savedLater';box.className='later-section';box.setAttribute('aria-label','Hilisemad ülesanded ja üritused');grid.parentNode.insertBefore(box,grid);}
+ box.hidden=false;box.replaceChildren();if(view.classList)view.classList.add('later-merged');
+ $('savedTasks').replaceChildren();$('savedEvents').replaceChildren();
+ const months=new Map();
+ const slot=key=>{if(!months.has(key))months.set(key,{tasks:[],events:[]});return months.get(key);};
+ later.forEach(item=>slot(item.date.slice(0,7)).events.push(item));
+ tasks.forEach(item=>slot(item.deadline?item.deadline.slice(0,7):'9999').tasks.push(item));
+ const undated=months.get('9999');months.delete('9999');
+ const keys=[...months.keys()].sort();
+ if(!keys.length&&!undated){savedText(box,'p','Hilisemaid ülesandeid ega üritusi pole.','empty');return;}
+ const monthHead=(block,label,count)=>{const head=document.createElement('h2');head.className='later-head';savedText(head,'span',label);savedText(head,'span',String(count),'later-count');block.append(head);return head;};
+ const columns=(block,month)=>{const cols=document.createElement('div');cols.className='later-cols';
+  [[month.tasks,'Ülesanded',taskCard],[month.events,'Üritused',eventCard]].forEach(([list,label,draw])=>{
+   const col=document.createElement('div');col.className='week-col';col.setAttribute('aria-label',label);
+   list.forEach(item=>draw(item,col));cols.append(col);
+  });block.append(cols);return cols;};
+ // Tähtajata ülesanded kohe "See nädal" järel, vaikimisi kokku volditud (avatud olek jääb meelde).
+ if(undated){
+  const block=document.createElement('div');block.className='later-month later-undated'+(undatedOpen?' open':'');
+  const head=monthHead(block,'Tähtajata',undated.tasks.length),toggle=document.createElement('button');
+  toggle.type='button';toggle.className='later-toggle';toggle.setAttribute('aria-expanded',String(undatedOpen));toggle.setAttribute('aria-controls','laterUndated');
+  toggle.append(...[...head.childNodes]);toggle.insertAdjacentHTML('beforeend','<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>');
+  toggle.onclick=()=>{undatedOpen=!undatedOpen;try{localStorage.setItem('pere-undated-open',undatedOpen?'1':'0');}catch(e){}renderOverview();};
+  head.append(toggle);const cols=columns(block,undated);cols.id='laterUndated';cols.hidden=!undatedOpen;box.append(block);
+ }
+ keys.forEach(key=>{
+  const month=months.get(key),block=document.createElement('div');block.className='later-month';
+  monthHead(block,monthLabel(key+'-15'),month.tasks.length+month.events.length);columns(block,month);box.append(block);
+ });
 }
 
 // ---- Kuuvaade: alt tulev paneel (kalendriikoon Pere ülevaate päises) ----
@@ -2051,6 +2138,8 @@ function openSearch(){
 function closeSearch(){if(!searchOpen)return;searchOpen=false;if(!calOpen||calDockOn)setBackgroundInert(false);$('searchOverlay').hidden=true;}
 // Kaart võib olla filtri või kokkuvolditud tehtud-loendi taga: eemalda takistus ja kerge kaardini.
 function revealItem(key){
+ const target=savedOverview.items.find(entry=>entry.key===key);
+ if(target&&!target.deadline&&target.kind!=='event'&&!undatedOpen){undatedOpen=true;renderOverview();}
  if(!overviewEventCards.get(key)&&!overviewTaskCards.get(key)){
   const item=savedOverview.items.find(entry=>entry.key===key);
   if($('overviewPerson').value)$('overviewPerson').value='';
