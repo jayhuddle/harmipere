@@ -959,6 +959,25 @@ details:not(.refine)[open]>summary:before{transform:rotate(90deg)}
 /* Tähtajata mull veel esiletõstetum: tugevam lilla toon, tumedam lilla number */
 @media(min-width:741px){.later-undated .later-count{background:color-mix(in srgb,var(--accent) 36%,var(--glass-strong));color:color-mix(in srgb,var(--accent) 80%,#000)}.later-toggle:hover .later-count{background:color-mix(in srgb,var(--accent) 44%,var(--glass-strong))}:root[data-theme="dark"] .later-undated .later-count{background:color-mix(in srgb,var(--accent) 58%,var(--glass-strong));color:#fff}}
 @media(min-width:741px) and (prefers-color-scheme:dark){:root:not([data-theme="light"]) .later-undated .later-count{background:color-mix(in srgb,var(--accent) 58%,var(--glass-strong));color:#fff}}
+/* Kuupäevavalija (work/datepicker.js): teemas eestikeelne kalender */
+.dp-pop{position:fixed;z-index:200;width:min(300px,calc(100vw - 24px));padding:12px;border-radius:20px;background:var(--glass-strong);border:1px solid var(--stroke);box-shadow:var(--shadow);-webkit-backdrop-filter:blur(26px) saturate(185%);backdrop-filter:blur(26px) saturate(185%);color:var(--ink);font-family:'Outfit',system-ui,-apple-system,'Segoe UI',sans-serif}
+:root[data-theme="dark"] .dp-pop{background:rgba(36,38,68,.9);border-color:rgba(255,255,255,.14);box-shadow:0 10px 30px rgba(0,0,0,.5)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .dp-pop{background:rgba(36,38,68,.9);border-color:rgba(255,255,255,.14);box-shadow:0 10px 30px rgba(0,0,0,.5)}}
+.dp-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.dp-title{font-size:16px;font-weight:700}
+.dp-nav,:root[data-theme="dark"] .dp-nav{width:32px;height:32px;min-height:0;padding:0;border-radius:50%;display:flex;align-items:center;justify-content:center;background:transparent;border:0;box-shadow:none;color:var(--muted)}
+.dp-nav svg{width:18px;height:18px}
+.dp-nav:hover{background:color-mix(in srgb,var(--accent) 10%,transparent);color:var(--accent)}
+.dp-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center}
+.dp-dow{font-size:11px;font-weight:700;color:var(--soft);padding:4px 0}
+.dp-day,:root[data-theme="dark"] .dp-day{height:34px;min-height:0;padding:0;border-radius:12px;background:transparent;border:0;box-shadow:none;font:inherit;font-size:14px;color:var(--ink)}
+.dp-day:hover{background:color-mix(in srgb,var(--accent) 10%,transparent)}
+.dp-day.today{color:var(--accent);font-weight:700;box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--accent) 45%,transparent)}
+.dp-day.sel,:root[data-theme="dark"] .dp-day.sel{background:linear-gradient(135deg,var(--accent),var(--accent-2));color:#fff;font-weight:700;box-shadow:0 4px 12px color-mix(in srgb,var(--accent) 35%,transparent)}
+.dp-foot{display:flex;justify-content:space-between;margin-top:8px}
+.dp-foot button,:root[data-theme="dark"] .dp-foot button{min-height:0;padding:6px 10px;border-radius:10px;background:transparent;border:0;box-shadow:none;font:inherit;font-size:13px;font-weight:600;color:var(--accent)}
+.dp-foot button:hover{background:color-mix(in srgb,var(--accent) 10%,transparent)}
+.dp-input{cursor:pointer}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
@@ -2326,12 +2345,90 @@ function isPreparationTask(item,event){
  const text=[item.title,item.notes,item.evidence].filter(Boolean).join(' ');
  return /(?:enne|eelnevalt|eelnev|ettevalmist)/i.test(text)&&(!item.deadline||!event.date||item.deadline<=event.date);
 }
+// Kuupäevaväljad: brauseri oma kalender oli inglise keeles ja teemast väljas. Väli on tekstiväli kujul pp.kk.aaaa, aga väärtus
+// (input.value) on endiselt ISO aaaa-kk-pp, nii et kogu muu kood töötab muutmata. Klõps avab teemaga sobiva eestikeelse kalendri.
+const DP_MONTHS=['Jaanuar','Veebruar','Märts','Aprill','Mai','Juuni','Juuli','August','September','Oktoober','November','Detsember'];
+const DP_DAYS=['E','T','K','N','R','L','P'];
+const dpPad=n=>String(n).padStart(2,'0');
+const dpIso=(y,m,d)=>y+'-'+dpPad(m+1)+'-'+dpPad(d);
+const dpShow=iso=>/^\d{4}-\d{2}-\d{2}$/.test(iso)?iso.slice(8)+'.'+iso.slice(5,7)+'.'+iso.slice(0,4):'';
+function dpParse(text){
+ const m=String(text||'').trim().match(/^(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{4})$/);if(!m)return '';
+ const d=+m[1],mo=+m[2],y=+m[3],date=new Date(Date.UTC(y,mo-1,d));
+ return date.getUTCFullYear()===y&&date.getUTCMonth()===mo-1&&date.getUTCDate()===d?dpIso(y,mo-1,d):'';
+}
+function dpFormatTyping(text){
+ const digits=String(text||'').replace(/\D/g,'').slice(0,8);let out=digits.slice(0,2);
+ if(digits.length>2)out+='.'+digits.slice(2,4);if(digits.length>4)out+='.'+digits.slice(4);return out;
+}
+let dpOpen=null;
+function dpClose(){if(!dpOpen)return;dpOpen.box.remove();document.removeEventListener('mousedown',dpOpen.outside,true);document.removeEventListener('keydown',dpOpen.keys,true);window.removeEventListener('resize',dpClose);dpOpen=null;}
+function dpToday(){try{return typeof tallinnToday==='function'?tallinnToday():new Date().toISOString().slice(0,10);}catch(e){return new Date().toISOString().slice(0,10);}}
+function dpOpenFor(input){
+ dpClose();
+ const start=/^\d{4}-\d{2}-\d{2}$/.test(input.value)?input.value:dpToday();let year=+start.slice(0,4),month=+start.slice(5,7)-1;
+ const box=document.createElement('div');box.className='dp-pop';box.setAttribute('role','dialog');box.setAttribute('aria-label','Vali kuupäev');
+ const pick=iso=>{input.value=iso;input.dispatchEvent(new Event('input',{bubbles:true}));input.dispatchEvent(new Event('change',{bubbles:true}));dpClose();if(input.focus)input.focus();};
+ function draw(){
+  box.replaceChildren();
+  const head=document.createElement('div');head.className='dp-head';
+  const prev=document.createElement('button'),next=document.createElement('button'),title=document.createElement('span');
+  prev.type=next.type='button';prev.className=next.className='dp-nav';prev.setAttribute('aria-label','Eelmine kuu');next.setAttribute('aria-label','Järgmine kuu');
+  prev.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>';
+  next.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>';
+  title.className='dp-title';title.textContent=DP_MONTHS[month]+' '+year;
+  prev.onclick=()=>{month--;if(month<0){month=11;year--;}draw();};next.onclick=()=>{month++;if(month>11){month=0;year++;}draw();};
+  head.append(prev,title,next);box.append(head);
+  const grid=document.createElement('div');grid.className='dp-grid';
+  DP_DAYS.forEach(name=>{const cell=document.createElement('span');cell.className='dp-dow';cell.textContent=name;grid.append(cell);});
+  const first=(new Date(Date.UTC(year,month,1)).getUTCDay()+6)%7,days=new Date(Date.UTC(year,month+1,0)).getUTCDate(),today=dpToday();
+  for(let i=0;i<first;i++)grid.append(document.createElement('span'));
+  for(let d=1;d<=days;d++){
+   const iso=dpIso(year,month,d),cell=document.createElement('button');cell.type='button';cell.className='dp-day'+(iso===today?' today':'')+(iso===input.value?' sel':'');
+   cell.textContent=String(d);cell.onclick=()=>pick(iso);grid.append(cell);
+  }
+  box.append(grid);
+  const foot=document.createElement('div');foot.className='dp-foot';
+  const now=document.createElement('button'),clear=document.createElement('button');now.type=clear.type='button';now.textContent='Täna';clear.textContent='Tühjenda';
+  now.onclick=()=>pick(today);clear.onclick=()=>pick('');foot.append(now,clear);box.append(foot);
+ }
+ draw();document.body.append(box);
+ const place=()=>{const r=input.getBoundingClientRect(),w=box.offsetWidth,h=box.offsetHeight;
+  let left=Math.min(Math.max(12,r.left),window.innerWidth-w-12),top=r.bottom+6;if(top+h>window.innerHeight-12&&r.top-h-6>12)top=r.top-h-6;
+  box.style.left=left+'px';box.style.top=Math.max(12,top)+'px';};
+ place();
+ const outside=event=>{if(!box.contains(event.target)&&event.target!==input)dpClose();};
+ const keys=event=>{if(event.key==='Escape'){event.preventDefault();event.stopPropagation();dpClose();if(input.focus)input.focus();}};
+ document.addEventListener('mousedown',outside,true);document.addEventListener('keydown',keys,true);window.addEventListener('resize',dpClose);
+ dpOpen={box,outside,keys};
+}
+function makeDateInput(input){
+ if(!input||typeof HTMLInputElement==='undefined'||input.dataset.dp)return input;input.dataset.dp='1';
+ const nativeValue=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value');let iso=/^\d{4}-\d{2}-\d{2}$/.test(input.value)?input.value:'';
+ input.type='text';input.inputMode='numeric';input.placeholder='pp.kk.aaaa';input.maxLength=10;input.autocomplete='off';input.classList.add('dp-input');
+ Object.defineProperty(input,'value',{configurable:true,
+  get(){return iso;},
+  set(v){iso=/^\d{4}-\d{2}-\d{2}$/.test(String(v||''))?String(v):'';nativeValue.set.call(input,dpShow(iso));}});
+ nativeValue.set.call(input,dpShow(iso));
+ // Kirjutamisel lisatakse punktid ise; täielik kehtiv kuupäev muutub väärtuseks (capture: enne välja enda oninput-käsitlejat).
+ input.addEventListener('input',event=>{
+  const typed=dpFormatTyping(nativeValue.get.call(input));nativeValue.set.call(input,typed);iso=dpParse(typed);
+ },true);
+ input.addEventListener('blur',()=>{if(!iso)return;nativeValue.set.call(input,dpShow(iso));});
+ // Telefonis ainult kalender (klaviatuur ei kata seda): väli on kirjutuskaitstud.
+ if(window.matchMedia&&window.matchMedia('(pointer:coarse)').matches)input.readOnly=true;
+ input.addEventListener('click',()=>dpOpenFor(input));
+ input.addEventListener('keydown',event=>{if(event.key==='ArrowDown'&&!dpOpen){event.preventDefault();dpOpenFor(input);}});
+ return input;
+}
+if(typeof document!=='undefined'&&document.getElementById)makeDateInput(document.getElementById('sourceDate'));
 function field(item,key,label,type='text',index=-1){
  const wrap=document.createElement('div'),id='f-'+Math.random().toString(36).slice(2);
  wrap.className='field';
  const title=document.createElement('label');title.htmlFor=id;title.textContent=label;
  const input=document.createElement(key==='person'?'select':type==='textarea'?'textarea':'input');input.id=id;input.dataset.key=key;if(input.tagName==='INPUT')input.type=type;
  if(type==='time'){input.type='text';input.inputMode='numeric';input.placeholder='hh:mm';input.maxLength=5;input.autocomplete='off';}
+ if(type==='date')makeDateInput(input);
  if(key==='person'){
   [['','Vali, kelle kohta'],...PEOPLE.map(p=>[p.id,p.short]),['__other__','Muu – sisesta']].forEach(([value,text])=>{const option=document.createElement('option');option.value=value;option.textContent=text;input.append(option);});
   const other=document.createElement('input');other.type='text';other.maxLength=80;other.placeholder='Sisesta nimi';other.setAttribute('aria-label','Muu nimi');
