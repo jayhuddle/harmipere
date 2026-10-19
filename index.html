@@ -862,7 +862,7 @@ details:not(.refine)[open]>summary:before{transform:rotate(90deg)}
 @media(min-width:741px){
  body.nav-top{padding-top:76px}
  body.nav-top>header,:root[data-theme="dark"] body.nav-top>header{display:flex;align-items:stretch;gap:12px;height:60px;padding:0 max(24px,calc(50% - 456px))}
- body.nav-top.cal-docked>header,:root[data-theme="dark"] body.nav-top.cal-docked>header{padding:0 max(24px,calc(50% - 645px))}
+
  body.nav-top>header .brand{align-self:center}
  body.nav-top>header>.search-toggle,:root[data-theme="dark"] body.nav-top>header>.search-toggle{align-self:center;position:static;transform:none;margin:0 0 0 8px;width:240px;height:38px;min-height:0;padding:0 14px;border-radius:19px;display:flex;align-items:center;justify-content:flex-start;gap:8px;background:color-mix(in srgb,var(--accent) 7%,transparent);border:1px solid transparent;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none;color:var(--muted);font-size:14px;font-weight:500}
  body.nav-top>header>.search-toggle:after{content:'Otsi'}
@@ -908,6 +908,8 @@ details:not(.refine)[open]>summary:before{transform:rotate(90deg)}
 @media(min-width:741px){body.nav-top>header,:root[data-theme="dark"] body.nav-top>header{grid-template-columns:1fr auto auto;column-gap:28px}}
 /* Sisu 24px riba alt (oli 44px) */
 @media(min-width:741px){body.nav-top{padding-top:56px}}
+/* ≥1360px on kalendri külgriba ruum (body padding-right) igas vaates, seega päise joondus sama igas vaates (ei hüppa) */
+@media(min-width:1360px){body.nav-top>header,:root[data-theme="dark"] body.nav-top>header{padding:0 max(24px,calc(50% - 645px))}}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
