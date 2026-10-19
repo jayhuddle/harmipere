@@ -978,6 +978,10 @@ details:not(.refine)[open]>summary:before{transform:rotate(90deg)}
 .dp-foot button,:root[data-theme="dark"] .dp-foot button{min-height:0;padding:6px 10px;border-radius:10px;background:transparent;border:0;box-shadow:none;font:inherit;font-size:13px;font-weight:600;color:var(--accent)}
 .dp-foot button:hover{background:color-mix(in srgb,var(--accent) 10%,transparent)}
 .dp-input{cursor:pointer}
+/* Tähtajata mull heledas teemas natuke heledam (28% lillat, enne 36%) */
+@media(min-width:741px){.later-undated .later-count{background:color-mix(in srgb,var(--accent) 28%,var(--glass-strong))}.later-toggle:hover .later-count{background:color-mix(in srgb,var(--accent) 36%,var(--glass-strong))}:root[data-theme="dark"] .later-undated .later-count{background:color-mix(in srgb,var(--accent) 58%,var(--glass-strong))}}
+/* Tähtajata mull: heledas teemas 22% lillat, õrn vari (nagu "õhus") */
+@media(min-width:741px){.later-undated .later-count{background:color-mix(in srgb,var(--accent) 22%,var(--glass-strong));box-shadow:0 3px 8px color-mix(in srgb,var(--accent) 30%,transparent),0 1px 2px rgba(20,22,52,.12),inset 0 1px 0 rgba(255,255,255,.7)}.later-toggle:hover .later-count{background:color-mix(in srgb,var(--accent) 30%,var(--glass-strong))}:root[data-theme="dark"] .later-undated .later-count{box-shadow:0 3px 10px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.18)}}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
@@ -1821,7 +1825,7 @@ function renderLaterMonths(tasks,later,taskCard,eventCard){
  const undated=months.get('9999');months.delete('9999');
  const keys=[...months.keys()].sort();
  if(!keys.length&&!undated){savedText(box,'p','Hilisemaid ülesandeid ega üritusi pole.','empty');return;}
- const monthHead=(block,label,count)=>{const head=document.createElement('h2');head.className='later-head';savedText(head,'span',label);savedText(head,'span',String(count),'later-count');block.append(head);return head;};
+ const monthHead=(block,label,count)=>{const head=document.createElement('h2');head.className='later-head';savedText(head,'span',label);if(count!=null)savedText(head,'span',String(count),'later-count');block.append(head);return head;};
  const columns=(block,month)=>{const cols=document.createElement('div');cols.className='later-cols';
   [[month.tasks,'Ülesanded',taskCard],[month.events,'Üritused',eventCard]].forEach(([list,label,draw])=>{
    const col=document.createElement('div');col.className='week-col';col.setAttribute('aria-label',label);
@@ -1838,7 +1842,7 @@ function renderLaterMonths(tasks,later,taskCard,eventCard){
  }
  keys.forEach(key=>{
   const month=months.get(key),block=document.createElement('div');block.className='later-month';
-  monthHead(block,monthLabel(key+'-15'),month.tasks.length+month.events.length);columns(block,month);box.append(block);
+  monthHead(block,monthLabel(key+'-15'),null);columns(block,month);box.append(block);
  });
 }
 
