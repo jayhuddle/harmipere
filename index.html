@@ -775,6 +775,16 @@ header{view-transition-name:pere-header}
 @media(min-width:741px){
  #savedWeek .week-col-label{display:block;margin:var(--s2) var(--s1) 0;font-size:12px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted)}
 }
+/* Viimased tekstimärgid Lucide ikoonideks (CSS-maskina): Täpsusta nool, voldikute nool (pöördub avatuna alla), hoiatuskolmnurk */
+:root{--icon-chevron:url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2024%2024'%20fill%3D'none'%20stroke%3D'black'%20stroke-width%3D'2'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%3E%3Cpath%20d%3D'm9%2018%206-6-6-6'%2F%3E%3C%2Fsvg%3E");--icon-warn:url("data:image/svg+xml,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2024%2024'%20fill%3D'none'%20stroke%3D'black'%20stroke-width%3D'2'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%3E%3Cpath%20d%3D'm21.73%2018-8-14a2%202%200%200%200-3.48%200l-8%2014A2%202%200%200%200%204%2021h16a2%202%200%200%200%201.73-3'%2F%3E%3Cpath%20d%3D'M12%209v4'%2F%3E%3Cpath%20d%3D'M12%2017h.01'%2F%3E%3C%2Fsvg%3E")}
+.refine>summary:after{content:"";width:20px;height:20px;font-size:0;background:currentColor;-webkit-mask:var(--icon-chevron) center/contain no-repeat;mask:var(--icon-chevron) center/contain no-repeat}
+details:not(.refine)>summary{list-style:none;display:flex;align-items:center;gap:6px;cursor:pointer}
+details:not(.refine)>summary::-webkit-details-marker{display:none}
+details:not(.refine)>summary:before{content:"";flex:none;width:14px;height:14px;background:currentColor;-webkit-mask:var(--icon-chevron) center/contain no-repeat;mask:var(--icon-chevron) center/contain no-repeat;transition:transform .2s}
+details:not(.refine)[open]>summary:before{transform:rotate(90deg)}
+.saved-conflict,.cal-warn{display:flex;align-items:flex-start;gap:6px}
+.saved-conflict:before,.cal-warn:before{content:"";flex:none;width:15px;height:15px;margin-top:2px;background:currentColor;-webkit-mask:var(--icon-warn) center/contain no-repeat;mask:var(--icon-warn) center/contain no-repeat}
+@media (prefers-reduced-motion:reduce){details:not(.refine)>summary:before{transition:none}}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
@@ -1537,7 +1547,7 @@ function renderOverview(){
   else if(parent===$('savedWeek')&&!(item.endDate&&item.endDate>item.date))savedText(card,'p',(phase==='past'?'Toimus · ':'')+(item.time?item.time+(item.endTime?'–'+item.endTime:''):'Kogu päev'),'saved-deadline');
   else savedText(card,'p',(phase==='past'&&item.date===today?'Toimus täna · ':item.date===today?'Täna · ':item.date===tomorrow?'Homme · ':'')+shortDay(item.date)+(item.time?' · '+item.time+(item.endTime?'–'+item.endTime:''):' · kogu päev'),'saved-deadline');
   if(item.location)savedLocation(card,item.location);
-  if(conflicts.has(item.key))savedText(card,'p','⚠ Kattub: '+conflicts.get(item.key).join('; '),'saved-conflict');
+  if(conflicts.has(item.key))savedText(card,'p','Kattub: '+conflicts.get(item.key).join('; '),'saved-conflict');
   savedNotes(card,item);
   const last=card.lastElementChild||card.children[card.children.length-1],footer=document.createElement('div'),content=document.createElement('div');footer.className='saved-event-footer';content.append(last);
   if(last&&last.className==='saved-deadline')footer.className+=' footer-plain';
@@ -1795,7 +1805,7 @@ function renderCalendar(){
  if(typeof requestAnimationFrame==='function')requestAnimationFrame(()=>{if(panes[1].offsetHeight)viewport.style.height=panes[1].offsetHeight+'px';});
  const legend=document.createElement('div');legend.className='cal-legend';
  legend.innerHTML='<span><i class="cal-dot" style="background:#0ea5e9"></i>üritus</span><span><i class="cal-task"></i>ülesanne</span><span><i class="cal-hol"></i>püha</span><span><i class="cal-brk"></i>vaheaeg</span>';sheet.append(legend);
- {const st=savedOverview.schoolStatus;if(st&&st.ok===false)savedText(sheet,'p','⚠ Koolivaheaegade automaatne uuendus ebaõnnestus'+(st.lastOk?' (viimati õnnestus '+shortDay(st.lastOk)+')':'')+'. Näidatud on viimane teadaolev tabel.','cal-warn');}
+ {const st=savedOverview.schoolStatus;if(st&&st.ok===false)savedText(sheet,'p','Koolivaheaegade automaatne uuendus ebaõnnestus'+(st.lastOk?' (viimati õnnestus '+shortDay(st.lastOk)+')':'')+'. Näidatud on viimane teadaolev tabel.','cal-warn');}
  const entry=byDay.get(calSel)||{events:[],tasks:[]},list=[...entry.events.slice().sort((a,b)=>(a.time||'').localeCompare(b.time||'')),...entry.tasks];
  const dayHead=document.createElement('div');dayHead.className='cal-dayhead';savedText(dayHead,'span',shortDay(calSel)+(calSel===today?' · täna':''));
  const focusable=list.find(item=>!calIsPastEvent(item));
@@ -1809,7 +1819,7 @@ function renderCalendar(){
   savedText(heading,'h3',item.title+(item.kind==='invoice'&&item.amount?' · '+item.amount+' '+item.currency:''));savedPersonTag(heading,item.person);card.append(heading);
   if(item.kind==='event'){
    savedLocation(card,item.location,item.time?item.time+(item.endTime?'–'+item.endTime:''):'kogu päev');
-   if(conflicts.has(item.key))savedText(card,'p','⚠ Kattub: '+conflicts.get(item.key).join('; '),'saved-conflict');
+   if(conflicts.has(item.key))savedText(card,'p','Kattub: '+conflicts.get(item.key).join('; '),'saved-conflict');
    if(past&&item.notes)savedText(card,'p',item.notes.length>200?item.notes.slice(0,200)+'…':item.notes,'saved-meta');
   }else savedText(card,'p','Tähtaeg'+(item.deadline<today?' · üle tähtaja':item.deadline===today?' · täna':''),'saved-deadline'+(item.deadline<today?' overdue':item.deadline===today?' today':''));
   if(!past){card.onclick=()=>focusItemKey(item.key);
