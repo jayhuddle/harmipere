@@ -984,6 +984,23 @@ details:not(.refine)[open]>summary:before{transform:rotate(90deg)}
 @media(min-width:741px){.later-undated .later-count{background:color-mix(in srgb,var(--accent) 22%,var(--glass-strong));box-shadow:0 3px 8px color-mix(in srgb,var(--accent) 30%,transparent),0 1px 2px rgba(20,22,52,.12),inset 0 1px 0 rgba(255,255,255,.7)}.later-toggle:hover .later-count{background:color-mix(in srgb,var(--accent) 30%,var(--glass-strong))}:root[data-theme="dark"] .later-undated .later-count{box-shadow:0 3px 10px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.18)}}
 /* Tähtajata mull flat: ilma varjuta */
 @media(min-width:741px){.later-undated .later-count,:root[data-theme="dark"] .later-undated .later-count{box-shadow:none}}
+/* Päise horisontaalne vahe: logo vasakul, vaated + otsing + teema paremal. Vaadete vahe kasvab ekraaniga (laias vaates rohkem õhku);
+   kitsamas aknas kahaneb otsingukast ja vajadusel jääb ainult luup, et teemanupp alati ära mahuks. */
+@media(min-width:741px){
+ body.nav-top>header,:root[data-theme="dark"] body.nav-top>header{display:flex;align-items:center;gap:0}
+ body.nav-top>header .brand{flex:0 0 auto}
+ body.nav-top>header .view-nav,:root[data-theme="dark"] body.nav-top>header .view-nav{margin-left:auto;gap:clamp(4px,calc((100vw - 1000px)/14),32px);flex:0 0 auto}
+ body.nav-top>header .header-tools{flex:0 0 auto;margin-left:clamp(12px,calc((100vw - 760px)/20),32px);gap:12px}
+}
+@media(min-width:741px) and (max-width:879px){
+ body.nav-top>header .header-tools>.search-toggle,:root[data-theme="dark"] body.nav-top>header .header-tools>.search-toggle{width:100px}
+}
+@media(min-width:741px) and (max-width:799px){
+ body.nav-top>header .header-tools>.search-toggle,:root[data-theme="dark"] body.nav-top>header .header-tools>.search-toggle{width:40px;height:40px;padding:0;justify-content:center;border-radius:50%;background:transparent;color:var(--muted)}
+ body.nav-top>header .header-tools>.search-toggle:after{content:none}
+ body.nav-top>header .header-tools>.search-toggle:hover{background:color-mix(in srgb,var(--accent) 8%,transparent);color:var(--accent);border-color:transparent}
+ body.nav-top>header .header-tools>.search-toggle svg{width:19px;height:19px}
+}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
