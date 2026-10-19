@@ -801,6 +801,40 @@ details:not(.refine)[open]>summary:before{transform:rotate(90deg)}
 /* Tume teema: paneel tumedam (kalendri ja mitteaktiivsete kiipide toon), ääris vaiksem */
 :root[data-theme="dark"] .week-section{background:rgba(26,28,56,.58);border-color:rgba(255,255,255,.06);box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 14px 34px rgba(0,0,0,.35)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .week-section{background:rgba(26,28,56,.58);border-color:rgba(255,255,255,.06);box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 14px 34px rgba(0,0,0,.35)}}
+/* PROOV "See nädal" joontega: taustata; pealkirja järel samal real lilla punktiir; sektsiooni lõpus teine punktiir */
+.week-section,:root[data-theme="dark"] .week-section{background:none;border:0;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none;border-radius:0;padding:0}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .week-section{background:none;border:0;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none}}
+@media(max-width:740px){.week-section{margin-left:0;margin-right:0;padding:0}}
+.week-section>h2{display:flex;align-items:center;gap:10px}
+.week-section>h2:after{content:'';flex:1;height:0;border-top:1.5px dashed color-mix(in srgb,var(--accent) 50%,transparent);margin-left:4px}
+.week-section:after{content:'';display:block;height:0;border-top:1.5px dashed color-mix(in srgb,var(--accent) 50%,transparent);margin-top:var(--s3)}
+@media(min-width:741px){#overviewView .overview-grid{padding:0}}
+/* PROOV: kahe punktiiri vahel õrn 5% lilla toon nagu vanas kastis (külgääristeta); telefonis servast servani */
+.week-section,:root[data-theme="dark"] .week-section{background:color-mix(in srgb,var(--accent) 5%,transparent);padding:10px 16px 12px;margin-left:-16px;margin-right:-16px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .week-section{background:color-mix(in srgb,var(--accent) 5%,transparent)}}
+@media(max-width:740px){.week-section{margin-left:-16px;margin-right:-16px;padding:10px 16px 12px}}
+@media(min-width:741px){#overviewView .overview-grid{padding:0}}
+@media(min-width:741px){.week-section{margin-left:0;margin-right:0;padding:10px 0 12px}}
+/* Toon ainult punktiirist punktiirini: algab pealkirjarea joone kõrgusel (--week-line), lõpeb alumise joonega (sektsiooni alumine serv) */
+.week-section,:root[data-theme="dark"] .week-section{--week-line:22px;background:linear-gradient(to bottom,transparent var(--week-line),color-mix(in srgb,var(--accent) 5%,transparent) var(--week-line));padding-bottom:0}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .week-section{--week-line:22px;background:linear-gradient(to bottom,transparent var(--week-line),color-mix(in srgb,var(--accent) 5%,transparent) var(--week-line));padding-bottom:0}}
+.week-section>h2{line-height:24px;min-height:24px}
+.week-section:after{margin-top:var(--s3)}
+@media(min-width:741px){.week-section,:root[data-theme="dark"] .week-section{margin-left:0;margin-right:0;padding:10px 0 0}}
+/* PROOV: toon 16px sisualast väljas (ka arvutis); punktiirid ulatuvad tooni servani, nii et tooni nurgad on täpselt joonte otstes */
+.week-section,:root[data-theme="dark"] .week-section{margin-left:-16px;margin-right:-16px;padding:10px 16px 0}
+@media(min-width:741px){.week-section,:root[data-theme="dark"] .week-section{margin-left:-16px;margin-right:-16px;padding:10px 16px 0}}
+.week-section>h2:after{margin-right:-16px}
+.week-section:after{margin:var(--s3) -16px 0}
+/* Kalendri külgriba 24px "See nädal" tooni servast (toon ulatub 16px sisualast välja) */
+@media(min-width:1360px){body{padding-right:377px}.cal-overlay.docked{left:calc(100% + 40px)}}
+/* PROOV: jooned sisuala laiuses (nagu enne); toon 16px välja, ümarad 16px nurgad algavad täpselt joonte otstest.
+   Toon on eraldi kiht (::before) joonest joonele, et saaks ümarad nurgad. */
+.week-section>h2:after{margin-right:0}
+.week-section:after{margin:var(--s3) 0 0}
+.week-section,:root[data-theme="dark"] .week-section{background:none;position:relative;isolation:isolate}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .week-section{background:none}}
+.week-section:before{content:'';position:absolute;z-index:-1;left:0;right:0;top:var(--week-line,22px);bottom:0;border-radius:16px;background:color-mix(in srgb,var(--accent) 5%,transparent);pointer-events:none}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
@@ -1700,7 +1734,9 @@ function closeCalendar(force){
 function placeCalDock(){
  if(!calDockOn)return;
  const week=document.querySelector&&document.querySelector('#overviewView .week-section');
- const top=week&&week.offsetParent===$('overviewView')?week.offsetTop:0;
+ // Kalendri ülaserv "See nädal" tooni ülaservaga samal joonel (toon algab pealkirjarea punktiiri kõrguselt, --week-line).
+ const line=week&&typeof getComputedStyle==='function'?parseFloat(getComputedStyle(week).getPropertyValue('--week-line'))||0:0;
+ const top=week&&week.offsetParent===$('overviewView')?week.offsetTop+line:0;
  if($('calOverlay').style&&$('calOverlay').style.setProperty)$('calOverlay').style.setProperty('--cal-top',top+'px');
 }
 function syncCalDock(){
