@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com/gsi/style; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://script.google.com https://script.googleusercontent.com https://accounts.google.com/gsi/; frame-src https://accounts.google.com/gsi/; manifest-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://accounts.google.com/gsi/client https://www.gstatic.com/firebasejs/; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://accounts.google.com/gsi/style; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://script.google.com https://script.googleusercontent.com https://accounts.google.com/gsi/ https://firebaseinstallations.googleapis.com https://fcmregistrations.googleapis.com https://fcm.googleapis.com; frame-src https://accounts.google.com/gsi/; manifest-src 'self'; worker-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="theme-color" content="#e4e1fb" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#13122a" media="(prefers-color-scheme: dark)">
@@ -1001,6 +1001,11 @@ details:not(.refine)[open]>summary:before{transform:rotate(90deg)}
  body.nav-top>header .header-tools>.search-toggle:hover{background:color-mix(in srgb,var(--accent) 8%,transparent);color:var(--accent);border-color:transparent}
  body.nav-top>header .header-tools>.search-toggle svg{width:19px;height:19px}
 }
+/* "Pere ülevaade" kõrval tänane kuupäev natuke nähtavam: suurem, paksem, tumedam hall */
+#overviewView .overview-date{font-size:16px;font-weight:600;color:color-mix(in srgb,var(--ink) 62%,transparent)}
+@media(max-width:740px){#overviewView .overview-date{font-size:14px}}
+/* Väike punkt pealkirja ja kuupäeva vahel */
+#overviewView .overview-date:before{content:"·";margin-right:8px;color:var(--soft);font-weight:700}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
@@ -1132,7 +1137,7 @@ body:after{content:'';position:absolute;top:0;left:0;right:0;height:180px;z-inde
 <div class="overview-grid"><section id="tasksSection" class="tasks-section collapsed" aria-label="Ülesannete loend"><h2><button id="tasksToggle" class="section-toggle" type="button" aria-expanded="false" aria-controls="savedTasks"><span>Ülesanded <span id="taskCount" class="count"></span></span><span id="taskUrgent" class="section-urgent" hidden></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></h2><div id="savedTasks"></div><label class="show-done"><input id="showDone" type="checkbox">Näita ka tehtud ülesandeid</label><div id="doneTasks"></div></section><section aria-label="Ürituste loend"><h2>Üritused <span id="eventCount" class="count"></span></h2><div id="savedEvents"></div></section></div>
 </section>
 <section id="mailView" hidden aria-label="Perepostkasti kirjad"><div class="overview-top"><h1>E-kirjad</h1><button id="refreshMail" class="icon-button" type="button" aria-label="Värskenda" title="Värskenda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg></button></div><p class="saved-meta">Automaatika lisab selged uued sündmused ja ülesanded. Siin saad üle vaadata ebaselge info ja töötluse tulemused. „Peida” jätab Gmaili kirja alles.</p><div class="overview-filters"><label><input id="showProcessedMail" type="checkbox">Näita ka automaatselt töödeldud kirju</label></div><p id="mailStatus" class="status" role="status" aria-live="polite"></p><div id="mailCards"></div></section>
-<footer>Kuni 40 töötluskatset päevas · AI tulemus vajab ülevaatamist · <button type="button" class="logout-link" onclick="pereLogout()">Logi välja</button><span id="diagWrap" hidden> · <button type="button" class="logout-link" onclick="pereDiag()">Veateave</button></span></footer><script>(function(){const KEY='pere-last-bad-response';function read(){try{return localStorage.getItem(KEY);}catch(_){return null;}}
+<footer>Kuni 40 töötluskatset päevas · AI tulemus vajab ülevaatamist · <button type="button" class="logout-link" onclick="pereLogout()">Logi välja</button><span id="pushWrap" hidden> · <button type="button" class="logout-link" id="pushToggle"></button></span><span id="diagWrap" hidden> · <button type="button" class="logout-link" onclick="pereDiag()">Veateave</button></span></footer><script>(function(){const KEY='pere-last-bad-response';function read(){try{return localStorage.getItem(KEY);}catch(_){return null;}}
  function sync(){const wrap=document.getElementById('diagWrap');if(wrap)wrap.hidden=!read();}
  window.pereDiag=async()=>{const raw=read();if(!raw)return;let text=raw;try{const d=JSON.parse(raw);text='Aeg: '+d.at+'\nToiming: '+d.action+'\nHTTP: '+d.status+(d.attempt?'\nKatse: '+d.attempt+'/3':'')+'\nKordus aitas: '+(d.recovered?'jah (tõrget ei olnud näha)':'ei / teadmata')+'\nVastus: '+d.text;}catch(_){}
   let copied=false;try{await navigator.clipboard.writeText(text);copied=true;}catch(_){}
@@ -1698,12 +1703,21 @@ function eventPhase(item,now){
  if(now>=end)return 'past';if(now>=start)return 'now';return '';
 }
 let overviewPhases=new Map();
+// "Pere ülevaade" kõrval tänane kuupäev: kui ekraanile mahub (≥480 px), nädalapäev sõnana ("Esmaspäev 19.10.2026"), muidu lühike ("E 19.10.2026").
+const WEEKDAYS_LONG=['Pühapäev','Esmaspäev','Teisipäev','Kolmapäev','Neljapäev','Reede','Laupäev'];
+let overviewDateIso='';
+function setOverviewDate(iso){
+ if(iso)overviewDateIso=iso;if(!overviewDateIso)return;
+ const wide=typeof window!=='undefined'&&typeof window.matchMedia==='function'&&window.matchMedia('(min-width:480px)').matches;
+ $('overviewDate').textContent=wide?WEEKDAYS_LONG[new Date(overviewDateIso+'T12:00:00Z').getUTCDay()]+' '+displayDate(overviewDateIso):displayEventDate(overviewDateIso);
+}
+if(typeof window!=='undefined'&&typeof window.matchMedia==='function'){try{window.matchMedia('(min-width:480px)').addEventListener('change',()=>setOverviewDate());}catch(_){}}
 function renderOverview(){
  overviewPhases=new Map();
  if(activeCancelMenu)activeCancelMenu.close();
  if(!savedOverview)return;
  const today=savedOverview.today,tomorrow=addDays(today,1),weekEnd=addDays(today,6);
- $('overviewDate').textContent=displayEventDate(today);
+ setOverviewDate(today);
  const isTask=item=>['task','invoice'].includes(item.kind);
  const urgent=savedOverview.items.filter(item=>isTask(item)&&item.status!=='Tehtud'&&item.deadline&&item.deadline<=tomorrow).length;
  $('urgentCount').hidden=!urgent;setBadgeText($('urgentCount'),String(urgent));
@@ -2713,6 +2727,65 @@ if(window.pereSharing)(async()=>{
   else status((meta.skipped?'Lisatud esimesed 3 faili. ':'')+'Jagatud sisu on lisatud. Vali vajadusel „Kelle kohta?” ja vajuta „Sisesta info”.');
  }catch(_){status('Jagatud sisu lisamine ebaõnnestus. Lisa see käsitsi.',true);}
 })();
+</script>
+<script>
+// Äpi enda push-teated (Firebase Cloud Messaging, Web Push). Jaluses link "Teated": luba küsimine → seadme tunnus → server (pereNotifyRegister).
+// Näha ainult siis, kui brauser toetab push-i ja config.js-is on firebase seaded (config + vapidKey; need on avalikud, mitte saladused).
+// Teate ise kuvab service worker (sw.js); data-only sõnum {title, body, url, tag}.
+(function(){
+ const cfg=(window.PERE_CONFIG||{}).firebase;
+ const supported='serviceWorker' in navigator&&'PushManager' in window&&'Notification' in window;
+ const wrap=document.getElementById('pushWrap'),btn=document.getElementById('pushToggle');
+ if(!cfg||!cfg.config||!cfg.vapidKey||!supported||!wrap||!btn)return;
+ const SDK=['https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js','https://www.gstatic.com/firebasejs/10.14.1/firebase-messaging-compat.js'];
+ const KEY='pere-push-token';
+ const read=()=>{try{return localStorage.getItem(KEY)||'';}catch(_){return '';}};
+ const write=value=>{try{if(value)localStorage.setItem(KEY,value);else localStorage.removeItem(KEY);}catch(_){}};
+ const server=(name,arg)=>new Promise((ok,fail)=>{if(!(window.google&&google.script&&google.script.run))return fail(new Error('Server pole saadaval.'));google.script.run.withSuccessHandler(ok).withFailureHandler(fail)[name](arg);});
+ const loadScript=src=>new Promise((ok,fail)=>{if([...document.scripts].some(node=>node.src===src))return ok();const node=document.createElement('script');node.src=src;node.onload=ok;node.onerror=()=>fail(new Error('Firebase ei laadinud.'));document.head.append(node);});
+ let messaging=null;
+ async function sdk(){
+  if(messaging)return messaging;
+  for(const src of SDK)await loadScript(src);
+  if(!firebase.apps.length)firebase.initializeApp(cfg.config);
+  messaging=firebase.messaging();return messaging;
+ }
+ const deviceName=()=>{const ua=navigator.userAgent||'';const m=/Android[^;)]*;\s*([^;)]+)/.exec(ua);return (m?m[1].trim():/Windows/.test(ua)?'Windows':/Mac/.test(ua)?'Mac':'Seade').slice(0,60);};
+ function render(state,detail){
+  wrap.hidden=false;btn.disabled=state==='busy';
+  const label={off:'Luba teated',on:'Teated on sees',busy:'Töötan…',denied:'Teated blokeeritud',error:'Teated ei õnnestunud'}[state]||'Teated';
+  btn.textContent=label;btn.dataset.state=state;
+  btn.title=detail||(state==='on'?'Vajuta, et teated välja lülitada':state==='denied'?'Luba teated brauseri sätetes (lukuikoon aadressiribal)':state==='error'?'Proovi uuesti':'Vajuta, et saada meeldetuletusi selle seadmesse');
+ }
+ async function enable(){
+  render('busy');
+  try{
+   const permission=Notification.permission==='granted'?'granted':await Notification.requestPermission();
+   if(permission!=='granted'){render(permission==='denied'?'denied':'off');return;}
+   const m=await sdk(),registration=await navigator.serviceWorker.ready;
+   const token=await m.getToken({vapidKey:cfg.vapidKey,serviceWorkerRegistration:registration});
+   if(!token)throw new Error('Tunnust ei tulnud.');
+   await server('pereNotifyRegister',{token:token,device:deviceName()});
+   write(token);render('on');
+  }catch(error){if(window.console)console.warn('push:',error&&error.message||error);render('error',String(error&&error.message||'Viga').slice(0,120));}
+ }
+ async function disable(){
+  render('busy');
+  const token=read();
+  try{if(token)await server('pereNotifyUnregister',{token:token});}catch(_){}
+  try{const m=await sdk();await m.deleteToken();}catch(_){}
+  write('');render('off');
+ }
+ btn.addEventListener('click',()=>{const state=btn.dataset.state;if(state==='on')disable();else if(state==='denied'){render('denied','Luba teated brauseri sätetes (lukuikoon aadressiribal) ja proovi uuesti.');}else enable();});
+ // Käivitusel: kui luba on olemas ja tunnus salvestatud, värskenda vaikselt (tunnus võib vahetuda); muidu näita nuppu.
+ if(Notification.permission==='denied')render('denied');
+ else if(Notification.permission==='granted'&&read()){
+  render('on');
+  setTimeout(async()=>{try{const m=await sdk(),registration=await navigator.serviceWorker.ready,token=await m.getToken({vapidKey:cfg.vapidKey,serviceWorkerRegistration:registration});
+   if(token&&token!==read()){await server('pereNotifyRegister',{token:token,device:deviceName()});write(token);}}catch(_){}},4000);
+ }else render('off');
+})();
+
 </script>
 <script>if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 (function(){const root=document.documentElement,metas=[...document.querySelectorAll('meta[name="theme-color"]')],colors={light:'#e4e1fb',dark:'#13122a'};
