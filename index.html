@@ -1110,6 +1110,13 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 @media(min-width:741px){body.nav-top>header .header-tools>.search-toggle,:root[data-theme="dark"] body.nav-top>header .header-tools>.search-toggle{position:relative}}
 .nav-fade{display:none}
 @media(max-width:740px){.nav-fade{display:block}}
+/* Riba 2 px allapoole (17 → 15 px; kalendrimull jääb); hajutus pehmem: riba all paistab sisu veel häguselt läbi (tint 88 % → 50 %, hägu 12 px) */
+@media(max-width:740px){
+ .view-nav{bottom:calc(15px + env(safe-area-inset-bottom))}
+ .nav-fade{background:linear-gradient(to bottom,transparent,color-mix(in srgb,var(--bg) 50%,transparent) 78%);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+}
+/* Hajutus veel pehmem: riba alt servast paistab sisu häguselt (hägu 6 px, tint 32 %) */
+@media(max-width:740px){.nav-fade{background:linear-gradient(to bottom,transparent,color-mix(in srgb,var(--bg) 32%,transparent) 78%);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
