@@ -1086,6 +1086,25 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
  .undo-toast{bottom:calc(182px + env(safe-area-inset-bottom))}
  main{padding-bottom:calc(114px + env(safe-area-inset-bottom))}
 }
+/* PROOV telefon: alt libisev hajutus (klaas jääb 60 %), nii et kaartide tekst kustub enne menüüriba (progressiivne hägu); riba ja kalendrinupp 5 px madalamal */
+@media(max-width:740px){
+ .view-nav{bottom:calc(17px + env(safe-area-inset-bottom))}
+ .cal-fab{bottom:calc(105px + env(safe-area-inset-bottom))}
+ .undo-toast{bottom:calc(177px + env(safe-area-inset-bottom))}
+ main{padding-bottom:calc(109px + env(safe-area-inset-bottom))}
+ body:after{content:'';position:fixed;left:0;right:0;bottom:0;height:calc(116px + env(safe-area-inset-bottom));z-index:40;pointer-events:none;background:linear-gradient(to bottom,transparent,color-mix(in srgb,var(--bg) 80%,transparent) 80%);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);-webkit-mask-image:linear-gradient(to bottom,transparent,#000 55%);mask-image:linear-gradient(to bottom,transparent,#000 55%)}
+}
+/* Alamenüü täpselt 58 px kõrge (sama kõrgus kui kalendrimull), asukoht sama; vahe mullini 30 px */
+@media(max-width:740px){.view-nav{height:58px;box-sizing:border-box}}
+/* Ürituse kategooriaikoon hall (rahulik, ei võistle inimese värviga); lilla ainult käimasoleval üritusel ("Praegu") */
+.task-main>.event-icon{color:var(--muted)}
+.saved-event-card.event-now .task-main>.event-icon{color:var(--accent)}
+/* Ürituse ikoon samale toonile kui pliiats (--soft); möödunud üritusel ka (kaart on juba tuhmim) */
+.task-main>.event-icon,.saved-event-card.event-past .event-icon{color:var(--soft)}
+/* PROOV: ürituse ikoon ja pliiats õrnlillad (42 % aktsenti + 58 % halli); "Praegu" üritus jääb täislillaks */
+:root{--icon-soft:color-mix(in srgb,var(--accent) 42%,var(--soft))}
+.task-main>.event-icon,.saved-event-card.event-past .event-icon,.edit-item{color:var(--icon-soft)}
+.saved-event-card.event-now .task-main>.event-icon{color:var(--accent)}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
