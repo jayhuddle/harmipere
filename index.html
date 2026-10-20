@@ -1058,7 +1058,7 @@ details:not(.refine)[open]>summary:before{transform:rotate(90deg)}
 .mail-intro{line-height:1.4;margin:6px 0 12px}
 /* Puudutusalad vähemalt 44 px (Apple'i soovitus): nähtav suurus jääb samaks, haaramisala suureneb läbipaistva pseudoelemendiga */
 @media(pointer:coarse),(max-width:740px){
- .edit-item,.chip,#themeToggle,.theme-toggle,#micButton,#refreshMail,#refreshOverview,.related-link,.section-toggle,summary,.saved-notes a{position:relative}
+ .edit-item,.chip,#themeToggle,.theme-toggle,#refreshMail,#refreshOverview,.related-link,.section-toggle,summary,.saved-notes a{position:relative}
  .edit-item:before{content:'';position:absolute;inset:-6px}
  .chip:after{content:'';position:absolute;inset:-5px -2px}
  .theme-toggle:before,#themeToggle:before,#micButton:before,#refreshMail:before,#refreshOverview:before{content:'';position:absolute;inset:-2px}
@@ -1092,7 +1092,7 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
  .cal-fab{bottom:calc(105px + env(safe-area-inset-bottom))}
  .undo-toast{bottom:calc(177px + env(safe-area-inset-bottom))}
  main{padding-bottom:calc(109px + env(safe-area-inset-bottom))}
- body:after{content:'';position:fixed;left:0;right:0;bottom:0;height:calc(116px + env(safe-area-inset-bottom));z-index:40;pointer-events:none;background:linear-gradient(to bottom,transparent,color-mix(in srgb,var(--bg) 80%,transparent) 80%);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);-webkit-mask-image:linear-gradient(to bottom,transparent,#000 55%);mask-image:linear-gradient(to bottom,transparent,#000 55%)}
+ html:after{content:'';position:fixed;left:0;right:0;bottom:0;height:calc(116px + env(safe-area-inset-bottom));z-index:40;pointer-events:none;background:linear-gradient(to bottom,transparent,color-mix(in srgb,var(--bg) 80%,transparent) 80%);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);-webkit-mask-image:linear-gradient(to bottom,transparent,#000 55%);mask-image:linear-gradient(to bottom,transparent,#000 55%)}
 }
 /* Alamenüü täpselt 58 px kõrge (sama kõrgus kui kalendrimull), asukoht sama; vahe mullini 30 px */
 @media(max-width:740px){.view-nav{height:58px;box-sizing:border-box}}
