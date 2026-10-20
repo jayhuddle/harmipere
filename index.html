@@ -1054,6 +1054,38 @@ details:not(.refine)[open]>summary:before{transform:rotate(90deg)}
 @media(max-width:740px){main{padding-bottom:calc(112px + env(safe-area-inset-bottom))}}
 /* Luup samale kesklinjale kalendrinupuga (nupp 58px, serv 16px => keskpunkt 45px paremalt): veerg 48+4px mahub paneeli, parem polster 8px */
 @media(max-width:740px){.view-nav{grid-template-columns:repeat(3,minmax(0,1fr)) 52px;padding:5px 8px 5px 6px}}
+/* E-kirjade sissejuhatus: 15 px, tihedam reavahe */
+.mail-intro{line-height:1.4;margin:6px 0 12px}
+/* Puudutusalad vähemalt 44 px (Apple'i soovitus): nähtav suurus jääb samaks, haaramisala suureneb läbipaistva pseudoelemendiga */
+@media(pointer:coarse),(max-width:740px){
+ .edit-item,.chip,#themeToggle,.theme-toggle,#micButton,#refreshMail,#refreshOverview,.related-link,.section-toggle,summary,.saved-notes a{position:relative}
+ .edit-item:before{content:'';position:absolute;inset:-6px}
+ .chip:after{content:'';position:absolute;inset:-5px -2px}
+ .theme-toggle:before,#themeToggle:before,#micButton:before,#refreshMail:before,#refreshOverview:before{content:'';position:absolute;inset:-2px}
+ .related-link:before{content:'';position:absolute;inset:-5px 0}
+ .section-toggle:before{content:'';position:absolute;inset:-6px 0}
+ details:not(.refine)>summary:after{content:'';position:absolute;inset:-14px 0}
+ .task-main>.complete-button:before{inset:-12px}
+ .location-link:before{inset:-15px -14px}
+ button.primary,.actions button,#analyze{min-height:44px}
+ #sourceDate{min-height:44px}
+}
+/* Kontrast (ainult värvid, suurused samaks): väike hall tekst vähemalt ~4,5:1 heledas teemas */
+#overviewView .overview-date{color:color-mix(in srgb,var(--ink) 72%,transparent)}
+.agenda-day small,.cal-weekdays span,.dp-dow{color:var(--muted)}
+textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88%,transparent)}
+/* Pealkirja ja sisu vahe pärast alampealkirja eemaldamist: sama 16 px Sisesta ja Pere ülevaate lehel */
+#inputView h1{margin-bottom:var(--s4)}
+#overviewView .overview-top{margin-bottom:var(--s4)}
+/* Arvuti: Pere ülevaate kiibid täpselt samale kõrgusele nagu Sisesta lehe kast (ülevaate päis on 13 px kõrgem kui pealkiri) */
+@media(min-width:741px){#overviewView .overview-top{margin-bottom:0}#overviewView .overview-filters{margin-top:3px}}
+/* Telefoni alamenüü 2 px kõrgemale (kasutaja soov); muu nagu enne vahede ühtlustamist */
+@media(max-width:740px){
+ .view-nav{bottom:calc(22px + env(safe-area-inset-bottom))}
+ .cal-fab{bottom:calc(110px + env(safe-area-inset-bottom))}
+ .undo-toast{bottom:calc(182px + env(safe-area-inset-bottom))}
+ main{padding-bottom:calc(114px + env(safe-area-inset-bottom))}
+}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
@@ -1155,7 +1187,7 @@ body:after{content:'';position:absolute;top:0;left:0;right:0;height:180px;z-inde
 <nav class="view-nav" aria-label="Pereäpi vaated"><button id="inputTab" type="button" aria-pressed="true" aria-label="Lisa infot" title="Lisa infot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"/></svg></button><button id="overviewTab" type="button" aria-pressed="false" aria-label="Pere ülevaade" title="Pere ülevaade"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/></svg><span id="urgentCount" class="nav-count" hidden></span></button><button id="mailTab" type="button" aria-pressed="false" aria-label="E-kirjad" title="E-kirjad"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span id="mailCount" class="nav-count" hidden></span></button></nav>
 <div id="inputView">
 <div class="eyebrow">Vähem meelespidamist</div><h1>Kõik oluline ühest teatest.</h1>
-<p class="intro">Kleebi kutse või kooliteade, lisa pilt.<span class="intro-more"> Vaata üle, millised sündmused, ülesanded ja arved sellest välja tulevad.</span></p>
+
 <div class="layout">
 <section class="panel" aria-label="Lisa pereinfo">
 <label for="text">Teade, kutse või sinu enda märkus</label>
@@ -1178,13 +1210,13 @@ body:after{content:'';position:absolute;top:0;left:0;right:0;height:180px;z-inde
 <section id="overviewView" hidden aria-label="Salvestatud pereinfo">
 <button id="calendarButton" class="cal-fab" type="button" aria-label="Kalender" title="Kalender" aria-haspopup="dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/></svg></button>
 <div class="overview-top"><div><div class="eyebrow">Kõik vajalik käepärast</div><div class="overview-title"><h1>Pere ülevaade</h1><span id="overviewDate" class="overview-date"></span></div></div><button id="refreshOverview" class="icon-button" type="button" aria-label="Värskenda" title="Värskenda" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg></button><button id="searchButton" class="theme-toggle search-toggle" type="button" aria-label="Otsi" title="Otsi" aria-haspopup="dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></button></div>
-<p class="intro">Üritused ja tegemised ühel lehel</p>
+
 <div class="overview-filters"><div id="personChips" class="person-chips" role="group" aria-label="Pereliige"></div><select id="overviewPerson" hidden aria-label="Filtreeri pereliikme järgi"><option value="">Kõik pereliikmed</option></select></div>
 <p id="overviewStatus" class="status overview-message" role="status" aria-live="polite"></p>
 <section id="weekSection" class="week-section" aria-label="See nädal"><h2>See nädal <span id="weekCount" class="count"></span></h2><div id="savedWeek"></div></section>
 <div class="overview-grid"><section id="tasksSection" class="tasks-section collapsed" aria-label="Ülesannete loend"><h2><button id="tasksToggle" class="section-toggle" type="button" aria-expanded="false" aria-controls="savedTasks"><span>Ülesanded <span id="taskCount" class="count"></span></span><span id="taskUrgent" class="section-urgent" hidden></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></h2><div id="savedTasks"></div><label class="show-done"><input id="showDone" type="checkbox">Näita ka tehtud ülesandeid</label><div id="doneTasks"></div></section><section aria-label="Ürituste loend"><h2>Üritused <span id="eventCount" class="count"></span></h2><div id="savedEvents"></div></section></div>
 </section>
-<section id="mailView" hidden aria-label="Perepostkasti kirjad"><div class="overview-top"><h1>E-kirjad</h1><button id="refreshMail" class="icon-button" type="button" aria-label="Värskenda" title="Värskenda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg></button></div><p class="saved-meta">Automaatika lisab selged uued sündmused ja ülesanded. Siin saad üle vaadata ebaselge info ja töötluse tulemused. „Peida” jätab Gmaili kirja alles.</p><div class="overview-filters"><label><input id="showProcessedMail" type="checkbox">Näita ka automaatselt töödeldud kirju</label></div><p id="mailStatus" class="status" role="status" aria-live="polite"></p><div id="mailCards"></div></section>
+<section id="mailView" hidden aria-label="Perepostkasti kirjad"><div class="overview-top"><h1>E-kirjad</h1><button id="refreshMail" class="icon-button" type="button" aria-label="Värskenda" title="Värskenda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg></button></div><p class="saved-meta mail-intro">Automaatika lisab selged sündmused ise. Siin on ebaselged, mis vajavad sind.</p><div class="overview-filters"><label><input id="showProcessedMail" type="checkbox">Näita ka automaatselt töödeldud kirju</label></div><p id="mailStatus" class="status" role="status" aria-live="polite"></p><div id="mailCards"></div></section>
 <footer>Kuni 40 töötluskatset päevas · AI tulemus vajab ülevaatamist · <button type="button" class="logout-link" onclick="pereLogout()">Logi välja</button><span id="pushWrap" hidden> · <button type="button" class="logout-link" id="pushToggle"></button></span><span id="diagWrap" hidden> · <button type="button" class="logout-link" onclick="pereDiag()">Veateave</button></span></footer><script>(function(){const KEY='pere-last-bad-response';function read(){try{return localStorage.getItem(KEY);}catch(_){return null;}}
  function sync(){const wrap=document.getElementById('diagWrap');if(wrap)wrap.hidden=!read();}
  window.pereDiag=async()=>{const raw=read();if(!raw)return;let text=raw;try{const d=JSON.parse(raw);text='Aeg: '+d.at+'\nToiming: '+d.action+'\nHTTP: '+d.status+(d.attempt?'\nKatse: '+d.attempt+'/3':'')+'\nKordus aitas: '+(d.recovered?'jah (tõrget ei olnud näha)':'ei / teadmata')+'\nVastus: '+d.text;}catch(_){}
@@ -1488,7 +1520,7 @@ function loadMail(collect=false){
   mailLoading=false;$('refreshMail').disabled=false;$('refreshMail').setAttribute('aria-label','Värskenda');$('mailCards').replaceChildren();updateMailBadge(data.items);
   const processed=['Automaatselt lisatud','Juba olemas','Ebaoluline','Käsitsi lisatud'];
   const visible=data.items.filter(item=>$('showProcessedMail').checked||!processed.includes(item.status));
-  mailStatus(data.refreshMessage||(data.limited?'Kuvatud on viimase 500 kirja seas olevad peitmata kirjad.':visible.length?'':'Ülevaatamist ootavaid kirju pole. Töödeldud kirju näed ülal oleva valikuga.'));
+  mailStatus(data.refreshMessage||(data.limited?'Kuvatud on viimase 500 kirja seas olevad peitmata kirjad.':visible.length?'':'Kõik korras: ükski kiri ei vaja sind. Töödeldud kirju näed ülal oleva valikuga.'));
   visible.sort((a,b)=>(b.status==='Vajab ülevaatamist')-(a.status==='Vajab ülevaatamist'));
   visible.forEach(item=>{
    const card=document.createElement('article');card.className='saved-card mail-card'+(item.status==='Vajab ülevaatamist'?' needs-review':'');savedText(card,'h3',item.subject||'(Teemata kiri)');
@@ -1838,7 +1870,7 @@ function renderOverview(){
  const weekTasks=items.filter(item=>isTask(item)&&inWeek(item)).sort((a,b)=>a.deadline.localeCompare(b.deadline));
  const weekEvents=items.filter(item=>item.kind==='event'&&inWeek(item)).sort((a,b)=>(a.date+' '+a.time).localeCompare(b.date+' '+b.time));
  $('savedWeek').replaceChildren();$('weekCount').textContent=String(weekTasks.length+weekEvents.length);$('weekCount').hidden=!(weekTasks.length+weekEvents.length);
- if(!weekTasks.length&&!weekEvents.length)savedText($('savedWeek'),'p','Järgmise 7 päeva jooksul pole midagi kirjas.','empty');
+ if(!weekTasks.length&&!weekEvents.length)savedText($('savedWeek'),'p','Selleks nädalaks on kõik vaba.','empty');
  else if(typeof window!=='undefined'&&window.matchMedia&&window.matchMedia('(max-width:740px)').matches){
   const week=$('savedWeek'),overdue=weekTasks.filter(item=>item.deadline<today);
   if(overdue.length){savedText(week,'div','Üle tähtaja','week-col-label overdue-label');overdue.forEach(item=>taskCard(item,week));}
@@ -1874,7 +1906,7 @@ function renderOverview(){
    const line=$('savedTasks').lastElementChild;if(!item.deadline&&line&&line.classList)line.classList.add('undated-divider');}
   taskCard(item,$('savedTasks'));
  });
- if(!tasks.length)savedText($('savedTasks'),'p',items.some(item=>isTask(item)&&inWeek(item))?'Lähemad ülesanded on „See nädal” all.':items.some(isTask)?'Kõik selle vaate ülesanded on tehtud.':'Ülesandeid pole veel salvestatud.','empty');
+ if(!tasks.length)savedText($('savedTasks'),'p',items.some(item=>isTask(item)&&inWeek(item))?'Lähemad ülesanded on „See nädal” all.':items.some(isTask)?'Kõik ülesanded on tehtud, hea töö!':'Ülesandeid pole veel salvestatud.','empty');
  const events=items.filter(item=>item.kind==='event').sort((a,b)=>(a.date+' '+a.time).localeCompare(b.date+' '+b.time));
  const later=events.filter(item=>item.date>weekEnd);
  $('eventCount').textContent='('+later.length+' hiljem)';
@@ -1905,7 +1937,7 @@ function renderLaterMonths(tasks,later,taskCard,eventCard){
  tasks.forEach(item=>slot(item.deadline?item.deadline.slice(0,7):'9999').tasks.push(item));
  const undated=months.get('9999');months.delete('9999');
  const keys=[...months.keys()].sort();
- if(!keys.length&&!undated){savedText(box,'p','Hilisemaid ülesandeid ega üritusi pole.','empty');return;}
+ if(!keys.length&&!undated){savedText(box,'p','Hilisemaid ülesandeid ega üritusi pole, kõik on korras.','empty');return;}
  const monthHead=(block,label,count)=>{const head=document.createElement('h2');head.className='later-head';savedText(head,'span',label);if(count!=null)savedText(head,'span',String(count),'later-count');block.append(head);return head;};
  const columns=(block,month)=>{const cols=document.createElement('div');cols.className='later-cols';
   [[month.tasks,'Ülesanded',taskCard],[month.events,'Üritused',eventCard]].forEach(([list,label,draw])=>{
@@ -2148,7 +2180,7 @@ function renderCalendar(){
    card.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();focusItemKey(item.key);}});}
   sheet.append(card);
  });
- if(!list.length)savedText(sheet,'p','Sel päeval pole midagi kirjas.','empty');
+ if(!list.length)savedText(sheet,'p','Sel päeval on vaba.','empty');
 }
 $('calendarButton').onclick=openCalendar;$('calScrim').onclick=()=>closeCalendar();
 // Arvutis on päis akna laiune kleepuv riba: logo vasakul, vaated paremal, siis otsing ja teema. Telefonis on vaated all
