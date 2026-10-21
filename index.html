@@ -1117,8 +1117,6 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 }
 /* Hajutus veel pehmem: riba alt servast paistab sisu häguselt (hägu 6 px, tint 32 %) */
 @media(max-width:740px){.nav-fade{background:linear-gradient(to bottom,transparent,color-mix(in srgb,var(--bg) 32%,transparent) 78%);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}}
-/* Hajutus ilma backdrop-filter'i ja maskita (telefonis tekitas kerimisel vahel tühje ribasid / värelust); lihtne gradient-tint, riba alt paistab sisu õrnalt läbi */
-@media(max-width:740px){.nav-fade{background:linear-gradient(to bottom,transparent,color-mix(in srgb,var(--bg) 58%,transparent) 85%);-webkit-backdrop-filter:none;backdrop-filter:none;-webkit-mask-image:none;mask-image:none}}
 /* Varasemad möödunud üritused: ainult pealkirjaosa (kompaktne kaart), puudutus avab täiskaardi */
 .saved-card.compact-past{cursor:pointer;padding-top:10px;padding-bottom:10px;-webkit-tap-highlight-color:transparent}
 .saved-card.compact-past .task-body{min-width:0}
