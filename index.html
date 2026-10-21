@@ -1123,6 +1123,8 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 .saved-card.compact-past{cursor:pointer;padding-top:10px;padding-bottom:10px;-webkit-tap-highlight-color:transparent}
 .saved-card.compact-past .task-body{min-width:0}
 .saved-card.compact-past:focus-visible{outline:2px solid color-mix(in srgb,var(--accent) 55%,transparent);outline-offset:2px}
+/* Kaartidelt hägu ära: iga kaart oli oma backdrop-filter kiht (kümneid), mis ületas telefonis GPU mälu ja kerimisel kadusid lehe ülaosa (pealkiri, kiibid) tühjaks. Taust on sile gradient, nii et hägu pole nähtav. */
+.saved-card,:root[data-theme="dark"] .saved-card,.item,:root[data-theme="dark"] .item{-webkit-backdrop-filter:none;backdrop-filter:none}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
