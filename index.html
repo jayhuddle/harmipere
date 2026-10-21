@@ -11,7 +11,8 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Härmipere">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="manifest" href="manifest.webmanifest">
+<link rel="manifest" href="manifest.webmanifest" id="pereManifest">
+<script>(function(){try{const link=document.getElementById("pereManifest");if(!link)return;const mq=window.matchMedia?matchMedia("(prefers-color-scheme: dark)"):null;const dark=()=>{let t=null;try{t=localStorage.getItem("pere-theme");}catch(_){}return t==="dark"||(t!=="light"&&!!mq&&mq.matches);};const apply=()=>{const want=dark()?"manifest-dark.webmanifest":"manifest.webmanifest";if(link.getAttribute("href")!==want)link.setAttribute("href",want);};apply();window.pereSyncManifest=apply;if(mq){if(mq.addEventListener)mq.addEventListener("change",apply);else if(mq.addListener)mq.addListener(apply);}}catch(_){}})();</script>
 <link rel="icon" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <title>Härmipere</title>
@@ -1440,7 +1441,7 @@ function applyTheme(mode){
 applyTheme(themeMode);
 $('themeToggle').onclick=()=>{
  themeMode={auto:'light',light:'dark',dark:'auto'}[themeMode];applyTheme(themeMode);
- try{if(themeMode==='auto')localStorage.removeItem('pere-theme');else localStorage.setItem('pere-theme',themeMode);}catch(_){}
+ try{if(themeMode==='auto')localStorage.removeItem('pere-theme');else localStorage.setItem('pere-theme',themeMode);}catch(_){}try{if(window.pereSyncManifest)window.pereSyncManifest();}catch(_){}
 };
 // Animatsioonid: lehevahetus, kiipidega filtreerimine, märgi põrge, tehtud ülesande lahkumine, salvestamise "lend" Pere nupu poole.
 // Kõik lülituvad välja, kui seadmes on "vähenda liikumist"; kui brauser View Transitions'it ei toeta, toimub muutus lihtsalt ilma animatsioonita.

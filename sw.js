@@ -1,5 +1,5 @@
 // Ainult äpi enda failid: võrk eelkõige, vahemälu varuks. API, fondid ja Google'i login lähevad otse võrku.
-const CACHE='pere-shell-v2',FILES=['./','index.html','config.js','manifest.webmanifest','icons/icon-192.png','icons/icon-512.png','icons/apple-touch-icon.png'];
+const CACHE='pere-shell-v2',FILES=['./','index.html','config.js','manifest.webmanifest','manifest-dark.webmanifest','icons/icon-192.png','icons/icon-512.png','icons/apple-touch-icon.png'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(FILES)).then(()=>self.skipWaiting()));});
 self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE&&key!=='pere-share').map(key=>caches.delete(key)))).then(()=>self.clients.claim()));});
 // Äpi push (FCM data-only sõnum {title, body, url, tag}): kuva teade; koputus avab äpi.
