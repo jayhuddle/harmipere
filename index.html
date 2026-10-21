@@ -1117,6 +1117,8 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 }
 /* Hajutus veel pehmem: riba alt servast paistab sisu häguselt (hägu 6 px, tint 32 %) */
 @media(max-width:740px){.nav-fade{background:linear-gradient(to bottom,transparent,color-mix(in srgb,var(--bg) 32%,transparent) 78%);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}}
+/* Hajutus ilma backdrop-filter'i ja maskita (telefonis tekitas kerimisel vahel tühje ribasid / värelust); lihtne gradient-tint, riba alt paistab sisu õrnalt läbi */
+@media(max-width:740px){.nav-fade{background:linear-gradient(to bottom,transparent,color-mix(in srgb,var(--bg) 58%,transparent) 85%);-webkit-backdrop-filter:none;backdrop-filter:none;-webkit-mask-image:none;mask-image:none}}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
@@ -1294,13 +1296,13 @@ body:after{content:'';position:absolute;top:0;left:0;right:0;height:180px;z-inde
  }
  // Ilma ühenduseta "märgi tehtuks / ava uuesti": märge jääb seadmesse ootele (sama ülesande kohta ainult viimane) ja saadetakse,
  // kui ühendus taastub (online-sündmus, äpi avamine, enne iga lugemispäringut). Toiming seab oleku, nii et kordamine on ohutu.
- const OUTBOX='pere-outbox',QUEUEABLE={pereSetTaskDone:true};
+ const OUTBOX='pere-outbox',QUEUEABLE={pereSetTaskDone:true,pereMailMarkDone:true},QUEUE_ON_ANY={pereMailMarkDone:true};
  function outbox(){try{const list=JSON.parse(localStorage.getItem(OUTBOX)||'[]');return Array.isArray(list)?list:[];}catch(_){return [];}}
  function saveOutbox(list){try{list.length?localStorage.setItem(OUTBOX,JSON.stringify(list)):localStorage.removeItem(OUTBOX);}catch(_){}}
  function queueOffline(action,arg){
-  const key=arg&&arg.key,list=outbox().filter(job=>!(job.action===action&&job.arg&&job.arg.key===key));
+  const key=arg&&(arg.key||arg.id),list=outbox().filter(job=>!(job.action===action&&job.arg&&(job.arg.key||job.arg.id)===key));
   list.push({id:Date.now()+'-'+Math.random().toString(36).slice(2,8),action,arg});saveOutbox(list.slice(-50));
-  return {status:arg&&arg.done?'Tehtud':'Avatud',queued:true};
+  return action==='pereMailMarkDone'?{id:arg&&arg.id,status:'Käsitsi lisatud',queued:true}:{status:arg&&arg.done?'Tehtud':'Avatud',queued:true};
  }
  let flushing=null;
  function flushOutbox(){
@@ -1310,7 +1312,7 @@ body:after{content:'';position:absolute;top:0;left:0;right:0;height:180px;z-inde
    let sent=0;
    for(const job of outbox()){
     try{await send(job.action,job.arg,false);sent++;}
-    catch(error){if(error.network||error.auth)break;}
+    catch(error){if(error.network||error.auth||/Server ei vastanud/.test(error.message||''))break;}
     saveOutbox(outbox().filter(other=>other.id!==job.id));
    }
    if(sent&&typeof window.pereOutboxSent==='function')window.pereOutboxSent(sent);
@@ -1322,7 +1324,7 @@ body:after{content:'';position:absolute;top:0;left:0;right:0;height:180px;z-inde
   if(QUEUEABLE[action]&&typeof navigator!=='undefined'&&navigator.onLine===false)return queueOffline(action,arg);
   if(/^pere(List|Profile)/.test(action))await flushOutbox().catch(()=>0);
   try{return await send(action,arg,retry);}
-  catch(error){if(error.network&&QUEUEABLE[action])return queueOffline(action,arg);throw error;}
+  catch(error){if(QUEUEABLE[action]&&!error.auth&&(error.network||QUEUE_ON_ANY[action]))return queueOffline(action,arg);throw error;}
  }
  if(typeof window.addEventListener==='function')window.addEventListener('online',()=>{flushOutbox().catch(()=>0);});
  window.perePendingCount=()=>outbox().length;
@@ -1576,7 +1578,7 @@ function loadMail(collect=false){
      if(source.analysis){
       sourceSnapshot={text:source.text,sourceDate:source.sourceDate,person:'',images:source.images,mailStatus:source.status};result=source.analysis;renderResult();
       status((processed.includes(source.status)?'See kiri on juba automaatselt töödeldud. Muudatusi tee olemasoleva kirje juures.':'AI eelvaade on valmis. Täpsusta vajalik info ja salvesta.')+(source.note?'\n'+source.note:''));
-     }else status('E-kiri laaditud. Kontrolli algse teate kuupäeva ja vajuta „Sisesta info”.'+(source.warnings?'\n'+source.warnings:''));
+     }else if(!source.warnings){status('E-kiri laaditud, töötlen…');setTimeout(()=>{if(!busy&&!loadingImages&&$('analyze').click)$('analyze').click();},60);}else status('E-kiri laaditud. Kontrolli algse teate kuupäeva ja vajuta „Sisesta info”.'+(source.warnings?'\n'+source.warnings:''));
      mailStatus('');showResultsCard();
     }).withFailureHandler(error=>{setBusy(false);open.disabled=false;hide.disabled=false;mailStatus(error.message||'Kirja laadimine ebaõnnestus.',true);}).pereLoadMail(item.id);
    };
