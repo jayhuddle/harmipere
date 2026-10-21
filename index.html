@@ -1119,6 +1119,10 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 @media(max-width:740px){.nav-fade{background:linear-gradient(to bottom,transparent,color-mix(in srgb,var(--bg) 32%,transparent) 78%);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}}
 /* Hajutus ilma backdrop-filter'i ja maskita (telefonis tekitas kerimisel vahel tühje ribasid / värelust); lihtne gradient-tint, riba alt paistab sisu õrnalt läbi */
 @media(max-width:740px){.nav-fade{background:linear-gradient(to bottom,transparent,color-mix(in srgb,var(--bg) 58%,transparent) 85%);-webkit-backdrop-filter:none;backdrop-filter:none;-webkit-mask-image:none;mask-image:none}}
+/* Varasemad möödunud üritused: ainult pealkirjaosa (kompaktne kaart), puudutus avab täiskaardi */
+.saved-card.compact-past{cursor:pointer;padding-top:10px;padding-bottom:10px;-webkit-tap-highlight-color:transparent}
+.saved-card.compact-past .task-body{min-width:0}
+.saved-card.compact-past:focus-visible{outline:2px solid color-mix(in srgb,var(--accent) 55%,transparent);outline-offset:2px}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
@@ -1879,9 +1883,21 @@ function renderOverview(){
   const tools=document.createElement('div');tools.className='card-tools';tools.append(editButton(item));footer.append(content,tools);body.append(footer);
   main.append(complete,body);card.append(main);parent.append(card);
  }
+ // Varasemad möödunud üritused (peale viimase) on kompaktse kaardina: ainult ikoon, pealkiri ja inimene. Puudutus avab täiskaardi; täpsemalt näeb kalendrist.
+ const compactPast=new Set();
+ function compactEventCard(item,parent){
+  const card=document.createElement('article');card.className='saved-card saved-event-card event-past compact-past';if(card.dataset)card.dataset.key=item.key;overviewEventCards.set(item.key,card);
+  const main=document.createElement('div'),body=document.createElement('div'),heading=document.createElement('div');main.className='task-main event-main';body.className='task-body';heading.className='saved-event-heading';
+  savedText(heading,'h3',item.title);savedPersonTag(heading,item.person);body.append(heading);main.append(eventIconNode(item),body);card.append(main);
+  card.tabIndex=0;card.setAttribute('role','button');card.setAttribute('aria-label','Näita üksikasju: '+item.title);
+  const open=()=>{const tmp=document.createElement('div');compactPast.delete(item.key);eventCard(item,tmp);const full=tmp.firstChild||(tmp.children&&tmp.children[0]);if(full&&card.replaceWith)card.replaceWith(full);};
+  card.onclick=open;card.onkeydown=event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();open();}};
+  parent.append(card);
+ }
  function eventCard(item,parent){
   if(editing(item,parent))return;
   const phase=eventPhase(item,tallinnNow());overviewPhases.set(item.key,phase);
+  if(phase==='past'&&compactPast.has(item.key)){compactEventCard(item,parent);return;}
   const card=document.createElement('article');card.className='saved-card saved-event-card'+(phase?' event-'+phase:'');if(card.dataset)card.dataset.key=item.key;overviewEventCards.set(item.key,card);
   const heading=document.createElement('div');heading.className='saved-event-heading';
   savedText(heading,'h3',item.title);savedPersonTag(heading,item.person);card.append(heading);
@@ -1902,6 +1918,7 @@ function renderOverview(){
  // See nädal: arvutis ülesanded vasakul (üle tähtaja ees) ja üritused paremal; mobiilis päevade kaupa segamini (üle tähtaja ülal; päeva sees ülesanded enne üritusi).
  const weekTasks=items.filter(item=>isTask(item)&&inWeek(item)).sort((a,b)=>a.deadline.localeCompare(b.deadline));
  const weekEvents=items.filter(item=>item.kind==='event'&&inWeek(item)).sort((a,b)=>(a.date+' '+a.time).localeCompare(b.date+' '+b.time));
+ {const nowIso=tallinnNow(),past=weekEvents.filter(item=>eventPhase(item,nowIso)==='past');past.slice(0,-1).forEach(item=>compactPast.add(item.key));}
  $('savedWeek').replaceChildren();$('weekCount').textContent=String(weekTasks.length+weekEvents.length);$('weekCount').hidden=!(weekTasks.length+weekEvents.length);
  if(!weekTasks.length&&!weekEvents.length)savedText($('savedWeek'),'p','Selleks nädalaks on kõik vaba.','empty');
  else if(typeof window!=='undefined'&&window.matchMedia&&window.matchMedia('(max-width:740px)').matches){
