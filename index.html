@@ -1823,7 +1823,8 @@ function eventPhase(item,now){
 let overviewPhases=new Map();
 // "Pere ülevaade" kõrval tänane kuupäev: kui ekraanile mahub (≥480 px), nädalapäev sõnana ("Esmaspäev 19.10.2026"), muidu lühike ("E 19.10.2026").
 const WEEKDAYS_LONG=['Pühapäev','Esmaspäev','Teisipäev','Kolmapäev','Neljapäev','Reede','Laupäev'];
-let overviewDateIso='';
+let overviewDateIso='',weekDrawing=false;
+function longDay(date,lower){if(!date)return '';const name=WEEKDAYS_LONG[new Date(date+'T12:00:00Z').getUTCDay()];return (lower?name.toLowerCase():name)+' '+shortDate(date);}
 function setOverviewDate(iso){
  if(iso)overviewDateIso=iso;if(!overviewDateIso)return;
  const wide=typeof window!=='undefined'&&typeof window.matchMedia==='function'&&window.matchMedia('(min-width:480px)').matches;
@@ -1858,7 +1859,7 @@ function renderOverview(){
   if(completing.has(item.key)){const strike=document.createElement('span');strike.className='strike';strike.textContent=titleText;strike.style.animationDelay=(-(Date.now()-completing.get(item.key))/1000)+'s';h3.append(strike);}else h3.textContent=titleText;
   heading.append(h3);savedPersonTag(heading,item.person);body.append(heading);
   if(item.deadline){const late=item.status!=='Tehtud'&&item.deadline<today,isToday=item.deadline===today,soon=item.status!=='Tehtud'&&item.deadline===tomorrow;
-   savedText(body,'p','Tähtaeg: '+shortDay(item.deadline)+(late?' · üle tähtaja':isToday?' · täna':soon?' · homme':''),'saved-deadline'+(late?' overdue':isToday?' today':soon?' tomorrow':''));
+   savedText(body,'p','Tähtaeg: '+(weekDrawing?longDay(item.deadline,true):shortDay(item.deadline))+(late?' · üle tähtaja':isToday?' · täna':soon?' · homme':''),'saved-deadline'+(late?' overdue':isToday?' today':soon?' tomorrow':''));
   }else savedText(body,'p','Tähtaega pole määratud','saved-meta');
   if(item.relatedEvent){const rel=item.relatedEvent,link=document.createElement('button');link.type='button';link.className='saved-related related-link';
    const label=document.createElement('span');label.className='related-text';label.textContent='Üritus: '+rel.title+' · '+shortDay(rel.date);
@@ -1905,7 +1906,7 @@ function renderOverview(){
   if(phase==='now')savedText(card,'p','Praegu'+(item.endTime?' · kuni '+item.endTime:item.time?' · algas '+item.time:''),'saved-deadline now-line');
   // Telefoni "See nädal" on päevade kaupa (päeva pealkiri ütleb kuupäeva): kaardil ainult kellaaeg; mitmepäevasel jääb täiskuupäev.
   else if(parent===$('savedWeek')&&!(item.endDate&&item.endDate>item.date))savedText(card,'p',(phase==='past'?'Toimus · ':'')+(item.time?item.time+(item.endTime?'–'+item.endTime:''):'Kogu päev'),'saved-deadline');
-  else savedText(card,'p',(phase==='past'&&item.date===today?'Toimus täna · ':item.date===today?'Täna · ':item.date===tomorrow?'Homme · ':'')+shortDay(item.date)+(item.time?' · '+item.time+(item.endTime?'–'+item.endTime:''):' · kogu päev'),'saved-deadline');
+  else savedText(card,'p',(phase==='past'&&item.date===today?'Toimus täna · ':item.date===today?'Täna · ':item.date===tomorrow?'Homme · ':'')+(weekDrawing?longDay(item.date,item.date===today||item.date===tomorrow):shortDay(item.date))+(item.time?' · '+item.time+(item.endTime?'–'+item.endTime:''):' · kogu päev'),'saved-deadline');
   if(item.location)savedLocation(card,item.location);
   if(conflicts.has(item.key))savedText(card,'p','Kattub: '+conflicts.get(item.key).join('; '),'saved-conflict');
   savedNotes(card,item);
@@ -1921,6 +1922,7 @@ function renderOverview(){
  const weekEvents=items.filter(item=>item.kind==='event'&&inWeek(item)).sort((a,b)=>(a.date+' '+a.time).localeCompare(b.date+' '+b.time));
  {const nowIso=tallinnNow(),past=weekEvents.filter(item=>eventPhase(item,nowIso)==='past');past.slice(0,-1).forEach(item=>compactPast.add(item.key));}
  $('savedWeek').replaceChildren();$('weekCount').textContent=String(weekTasks.length+weekEvents.length);$('weekCount').hidden=!(weekTasks.length+weekEvents.length);
+ weekDrawing=true;
  if(!weekTasks.length&&!weekEvents.length)savedText($('savedWeek'),'p','Selleks nädalaks on kõik vaba.','empty');
  else if(typeof window!=='undefined'&&window.matchMedia&&window.matchMedia('(max-width:740px)').matches){
   const week=$('savedWeek'),overdue=weekTasks.filter(item=>item.deadline<today);
@@ -1929,13 +1931,14 @@ function renderOverview(){
    const date=addDays(today,i),dayEvents=weekEvents.filter(item=>item.date===date),dayTasks=weekTasks.filter(item=>item.deadline===date);
    if(!dayEvents.length&&!dayTasks.length)continue;
    const head=document.createElement('div');head.className='agenda-day'+(i===0?' today':'');
-   savedText(head,'span',(i===0?'Täna · ':i===1?'Homme · ':'')+shortDay(date));const holiday=calOff(date).holiday;if(holiday)savedText(head,'small',holiday);week.append(head);
+   savedText(head,'span',(i===0?'Täna · ':i===1?'Homme · ':'')+longDay(date));const holiday=calOff(date).holiday;if(holiday)savedText(head,'small',holiday);week.append(head);
    dayTasks.forEach(item=>taskCard(item,week));dayEvents.forEach(item=>eventCard(item,week));
   }
  }else [[weekTasks,'Ülesanded','Sel nädalal ülesandeid pole.',taskCard],[weekEvents,'Üritused','Sel nädalal üritusi pole.',eventCard]].forEach(([list,label,empty,draw])=>{
   const column=document.createElement('div');column.className='week-col';savedText(column,'div',label,'week-col-label');
   list.forEach(item=>draw(item,column));if(!list.length)savedText(column,'p',empty,'empty');$('savedWeek').append(column);
  });
+ weekDrawing=false;
  // Hilisemad avatud ülesanded kuude kaupa; tehtud ülesanded eraldi linnukese all (viimased 3 tähtaja järgi + kõik, mille üritus pole veel toimunud).
  const tasks=items.filter(item=>isTask(item)&&!inWeek(item)&&(item.status!=='Tehtud'||completing.has(item.key)))
   .sort((a,b)=>(a.deadline||'9999').localeCompare(b.deadline||'9999'));
