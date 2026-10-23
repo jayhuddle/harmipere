@@ -1124,6 +1124,17 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 .saved-card.compact-past:focus-visible{outline:2px solid color-mix(in srgb,var(--accent) 55%,transparent);outline-offset:2px}
 /* Kaartidelt hägu ära: iga kaart oli oma backdrop-filter kiht (kümneid), mis ületas telefonis GPU mälu ja kerimisel kadusid lehe ülaosa (pealkiri, kiibid) tühjaks. Taust on sile gradient, nii et hägu pole nähtav. */
 .saved-card,:root[data-theme="dark"] .saved-card,.item,:root[data-theme="dark"] .item{-webkit-backdrop-filter:none;backdrop-filter:none}
+/* Pikk katkematu tekst (link, koht) ei tohi kaarte ekraanist laiemaks venitada. */
+.saved-card,.saved-card .task-main,.saved-card .task-body,.saved-card .saved-event-heading,.saved-card .saved-event-footer,.saved-card a{min-width:0;max-width:100%}
+.saved-card h3,.saved-card p,.saved-card a,.saved-card .task-body{overflow-wrap:anywhere}
+/* "Töötlen…" nupul pöörlev ring ja liikuvad täpid, et oleks näha, et midagi toimub. */
+#analyze .busy-spin{display:inline-block;width:1em;height:1em;margin-right:.55em;vertical-align:-.15em;border:2.2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:busy-spin .8s linear infinite}
+#analyze .busy-dots span{animation:busy-dot 1.2s infinite both}
+#analyze .busy-dots span:nth-child(2){animation-delay:.2s}
+#analyze .busy-dots span:nth-child(3){animation-delay:.4s}
+@keyframes busy-spin{to{transform:rotate(360deg)}}
+@keyframes busy-dot{0%,80%,100%{opacity:.2}40%{opacity:1}}
+@media(prefers-reduced-motion:reduce){#analyze .busy-spin{animation-duration:2.4s}#analyze .busy-dots span{animation:none}}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
@@ -2430,7 +2441,7 @@ function cacheOverview(){if(savedOverview&&typeof writeCache==='function')writeC
 if(typeof window!=='undefined')window.pereOutboxSent=()=>{if(typeof loadOverview==='function')loadOverview();};
 function status(text, error=false){updateRefine();$('status').textContent=text;$('status').classList.toggle('error',error);}
 function resetResult(){result=null;sourceSnapshot=null;$('results').hidden=true;$('cards').replaceChildren();}
-function setBusy(value){busy=value;['analyze','pick','camera','cameraFile','text','person','personOther','sourceDate','files'].forEach(id=>$(id).disabled=value);$('analyze').innerHTML=value?'Töötlen…':'Sisesta info'+"<svg class=\"enter-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4\"/><path d=\"m10 17 5-5-5-5\"/><path d=\"M15 12H3\"/></svg>";renderImages();}
+function setBusy(value){busy=value;['analyze','pick','camera','cameraFile','text','person','personOther','sourceDate','files'].forEach(id=>$(id).disabled=value);$('analyze').innerHTML=value?'<span class="busy-spin"></span>Töötlen<span class="busy-dots"><span>.</span><span>.</span><span>.</span></span>':'Sisesta info'+"<svg class=\"enter-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4\"/><path d=\"m10 17 5-5-5-5\"/><path d=\"M15 12H3\"/></svg>";renderImages();}
 function sourcePerson(){return $('person').value==='__other__' ? $('personOther').value.trim() : $('person').value;}
 $('person').onchange=()=>{$('personOther').hidden=$('person').value!=='__other__';$('personOther').value='';resetResult();if(!$('personOther').hidden)$('personOther').focus();};
 $('personOther').oninput=resetResult;
