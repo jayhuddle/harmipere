@@ -1127,14 +1127,23 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 /* Pikk katkematu tekst (link, koht) ei tohi kaarte ekraanist laiemaks venitada. */
 .saved-card,.saved-card .task-main,.saved-card .task-body,.saved-card .saved-event-heading,.saved-card .saved-event-footer,.saved-card a{min-width:0;max-width:100%}
 .saved-card h3,.saved-card p,.saved-card a,.saved-card .task-body{overflow-wrap:anywhere}
-/* "Töötlen…" nupul pöörlev ring ja liikuvad täpid, et oleks näha, et midagi toimub. */
-#analyze .busy-spin{display:inline-block;width:1em;height:1em;margin-right:.55em;vertical-align:-.15em;border:2.2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:busy-spin .8s linear infinite}
-#analyze .busy-dots span{animation:busy-dot 1.2s infinite both}
-#analyze .busy-dots span:nth-child(2){animation-delay:.2s}
-#analyze .busy-dots span:nth-child(3){animation-delay:.4s}
-@keyframes busy-spin{to{transform:rotate(360deg)}}
-@keyframes busy-dot{0%,80%,100%{opacity:.2}40%{opacity:1}}
-@media(prefers-reduced-motion:reduce){#analyze .busy-spin{animation-duration:2.4s}#analyze .busy-dots span{animation:none}}
+/* "Töötlen…" nupul: helkiv laine, hõõguv serv ja kolm vaheldumisi pulseerivat sädet. */
+#analyze:has(.busy-sparks),#analyze:disabled:has(.busy-sparks){position:relative;overflow:hidden;opacity:1!important;cursor:progress;animation:busy-glow 1.8s ease-in-out infinite}
+#analyze:has(.busy-sparks):after{content:'';position:absolute;top:0;bottom:0;left:0;width:55%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.38),transparent);transform:translateX(-120%);animation:busy-sheen 1.6s ease-in-out infinite;pointer-events:none}
+#analyze .busy-sparks{display:inline-flex;gap:.28em;margin-right:.6em;vertical-align:middle}
+#analyze .busy-sparks i{width:.42em;height:.42em;border-radius:50%;background:currentColor;animation:busy-spark 1.2s ease-in-out infinite both}
+#analyze .busy-sparks i:nth-child(2){animation-delay:.18s}
+#analyze .busy-sparks i:nth-child(3){animation-delay:.36s}
+@keyframes busy-sheen{to{transform:translateX(280%)}}
+@keyframes busy-glow{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 0%,transparent)}50%{box-shadow:0 0 18px 2px color-mix(in srgb,var(--accent) 55%,transparent)}}
+@keyframes busy-spark{0%,100%{transform:scale(.55);opacity:.35}40%{transform:scale(1.25);opacity:1}}
+@media(prefers-reduced-motion:reduce){#analyze:has(.busy-sparks),#analyze:has(.busy-sparks):after,#analyze .busy-sparks i{animation:none}}
+/* Tühi täna: "See nädal" mobiilivaates esimene rida, üks tekstirida, ilma kastita. */
+.free-today{margin:2px 4px 0;font-size:14px}
+.free-today .free-text{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:.6em;min-width:0;height:1.45em;overflow:hidden;line-height:1.45em}
+.free-today .free-text>*{flex:none;white-space:nowrap}
+.free-today strong{font-weight:700;color:var(--accent)}
+.free-today em{font-style:normal;font-size:12px;color:var(--muted)}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
@@ -1937,6 +1946,16 @@ function renderOverview(){
  if(!weekTasks.length&&!weekEvents.length)savedText($('savedWeek'),'p','Selleks nädalaks on kõik vaba.','empty');
  else if(typeof window!=='undefined'&&window.matchMedia&&window.matchMedia('(max-width:740px)').matches){
   const week=$('savedWeek'),overdue=weekTasks.filter(item=>item.deadline<today);
+  if(!weekTasks.some(item=>item.deadline===today)&&!weekEvents.some(item=>item.date===today)){
+   const free=document.createElement('div');free.className='free-today';
+   const phrases=['Täna on sündmustevaba!','Täna pole midagi plaanis!','Vaba päev, kasuta ära!','Täna saab hinge tõmmata!','Päev on sinu päralt!','Täna on rahulik päev!'];
+   const next=[...weekTasks.map(item=>item.deadline),...weekEvents.map(item=>item.date)].filter(d=>d>today).sort()[0];
+   const when=d=>{if(d===tomorrow)return 'homme';if(d===addDays(today,2))return 'üle-homme';const n=longDay(d,true).split(' ')[0];return n+(n.endsWith('e')?'l':'al');};
+   const text=document.createElement('span');text.className='free-text';
+   savedText(text,'strong',phrases[Math.floor(Date.parse(today+'T12:00:00Z')/86400000)%phrases.length]);
+   if(next)savedText(text,'em','Järgmine asi on '+when(next));
+   free.append(text);week.append(free);
+  }
   if(overdue.length){savedText(week,'div','Üle tähtaja','week-col-label overdue-label');overdue.forEach(item=>taskCard(item,week));}
   for(let i=0;i<7;i++){
    const date=addDays(today,i),dayEvents=weekEvents.filter(item=>item.date===date),dayTasks=weekTasks.filter(item=>item.deadline===date);
@@ -2441,7 +2460,7 @@ function cacheOverview(){if(savedOverview&&typeof writeCache==='function')writeC
 if(typeof window!=='undefined')window.pereOutboxSent=()=>{if(typeof loadOverview==='function')loadOverview();};
 function status(text, error=false){updateRefine();$('status').textContent=text;$('status').classList.toggle('error',error);}
 function resetResult(){result=null;sourceSnapshot=null;$('results').hidden=true;$('cards').replaceChildren();}
-function setBusy(value){busy=value;['analyze','pick','camera','cameraFile','text','person','personOther','sourceDate','files'].forEach(id=>$(id).disabled=value);$('analyze').innerHTML=value?'<span class="busy-spin"></span>Töötlen<span class="busy-dots"><span>.</span><span>.</span><span>.</span></span>':'Sisesta info'+"<svg class=\"enter-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4\"/><path d=\"m10 17 5-5-5-5\"/><path d=\"M15 12H3\"/></svg>";renderImages();}
+function setBusy(value){busy=value;['analyze','pick','camera','cameraFile','text','person','personOther','sourceDate','files'].forEach(id=>$(id).disabled=value);$('analyze').innerHTML=value?'<span class="busy-sparks"><i></i><i></i><i></i></span>Töötlen…':'Sisesta info'+"<svg class=\"enter-icon\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4\"/><path d=\"m10 17 5-5-5-5\"/><path d=\"M15 12H3\"/></svg>";renderImages();}
 function sourcePerson(){return $('person').value==='__other__' ? $('personOther').value.trim() : $('person').value;}
 $('person').onchange=()=>{$('personOther').hidden=$('person').value!=='__other__';$('personOther').value='';resetResult();if(!$('personOther').hidden)$('personOther').focus();};
 $('personOther').oninput=resetResult;
