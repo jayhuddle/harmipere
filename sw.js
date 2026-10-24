@@ -6,7 +6,7 @@ self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys
 self.addEventListener('push',event=>{
  let payload={};try{payload=event.data?event.data.json():{};}catch(_){try{payload={data:{body:event.data.text()}};}catch(__){}}
  const data=payload.data||{},note=payload.notification||{};
- event.waitUntil(self.registration.showNotification(data.title||note.title||'Härmipere',{body:data.body||note.body||'',icon:'icons/icon-192.png',badge:'icons/icon-192.png',tag:data.tag||'pere',data:{url:data.url||'./'}}));
+ event.waitUntil(self.registration.showNotification(data.title||note.title||'Härmipere',{body:data.body||note.body||'',icon:'icons/icon-192.png',badge:'icons/badge-96.png',tag:data.tag||'pere',data:{url:data.url||'./'}}));
 });
 self.addEventListener('notificationclick',event=>{
  event.notification.close();
