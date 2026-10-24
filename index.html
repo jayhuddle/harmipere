@@ -1144,6 +1144,9 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 .free-today small{color:var(--muted)}
 .free-today{margin-top:14px}
 .free-today+.agenda-day,.free-today+.week-col-label{margin-top:14px}
+/* Teatelt "#teated": jaluse "Teated" nupp vilgub korraks. */
+.push-attention{border-radius:8px;outline:2px solid var(--accent);outline-offset:3px;animation:push-attention 1.1s ease-in-out 3}
+@keyframes push-attention{50%{outline-color:transparent}}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
@@ -2950,6 +2953,24 @@ if(window.pereSharing)(async()=>{
   setTimeout(async()=>{try{const m=await sdk(),registration=await navigator.serviceWorker.ready,token=await m.getToken({vapidKey:cfg.vapidKey,serviceWorkerRegistration:registration});
    if(token&&token!==read()){await server('pereNotifyRegister',{token:token,device:deviceName()});write(token);}}catch(_){}},4000);
  }else render('off');
+})();
+
+// Teatele vajutus (sw.js): #ulevaade avab Pere ülevaate, #teated toob esile jaluse "Teated" nupu. Töötab ka siis, kui push pole toetatud.
+(function(){
+ function go(hash){
+  if(!/^#(ulevaade|teated)$/.test(hash||''))return;
+  try{history.replaceState(null,'',location.pathname+location.search);}catch(_){}
+  const tab=document.getElementById('overviewTab');if(tab&&tab.getAttribute('aria-pressed')!=='true')tab.click();
+  setTimeout(()=>{
+   if(hash==='#ulevaade'){window.scrollTo({top:0,behavior:'smooth'});return;}
+   const b=document.getElementById('pushToggle');if(!b)return;
+   b.scrollIntoView({block:'center',behavior:'smooth'});b.classList.add('push-attention');setTimeout(()=>b.classList.remove('push-attention'),4500);
+  },350);
+ }
+ if(typeof window.addEventListener!=='function'||typeof location==='undefined')return;
+ window.addEventListener('hashchange',()=>go(location.hash));
+ if(typeof navigator!=='undefined'&&navigator.serviceWorker&&navigator.serviceWorker.addEventListener)navigator.serviceWorker.addEventListener('message',event=>{if(event.data&&event.data.type==='pere-open')go(event.data.hash);});
+ if(location.hash)setTimeout(()=>go(location.hash),1500);
 })();
 
 </script>

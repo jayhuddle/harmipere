@@ -11,7 +11,8 @@ self.addEventListener('push',event=>{
 self.addEventListener('notificationclick',event=>{
  event.notification.close();
  const target=new URL((event.notification.data&&event.notification.data.url)||'./',self.registration.scope).href;
- event.waitUntil(self.clients.matchAll({type:'window',includeUncontrolled:true}).then(list=>{for(const client of list){if(client.url.startsWith(self.registration.scope)&&'focus' in client)return client.focus();}return self.clients.openWindow(target);}));
+ const hash=new URL(target).hash;
+ event.waitUntil(self.clients.matchAll({type:'window',includeUncontrolled:true}).then(list=>{for(const client of list){if(client.url.startsWith(self.registration.scope)&&'focus' in client){if(hash)client.postMessage({type:'pere-open',hash:hash});return client.focus();}}return self.clients.openWindow(target);}));
 });
 self.addEventListener('fetch',event=>{
  const request=event.request,url=new URL(request.url);
