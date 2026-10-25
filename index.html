@@ -1158,6 +1158,13 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
  :root:not([data-theme="light"]) .week-section>h2:after,:root:not([data-theme="light"]) .week-section:after{border-color:rgba(169,163,255,.55)}
  :root:not([data-theme="light"]) .agenda-day{color:#b4b9da}
 }
+/* Tume teema "Kalender" (Jüri valik 26.10): kalendripaneeli moodi lillakas klaas ilma häguta. Taustal tugevam lilla kuma, kaardid indigo gradiendiga, hele serv + ülaserva helk. */
+:root[data-theme="dark"]{--bg:#110f24;--blob1:rgba(124,108,255,.55);--blob2:rgba(20,184,166,.18);--blob3:rgba(219,39,119,.20);--blob4:rgba(96,120,250,.30);--glass:rgba(34,34,72,.62);--glass-strong:rgba(40,40,82,.9);--glass-field:rgba(22,22,50,.6);--muted:#b2b6dc;--soft:#9298c4;--stroke:rgba(255,255,255,.14)}
+:root[data-theme="dark"] .saved-card{background:linear-gradient(180deg,rgba(66,62,138,.62),rgba(34,34,76,.66));border-color:rgba(255,255,255,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 10px 30px rgba(0,0,0,.35)}
+@media (prefers-color-scheme:dark){
+ :root:not([data-theme="light"]){--bg:#110f24;--blob1:rgba(124,108,255,.55);--blob2:rgba(20,184,166,.18);--blob3:rgba(219,39,119,.20);--blob4:rgba(96,120,250,.30);--glass:rgba(34,34,72,.62);--glass-strong:rgba(40,40,82,.9);--glass-field:rgba(22,22,50,.6);--muted:#b2b6dc;--soft:#9298c4;--stroke:rgba(255,255,255,.14)}
+ :root:not([data-theme="light"]) .saved-card{background:linear-gradient(180deg,rgba(66,62,138,.62),rgba(34,34,76,.66));border-color:rgba(255,255,255,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 10px 30px rgba(0,0,0,.35)}
+}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
