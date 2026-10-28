@@ -2791,12 +2791,39 @@ function matchChanges(item,existing){
  const payload={},lines=[],same=(a,b)=>String(a||'').trim().toLowerCase()===String(b||'').trim().toLowerCase();
  const add=(field,name,label,before,after,format)=>{const mine=String(after||'').trim();if(mine&&!same(mine,before)){payload[name]=mine;lines.push(label+': '+(before?format(String(before)):'—')+' → '+format(mine));}};
  const plain=value=>value,day=value=>shortDay(value);
+ add('title','title','Nimetus',existing.title,item.title,plain);
  if(item.kind==='event'){
   add('date','date','Kuupäev',existing.date,item.date,day);add('time','time','Algus',existing.time,item.time,plain);
   add('end_time','endTime','Lõpp',existing.endTime,item.end_time,plain);add('location','location','Koht',existing.location,item.location,plain);
  }else add('deadline','deadline','Tähtaeg',existing.deadline,item.deadline,day);
+ // Märkused: uued asendavad vanad (uus teade on värskem), aga vanadest jäävad alles lingid (nt Google Mapsi), mida uues pole.
+ const fresh=String(item.notes||'').trim();
+ if(fresh&&!same(fresh,existing.notes)){
+  const kept=String(existing.notes||'').split('\n').map(line=>line.trim()).filter(line=>/^https?:\/\//.test(line)&&!fresh.includes(line));
+  payload.notes=[fresh].concat(kept).join('\n');lines.push('Märkused: uuendatud');
+ }
  return {count:lines.length,payload:payload,lines:lines};
 }
+// "Ava ülevaates" pärast salvestamist: ava ülevaade ja keri just salvestatud kaardini (ootab, kuni värsked andmed jõuavad, kuni ~10 s).
+function openSavedInOverview(item){
+ showView('overview');
+ const norm=value=>String(value||'').trim().toLowerCase();
+ const match=entry=>entry.kind===item.kind&&norm(entry.title)===norm(item.title)&&(item.kind==='event'?entry.date===item.date:String(entry.deadline||'')===String(item.deadline||''));
+ let tries=0,cleared=false;
+ const tick=()=>{
+  const loading=typeof overviewLoading!=='undefined'&&overviewLoading;
+  const found=!loading&&savedOverview&&savedOverview.items&&savedOverview.items.find(match);
+  if(found){
+   let card=overviewEventCards.get(found.key)||overviewTaskCards.get(found.key);
+   if(!card&&!cleared&&$('overviewPerson').value){cleared=true;$('overviewPerson').value='';renderOverview();card=overviewEventCards.get(found.key)||overviewTaskCards.get(found.key);}
+   if(card){focusItemKey(found.key);return;}
+  }
+  if(++tries<40)setTimeout(tick,250);
+ };
+ setTimeout(tick,300);
+}
+// Nupu tekst osastavas: "Uuenda olemasolevat sündmust / ülesannet / arvet".
+const MATCH_PARTITIVE={event:'sündmust',task:'ülesannet',invoice:'arvet',info:'teadet'};
 function matchBanner(item,existing,changes){
  const box=document.createElement('div'),updating=changes.count>0&&item.matchStatus==='update';
  box.className='match-banner '+(updating?'update':'dup');box.setAttribute('role','note');
@@ -2884,14 +2911,14 @@ function renderResult(){
    fields.append(row,field(task,'notes','Märkused','textarea',pairedTaskIndex));section.append(fields);
    card.append(section);
   }
-  const save=document.createElement('button');save.type='button';save.className='primary';save.textContent=updating?'Uuenda olemasolevat '+labels[item.kind].toLowerCase():existing?'Salvesta ikkagi uuesti':paired?'Salvesta sündmus ja ülesanne':'Salvesta '+labels[item.kind].toLowerCase();
+  const save=document.createElement('button');save.type='button';save.className='primary';save.textContent=updating?'Uuenda olemasolevat '+(MATCH_PARTITIVE[item.kind]||labels[item.kind].toLowerCase()):existing?'Salvesta ikkagi uuesti':paired?'Salvesta sündmus ja ülesanne':'Salvesta '+labels[item.kind].toLowerCase();
   if(['Automaatselt lisatud','Juba olemas','Ebaoluline','Käsitsi lisatud'].includes(sourceSnapshot?.mailStatus)){save.disabled=true;save.textContent='Juba töödeldud';}
   const state=document.createElement('p');state.className='save-state';state.setAttribute('role','status');
   const startSave=()=>{
    if(!sourceSnapshot?.text.trim()&&!sourceSnapshot?.images.length){state.textContent='Salvestamiseks lisa algne tekst, pilt või PDF.';state.classList.add('error');return;}
    if(!updating){const task=paired?result.items[pairedTaskIndex]:null,empty=entry=>!String(entry&&entry.person||'').trim();if(empty(item)||(task&&empty(task))){state.textContent=empty(item)?'Vali, kelle kohta.':'Vali, kelle kohta ülesanne käib.';state.classList.add('error');return;}}
    save.disabled=true;state.textContent=updating?'Uuendan…':'Salvestan…';state.classList.remove('error');
-   const runner=google.script.run.withSuccessHandler(res=>{const done=document.createElement('div');done.className='saved-confirm';savedText(done,'div',labels[item.kind],'kind');savedText(done,'h3',item.title||'(nimetu)');const line=document.createElement('p');line.className='saved-confirm-line';savedText(line,'strong',updating?'Uuendatud ✓':res.status==='duplicate'?'Juba olemas ✓':'Salvestatud ✓');line.append(document.createTextNode(' · '));const view=document.createElement('button');view.type='button';view.className='link-button';view.textContent='Ava ülevaates';view.onclick=()=>showView('overview');line.append(view);done.append(line);if(res.message)savedText(done,'p',res.message,'hint');savedImages(done,res.imageUrls);if(updating&&res.item){Object.assign(existing,res.item);writeCache('pere-overview',savedOverview);renderOverview();loadOverview();}flyToPere(card);card.className='item item-saved';card.replaceChildren(done);clearInputIfDone();})
+   const runner=google.script.run.withSuccessHandler(res=>{const done=document.createElement('div');done.className='saved-confirm';savedText(done,'div',labels[item.kind],'kind');savedText(done,'h3',item.title||'(nimetu)');const line=document.createElement('p');line.className='saved-confirm-line';savedText(line,'strong',updating?'Uuendatud ✓':res.status==='duplicate'?'Juba olemas ✓':'Salvestatud ✓');line.append(document.createTextNode(' · '));const view=document.createElement('button');view.type='button';view.className='link-button';view.textContent='Ava ülevaates';view.onclick=()=>openSavedInOverview(item);line.append(view);done.append(line);if(res.message)savedText(done,'p',res.message,'hint');savedImages(done,res.imageUrls);if(updating&&res.item){Object.assign(existing,res.item);writeCache('pere-overview',savedOverview);renderOverview();loadOverview();}flyToPere(card);card.className='item item-saved';card.replaceChildren(done);clearInputIfDone();})
     .withFailureHandler(e=>{state.textContent=e.message||'Salvestamine ebaõnnestus.';state.classList.add('error');save.disabled=false;});
    if(updating){const now=matchChanges(item,existing);if(!now.count){state.textContent='Muutusi pole: kõik väljad on juba samad.';state.classList.add('error');save.disabled=false;return;}runner.pereUpdateSaved({key:existing.key,changes:now.payload});}else if(paired)runner.pereSaveBundle({event:item,eventIndex:index,task:result.items[pairedTaskIndex],taskIndex:pairedTaskIndex,source:sourceSnapshot});
    else runner.pereSaveOne({item,index,source:sourceSnapshot,linkEventKey:item.linkEventKey||''});
