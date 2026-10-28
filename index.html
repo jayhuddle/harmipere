@@ -2185,14 +2185,14 @@ function syncCalDock(){
  if(want){if(calOpen){if(!searchOpen)setBackgroundInert(false);renderCalendar();}else openCalendar();}
  else if(calOpen)closeCalendar(true);
 }
-function focusItemKey(key){
+function focusItemKey(key,instant){
  const card=overviewEventCards.get(key)||overviewTaskCards.get(key);
  closeCalendar();
  if(!card){overviewStatus('Kirjet ei leitud.',true);return;}
  const details=card.closest&&card.closest('details');if(details)details.open=true;
  const inWeek=$('savedWeek').contains&&$('savedWeek').contains(card);
  if(overviewTaskCards.get(key)===card&&!inWeek&&$('tasksSection').classList.contains('collapsed'))$('tasksToggle').onclick();
- card.scrollIntoView({behavior:'smooth',block:'center'});card.classList.add('flash');setTimeout(()=>card.classList.remove('flash'),1800);
+ card.scrollIntoView({behavior:instant?'auto':'smooth',block:'center'});card.classList.add('flash');setTimeout(()=>card.classList.remove('flash'),1800);
 }
 function renderCalendar(){
  const sheet=$('calSheet'),today=savedOverview.today,items=calItems(),byDay=new Map();
@@ -2808,23 +2808,25 @@ function matchChanges(item,existing){
  }
  return {count:lines.length,payload:payload,lines:lines};
 }
-// "Ava ülevaates" pärast salvestamist: ava ülevaade ja keri just salvestatud kaardini (ootab, kuni värsked andmed jõuavad, kuni ~10 s).
+// "Ava ülevaates" pärast salvestamist: ava ülevaade ja hüppa kohe (ilma kerimisanimatsioonita) just salvestatud kaardini.
+// Uuendamisel on kirje vahemälus juba olemas, nii et hüpe ei oota serverit; kui serveri andmed pärast ülevaate uuesti joonistavad, tsentreeritakse kaart
+// veel kord. Uue kirje korral oodatakse laadimist (kuni ~10 s).
 function openSavedInOverview(item){
  showView('overview');
  const norm=value=>String(value||'').trim().toLowerCase();
  const match=entry=>entry.kind===item.kind&&norm(entry.title)===norm(item.title)&&(item.kind==='event'?entry.date===item.date:String(entry.deadline||'')===String(item.deadline||''));
- let tries=0,cleared=false;
+ const cardOf=key=>overviewEventCards.get(key)||overviewTaskCards.get(key);
+ const find=()=>{const found=savedOverview&&savedOverview.items&&savedOverview.items.find(match);return found&&cardOf(found.key)?found:null;};
+ const loading=()=>typeof overviewLoading!=='undefined'&&overviewLoading;
+ let tries=0,jumpedKey='',cleared=false;
  const tick=()=>{
-  const loading=typeof overviewLoading!=='undefined'&&overviewLoading;
-  const found=!loading&&savedOverview&&savedOverview.items&&savedOverview.items.find(match);
-  if(found){
-   let card=overviewEventCards.get(found.key)||overviewTaskCards.get(found.key);
-   if(!card&&!cleared&&$('overviewPerson').value){cleared=true;$('overviewPerson').value='';renderOverview();card=overviewEventCards.get(found.key)||overviewTaskCards.get(found.key);}
-   if(card){focusItemKey(found.key);return;}
-  }
-  if(++tries<40)setTimeout(tick,250);
+  let found=find();
+  if(!found&&!cleared&&!loading()&&$('overviewPerson').value&&savedOverview&&savedOverview.items&&savedOverview.items.some(match)){cleared=true;$('overviewPerson').value='';renderOverview();found=find();}
+  if(found&&!jumpedKey){jumpedKey=found.key;focusItemKey(found.key,true);}
+  else if(found&&jumpedKey&&!loading()){const card=cardOf(found.key);if(card){card.scrollIntoView({behavior:'auto',block:'center'});card.classList.add('flash');setTimeout(()=>card.classList.remove('flash'),1400);}return;}
+  if(++tries<60&&!(jumpedKey&&!loading()))setTimeout(tick,jumpedKey?200:150);
  };
- setTimeout(tick,300);
+ setTimeout(tick,60);
 }
 // Nupu tekst osastavas: "Uuenda olemasolevat sündmust / ülesannet / arvet".
 const MATCH_PARTITIVE={event:'sündmust',task:'ülesannet',invoice:'arvet',info:'teadet'};
