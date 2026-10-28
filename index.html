@@ -2829,7 +2829,7 @@ function openSavedInOverview(item){
 // Nupu tekst osastavas: "Uuenda olemasolevat sündmust / ülesannet / arvet".
 const MATCH_PARTITIVE={event:'sündmust',task:'ülesannet',invoice:'arvet',info:'teadet'};
 function matchBanner(item,existing,changes){
- const box=document.createElement('div'),updating=changes.count>0&&item.matchStatus==='update';
+ const box=document.createElement('div'),updating=changes.count>0&&['update','duplicate'].includes(item.matchStatus);
  box.className='match-banner '+(updating?'update':'dup');box.setAttribute('role','note');
  const when=existing.date||existing.deadline;
  savedText(box,'p',(updating?'↻ Uuendab olemasolevat: „':'ℹ Juba kirjas: „')+existing.title+'”'+(when?' ('+shortDay(when)+')':''),'match-title');
@@ -2890,7 +2890,7 @@ function renderResult(){
  result.items.forEach((item,index)=>{
   if(index===pairedTaskIndex)return;
   const card=document.createElement('article');card.className='item';const kind=document.createElement('div');kind.className='kind';kind.textContent=labels[item.kind];card.append(kind);card.append(dismissButton(card,item));
-  const existing=matchedExisting(item),firstChanges=existing?matchChanges(item,existing):null,updating=!!(existing&&item.matchStatus==='update'&&firstChanges.count>0);
+  const existing=matchedExisting(item),firstChanges=existing?matchChanges(item,existing):null,updating=!!(existing&&['update','duplicate'].includes(item.matchStatus)&&firstChanges.count>0);
   if(existing)card.append(matchBanner(item,existing,firstChanges));
   if(item.personFromSender&&result.senderHint)card.append(senderNote(result.senderHint));
   const fields=[['title','Nimetus'],['person','Kelle kohta?']];
