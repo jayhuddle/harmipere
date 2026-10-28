@@ -1175,6 +1175,10 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
  :root:not([data-theme="light"]) body:before{background:radial-gradient(46% 38% at 50% 34%,rgba(124,108,255,.34),transparent 70%),radial-gradient(38% 34% at 12% 8%,rgba(124,108,255,.62),transparent 70%),radial-gradient(34% 32% at 92% 18%,rgba(20,184,166,.26),transparent 70%),radial-gradient(40% 36% at 78% 92%,rgba(219,39,119,.28),transparent 70%),radial-gradient(36% 30% at 8% 78%,var(--blob4),transparent 70%)}
  :root:not([data-theme="light"]) .week-section:before{background:linear-gradient(180deg,rgba(124,116,255,.18),rgba(124,116,255,.04) 70%,transparent);border-top:1px solid rgba(169,163,255,.20)}
 }
+/* Mobiil: kui tekst või pilt on olemas (nupp "ready"), jääb "Sisesta info" nupp alumise menüü kohal nähtavale, ka siis kui pildid lükkavad vormi pikaks. Kleebib ainult oma paneeli piires. */
+@media(max-width:740px){
+ #inputView .actions:has(#analyze.ready){position:sticky;bottom:calc(84px + env(safe-area-inset-bottom));z-index:30;padding:8px 0}
+}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
