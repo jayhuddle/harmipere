@@ -1179,6 +1179,23 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 @media(max-width:740px){
  #inputView .actions:has(#analyze.ready){position:sticky;bottom:calc(84px + env(safe-area-inset-bottom));z-index:30;padding:8px 0}
 }
+
+/* "Kohe järgmine" kaart ülevaate tipus (julge muudatus): suur lilla kaart, mis vastab küsimusele "mis nüüd?" ühe pilguga. Sama mõlemas teemas. */
+.next-up{margin:0 0 var(--s4,16px);padding:16px 18px 18px;border-radius:22px;color:#fff;cursor:pointer;background:linear-gradient(135deg,#5b54e8,#8b5cf6 70%,#a78bfa);box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 14px 34px rgba(91,84,232,.38);-webkit-tap-highlight-color:transparent;position:relative;overflow:hidden}
+.next-up[hidden]{display:none}
+.next-up:active{transform:scale(.99)}
+.next-up:focus-visible{outline:2px solid #fff;outline-offset:3px}
+.next-up:before{content:'';position:absolute;right:-34px;top:-44px;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.28),transparent 68%);pointer-events:none}
+.next-up .nu-label{font-size:11px;font-weight:700;letter-spacing:1.3px;text-transform:uppercase;opacity:.92;display:flex;align-items:center;gap:8px}
+.next-up[data-phase="now"] .nu-label:before{content:'';width:8px;height:8px;border-radius:50%;background:#fff;box-shadow:0 0 0 0 rgba(255,255,255,.7);animation:nu-pulse 1.8s ease-out infinite}
+.next-up .nu-title{margin-top:6px;display:flex;align-items:center;flex-wrap:wrap;gap:8px;font-family:'Outfit',system-ui,sans-serif;font-size:22px;font-weight:700;line-height:1.2;letter-spacing:-.2px}
+.next-up .nu-person{font-size:12px;font-weight:700;letter-spacing:.2px;padding:3px 10px;border-radius:999px;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.3)}
+.next-up .nu-meta{margin-top:6px;font-size:15px;font-weight:600;opacity:.96}
+.next-up .nu-place{margin-top:3px;font-size:13px;opacity:.88}
+.next-up .nu-bar{margin-top:12px;height:5px;border-radius:999px;background:rgba(255,255,255,.28);overflow:hidden}
+.next-up .nu-bar i{display:block;height:100%;border-radius:inherit;background:#fff;transition:width .6s ease}
+@keyframes nu-pulse{70%{box-shadow:0 0 0 9px rgba(255,255,255,0)}100%{box-shadow:0 0 0 0 rgba(255,255,255,0)}}
+@media(prefers-reduced-motion:reduce){.next-up[data-phase="now"] .nu-label:before{animation:none}.next-up .nu-bar i{transition:none}}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
@@ -1891,7 +1908,54 @@ function eventPhase(item,now){
  else{const [h,m]=item.time.split(':').map(Number),mins=Math.min(h*60+m+60,23*60+59);end=item.date+' '+String(Math.floor(mins/60)).padStart(2,'0')+':'+String(mins%60).padStart(2,'0');}
  if(now>=end)return 'past';if(now>=start)return 'now';return '';
 }
-let overviewPhases=new Map();
+let overviewPhases=new Map(),nextUpItems=[];
+// "Kohe järgmine": ülevaate tipus suur kaart selle kohta, mis on praegu käimas või mis tuleb järgmisena (tänane üritus kellaajaga; õhtul ka homne esimene).
+// Näitab loendurit ("algab 2 h 15 min pärast"), käiva ürituse korral edenemisriba; puudutus viib kaardini. Uueneb iga 30 s. Tühjal päeval kaart puudub.
+function nextUpMinutes(a,b){return Math.round((Date.UTC(+b.slice(0,4),+b.slice(5,7)-1,+b.slice(8,10),+b.slice(11,13),+b.slice(14,16))-Date.UTC(+a.slice(0,4),+a.slice(5,7)-1,+a.slice(8,10),+a.slice(11,13),+a.slice(14,16)))/60000);}
+function nextUpSpan(mins){if(mins<1)return 'hetk';if(mins<60)return mins+' min';const h=Math.floor(mins/60),m=mins%60;if(h>=24){const d=Math.floor(h/24);return d+(d===1?' päev':' päeva');}return h+' h'+(m?' '+m+' min':'');}
+function nextUpEnd(item){
+ const endDate=item.endDate&&item.endDate>item.date?item.endDate:item.date;
+ if(item.endTime)return endDate+' '+item.endTime;
+ const [h,m]=item.time.split(':').map(Number),mins=Math.min(h*60+m+60,23*60+59);
+ return item.date+' '+String(Math.floor(mins/60)).padStart(2,'0')+':'+String(mins%60).padStart(2,'0');
+}
+function nextUpPick(items,now){
+ const today=now.slice(0,10),tomorrow=addDays(today,1);
+ const timed=items.filter(item=>item.kind==='event'&&item.time&&item.date&&item.date<=tomorrow);
+ const running=timed.filter(item=>eventPhase(item,now)==='now');
+ if(running.length)return {item:running.sort((a,b)=>nextUpEnd(a).localeCompare(nextUpEnd(b)))[0],phase:'now'};
+ const todayNext=timed.filter(item=>item.date===today&&eventPhase(item,now)==='').sort((a,b)=>a.time.localeCompare(b.time))[0];
+ if(todayNext)return {item:todayNext,phase:'next'};
+ if(Number(now.slice(11,13))>=17){const tm=timed.filter(item=>item.date===tomorrow).sort((a,b)=>a.time.localeCompare(b.time))[0];if(tm)return {item:tm,phase:'tomorrow'};}
+ return null;
+}
+function renderNextUp(){
+ try{
+  const week=typeof $==='function'&&$('weekSection');
+  if(!week||!week.parentNode||typeof week.parentNode.insertBefore!=='function'||typeof document.createElement!=='function')return;
+  let box=document.getElementById('nextUp');
+  const now=tallinnNow(),pick=savedOverview&&nextUpItems.length?nextUpPick(nextUpItems,now):null;
+  if(!pick){if(box)box.hidden=true;return;}
+  if(!box){box=document.createElement('section');box.id='nextUp';box.className='next-up';box.setAttribute('role','button');box.tabIndex=0;week.parentNode.insertBefore(box,week);
+   const go=()=>{if(box.dataset.key)focusItemKey(box.dataset.key,true);};box.addEventListener('click',go);box.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();go();}});}
+  const item=pick.item,end=nextUpEnd(item),start=item.date+' '+item.time;
+  const label=pick.phase==='now'?'Käib praegu':pick.phase==='tomorrow'?'Homme esimene':'Kohe järgmine';
+  let when;
+  if(pick.phase==='now')when='lõpeb '+nextUpSpan(Math.max(0,nextUpMinutes(now,end)))+' pärast';
+  else when='algab '+(pick.phase==='tomorrow'?'homme ':'')+nextUpSpan(Math.max(0,nextUpMinutes(now,start)))+' pärast';
+  box.hidden=false;box.dataset.key=item.key;box.dataset.phase=pick.phase;
+  box.setAttribute('aria-label',label+': '+item.title+', '+when);
+  box.replaceChildren();
+  savedText(box,'div',label,'nu-label');
+  const title=document.createElement('div');title.className='nu-title';savedText(title,'span',item.title,'nu-name');
+  if(item.person)savedText(title,'span',shortPerson(item.person),'nu-person');box.append(title);
+  savedText(box,'div',item.time+(item.endTime?'–'+item.endTime:'')+' · '+when,'nu-meta');
+  if(item.location)savedText(box,'div',item.location,'nu-place');
+  if(pick.phase==='now'){const total=Math.max(1,nextUpMinutes(start,end)),done=Math.min(total,Math.max(0,nextUpMinutes(start,now)));
+   const bar=document.createElement('div');bar.className='nu-bar';const fill=document.createElement('i');fill.style.width=Math.round(done/total*100)+'%';bar.append(fill);box.append(bar);}
+ }catch(_){}
+}
+if(typeof setInterval==='function')setInterval(()=>{if(typeof document!=='undefined'&&document.visibilityState==='visible'&&savedOverview&&typeof $==='function'&&$('overviewView')&&!$('overviewView').hidden)renderNextUp();},30000);
 // "Pere ülevaade" kõrval tänane kuupäev: kui ekraanile mahub (≥480 px), nädalapäev sõnana ("Esmaspäev 19.10.2026"), muidu lühike ("E 19.10.2026").
 const WEEKDAYS_LONG=['Pühapäev','Esmaspäev','Teisipäev','Kolmapäev','Neljapäev','Reede','Laupäev'];
 let overviewDateIso='',weekDrawing=false;
@@ -1914,6 +1978,7 @@ function renderOverview(){
  $('overviewTab').setAttribute('aria-label','Pere ülevaade'+(urgent?' · '+urgent+' kiiret ülesannet':''));
  renderPersonChips();
  const person=$('overviewPerson').value,items=savedOverview.items.filter(item=>!person||item.person===person);
+ nextUpItems=items;renderNextUp();
  const inWeek=item=>isTask(item)?(item.status!=='Tehtud'||completing.has(item.key))&&!!item.deadline&&item.deadline<=weekEnd:item.kind==='event'&&item.date>=today&&item.date<=weekEnd;
  const conflicts=eventConflicts(savedOverview.items.filter(item=>item.kind==='event'&&item.date>=today));
  overviewEventCards=new Map();overviewTaskCards=new Map();
