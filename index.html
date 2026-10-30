@@ -1196,6 +1196,28 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 .next-up .nu-bar i{display:block;height:100%;border-radius:inherit;background:#fff;transition:width .6s ease}
 @keyframes nu-pulse{70%{box-shadow:0 0 0 9px rgba(255,255,255,0)}100%{box-shadow:0 0 0 0 rgba(255,255,255,0)}}
 @media(prefers-reduced-motion:reduce){.next-up[data-phase="now"] .nu-label:before{animation:none}.next-up .nu-bar i{transition:none}}
+
+/* Nädalariba (julge muudatus 2): seitse päeva ühes reas, inimeste värvitäpid, täna lilla. */
+.week-strip{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px;margin:10px 0 6px}
+.week-strip .ws-day{display:flex;flex-direction:column;align-items:center;gap:2px;min-height:62px;padding:7px 0 8px;border-radius:16px;border:1px solid var(--stroke);background:var(--glass);color:var(--ink);cursor:pointer;font:inherit;-webkit-tap-highlight-color:transparent;box-shadow:none}
+.week-strip .ws-day:active{transform:scale(.96)}
+.week-strip .ws-dow{font-size:11px;font-weight:700;letter-spacing:.8px;color:var(--muted)}
+.week-strip .ws-num{font-family:'Outfit',system-ui,sans-serif;font-size:18px;font-weight:700;line-height:1.1}
+.week-strip .ws-dots{display:flex;align-items:center;justify-content:center;gap:3px;height:8px;margin-top:2px}
+.week-strip .ws-dot{width:6px;height:6px;border-radius:50%;background:var(--chip,#a0a4c0)}
+.week-strip .ws-count{display:none}
+.week-strip .ws-day.empty{opacity:.55}
+.week-strip .ws-day.today{background:linear-gradient(160deg,#5b54e8,#8b5cf6);border-color:transparent;color:#fff;box-shadow:0 8px 20px rgba(91,84,232,.32)}
+.week-strip .ws-day.today .ws-dow{color:rgba(255,255,255,.85)}
+.week-strip .ws-day.today .ws-dot{box-shadow:0 0 0 1.5px rgba(255,255,255,.85)}
+.agenda-day.flash{animation:ws-flash 1.4s ease}
+@keyframes ws-flash{0%,60%{color:var(--accent);transform:translateX(4px)}100%{transform:none}}
+@media(prefers-reduced-motion:reduce){.agenda-day.flash{animation:none}.week-strip .ws-day:active{transform:none}}
+.agenda-day{scroll-margin-top:28px}
+/* Nädalariba: tühja päeva märge riba all, ilmub ja kaob ise. */
+.ws-note{margin:0;height:0;overflow:hidden;opacity:0;font-size:13px;font-weight:600;color:var(--muted);text-align:center;transition:opacity .25s ease,height .25s ease,margin .25s ease}
+.ws-note.show{height:20px;margin:2px 0 4px;opacity:1}
+@media(prefers-reduced-motion:reduce){.ws-note{transition:none}}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
@@ -1966,6 +1988,46 @@ function setOverviewDate(iso){
  $('overviewDate').textContent=wide?WEEKDAYS_LONG[new Date(overviewDateIso+'T12:00:00Z').getUTCDay()]+' '+displayDate(overviewDateIso):displayEventDate(overviewDateIso);
 }
 if(typeof window!=='undefined'&&typeof window.matchMedia==='function'){try{window.matchMedia('(min-width:480px)').addEventListener('change',()=>setOverviewDate());}catch(_){}}
+// Nädalariba "See nädal" pealkirja all: 7 päeva ühes reas, iga päeva all inimeste värvilised täpid (üritused + tähtajad).
+// Näitab ühe pilguga nädala kuju (tihe/vaba, kelle päev). Puudutus: mobiilis hüpe selle päeva sildini, arvutis (või kui silti pole) kalender sellel päeval.
+const STRIP_DOW=['P','E','T','K','N','R','L'];
+let weekStripNoteTimer=0;
+function weekStripNote(strip,text){
+ let note=document.getElementById('weekStripNote');
+ if(!note){note=document.createElement('p');note.id='weekStripNote';note.className='ws-note';note.setAttribute('role','status');note.setAttribute('aria-live','polite');strip.after(note);}
+ note.textContent=text;note.classList.remove('show');void note.offsetWidth;note.classList.add('show');
+ clearTimeout(weekStripNoteTimer);weekStripNoteTimer=setTimeout(()=>note.classList.remove('show'),1800);
+}
+function renderWeekStrip(weekTasks,weekEvents,today){
+ try{
+  const section=$('weekSection'),list=$('savedWeek');
+  if(!section||!list||typeof section.insertBefore!=='function'||typeof document.createElement!=='function')return;
+  let strip=document.getElementById('weekStrip');
+  if(!strip){strip=document.createElement('div');strip.id='weekStrip';strip.className='week-strip';strip.setAttribute('role','group');strip.setAttribute('aria-label','Nädala päevad');section.insertBefore(strip,list);}
+  strip.replaceChildren();
+  for(let i=0;i<7;i++){
+   const date=addDays(today,i);
+   const day=[...weekEvents.filter(item=>item.date===date||(item.endDate&&item.date<date&&item.endDate>=date)),...weekTasks.filter(item=>item.deadline===date)];
+   const button=document.createElement('button');button.type='button';button.className='ws-day'+(i===0?' today':'')+(day.length?'':' empty');
+   const dow=STRIP_DOW[new Date(date+'T12:00:00Z').getUTCDay()];
+   button.setAttribute('aria-label',(i===0?'Täna, ':i===1?'Homme, ':'')+longDay(date)+': '+(day.length?day.length+(day.length===1?' kirje':' kirjet'):'vaba'));
+   savedText(button,'span',dow,'ws-dow');savedText(button,'span',String(Number(date.slice(8,10))),'ws-num');
+   const dots=document.createElement('span');dots.className='ws-dots';
+   const slugs=[...new Set(day.map(item=>personSlug(canonicalPerson(item.person||''))))];
+   slugs.slice(0,4).forEach(slug=>{const dot=document.createElement('i');dot.className='ws-dot chip-'+slug;dots.append(dot);});
+   if(day.length>slugs.slice(0,4).length&&day.length>1)savedText(dots,'b',String(day.length),'ws-count');
+   button.append(dots);
+   button.onclick=()=>{
+    // Tühi päev: lühike märge riba all ("Kolmapäev 14. okt on vaba"), kuhugi ei liiguta.
+    if(!day.length){weekStripNote(strip,(i===0?'Täna':i===1?'Homme':longDay(date))+' on vaba');return;}
+    const head=[...list.querySelectorAll('.agenda-day')].find(node=>node.dataset&&node.dataset.date===date);
+    if(head){head.scrollIntoView({behavior:'smooth',block:'start'});head.classList.add('flash');setTimeout(()=>head.classList.remove('flash'),1400);}
+    else if(typeof openCalendarAt==='function')openCalendarAt(date);
+   };
+   strip.append(button);
+  }
+ }catch(_){}
+}
 function renderOverview(){
  overviewPhases=new Map();
  if(activeCancelMenu)activeCancelMenu.close();
@@ -2075,7 +2137,7 @@ function renderOverview(){
   for(let i=0;i<7;i++){
    const date=addDays(today,i),dayEvents=weekEvents.filter(item=>item.date===date),dayTasks=weekTasks.filter(item=>item.deadline===date);
    if(!dayEvents.length&&!dayTasks.length)continue;
-   const head=document.createElement('div');head.className='agenda-day'+(i===0?' today':'');
+   const head=document.createElement('div');head.className='agenda-day'+(i===0?' today':'');if(head.dataset)head.dataset.date=date;
    savedText(head,'span',(i===0?'Täna · ':i===1?'Homme · ':'')+longDay(date));const holiday=calOff(date).holiday;if(holiday)savedText(head,'small',holiday);week.append(head);
    dayTasks.forEach(item=>taskCard(item,week));dayEvents.forEach(item=>eventCard(item,week));
   }
@@ -2084,6 +2146,7 @@ function renderOverview(){
   list.forEach(item=>draw(item,column));if(!list.length)savedText(column,'p',empty,'empty');$('savedWeek').append(column);
  });
  weekDrawing=false;
+ renderWeekStrip(weekTasks,weekEvents,today);
  // Hilisemad avatud ülesanded kuude kaupa; tehtud ülesanded eraldi linnukese all (viimased 3 tähtaja järgi + kõik, mille üritus pole veel toimunud).
  const tasks=items.filter(item=>isTask(item)&&!inWeek(item)&&(item.status!=='Tehtud'||completing.has(item.key)))
   .sort((a,b)=>(a.deadline||'9999').localeCompare(b.deadline||'9999'));
