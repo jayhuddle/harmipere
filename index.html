@@ -1234,6 +1234,25 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 .share-corner{position:absolute;top:10px;right:12px;display:grid;place-items:center;width:42px;height:42px;padding:0;border-radius:50%;border:1px solid color-mix(in srgb,var(--accent) 35%,transparent);background:color-mix(in srgb,var(--accent) 10%,transparent);color:var(--accent);box-shadow:none;cursor:pointer}
 .share-corner svg{width:20px;height:20px}
 .share-corner:active{transform:scale(.94)}
+
+/* "Homseks valmis": õhtune kaart (≥19:00) "Kohe järgmine" kohal, sama lilla gradient; fondisuurused samad mis next-up kaardil. */
+.next-up[data-phase="evening"]{cursor:default}
+.next-up[data-phase="evening"]:active{transform:none}
+.next-up .wx-b{margin-top:10px;--wx:#fff;background:rgba(255,255,255,.16);color:#fff;border-color:rgba(255,255,255,.3)}
+.next-up .eve-top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 10px;min-height:29px}
+.next-up .eve-top .nu-label{flex:none}
+.next-up .eve-top .wx-b{margin:0 0 0 auto;max-width:100%}
+.next-up .eve-wx{gap:5px;padding:5px 10px}
+.next-up .eve-wx>svg{align-self:center;margin-top:0}
+.next-up .eve-wx-word{font-weight:600;opacity:.9}
+.next-up .eve-wx-warn{display:inline-flex;align-items:center;gap:5px;margin-left:1px;padding-left:8px;border-left:1px solid rgba(255,255,255,.35);white-space:nowrap}
+.next-up .eve-rows{margin-top:8px;display:grid}
+.next-up .eve-row{position:relative;display:flex;align-items:center;gap:10px;min-height:44px;margin:0 -10px;padding:0 10px;border:0;border-radius:12px;background:transparent;box-shadow:none;color:inherit;font:inherit;font-size:15px;font-weight:600;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.next-up .eve-row:active{background:rgba(255,255,255,.14)}
+.next-up .eve-row+.eve-row{border-top:1px solid rgba(255,255,255,.14);border-radius:0}
+.next-up .eve-time{flex:none;min-width:52px;font-variant-numeric:tabular-nums;opacity:.86}
+.next-up .eve-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.next-up .eve-row .nu-person{flex:none}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
@@ -2003,9 +2022,12 @@ function renderNextUp(){
   if(!week||!week.parentNode||typeof week.parentNode.insertBefore!=='function'||typeof document.createElement!=='function')return;
   let box=document.getElementById('nextUp');
   const now=tallinnNow(),pick=savedOverview&&nextUpItems.length?nextUpPick(nextUpItems,now):null;
-  if(!pick){if(box)box.hidden=true;return;}
+  const eve=(!pick||pick.phase==='tomorrow')&&savedOverview?eveningPlan(nextUpItems,now):null;
+  if(!pick&&!eve){if(box)box.hidden=true;return;}
   if(!box){box=document.createElement('section');box.id='nextUp';box.className='next-up';box.setAttribute('role','button');box.tabIndex=0;week.parentNode.insertBefore(box,week);
    const go=()=>{if(box.dataset.key)focusItemKey(box.dataset.key,true);};box.addEventListener('click',go);box.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();go();}});}
+  if(eve){renderEvening(box,eve);return;}
+  box.setAttribute('role','button');box.tabIndex=0;delete box.dataset.sig;
   const item=pick.item,end=nextUpEnd(item),start=item.date+' '+item.time;
   const label=pick.phase==='now'?'Käib praegu':pick.phase==='tomorrow'?'Homme esimene':'Kohe järgmine';
   let when;
@@ -2024,6 +2046,70 @@ function renderNextUp(){
  }catch(_){}
 }
 if(typeof setInterval==='function')setInterval(()=>{if(typeof document!=='undefined'&&document.visibilityState==='visible'&&savedOverview&&typeof $==='function'&&$('overviewView')&&!$('overviewView').hidden)renderNextUp();},30000);
+// === HOMSEKS ===
+// "Homseks valmis": õhtul (alates 19:00), kui täna enam midagi ei käi ega tule, on "Kohe järgmine" asemel homse kokkuvõte (nagu õhtune teade):
+// homsed üritused ja tähtajad (puudutus viib kaardini) ning homne ilm. Keskööl kaob; hommikul on jälle "Kohe järgmine" / "Käib praegu".
+const EVE_HOUR=19;
+function eveningPlan(items,now){
+ if(!items||Number(now.slice(11,13))<EVE_HOUR)return null;
+ const tomorrow=addDays(now.slice(0,10),1);
+ const events=items.filter(item=>item.kind==='event'&&item.date&&item.date<=tomorrow&&(item.endDate||item.date)>=tomorrow)
+  .sort((a,b)=>(a.date<tomorrow||!a.time?'':a.time).localeCompare(b.date<tomorrow||!b.time?'':b.time));
+ const tasks=items.filter(item=>['task','invoice'].includes(item.kind)&&item.status!=='Tehtud'&&item.deadline===tomorrow);
+ if(!events.length&&!tasks.length)return null;
+ return {date:tomorrow,events:events,tasks:tasks};
+}
+// Õhtukaardi ilm on lühike: ikoon, temperatuur ja üks sõna; eraldi hoiatus ainult udu (kood 45/48) või tugeva tuule (≥ 10 m/s) korral.
+function eveWxWord(w,code){
+ if(w.later)return w.later.type==='snow'?'lumi':'vihm';
+ if(w.type==='snow')return 'lumi';if(w.type==='rain')return 'vihm';
+ if(w.rain>=50)return 'vihmaoht';if(w.type==='sun')return 'selge';
+ return code===2?'poolpilves':'pilves';
+}
+const EVE_WX_WARN={
+ wind:'<path d="M12.8 19.6A2 2 0 1 0 14 16H2"/><path d="M17.5 8a2.5 2.5 0 1 1 2 4H2"/><path d="M9.8 4.4A2 2 0 1 1 11 8H2"/>',
+ fog:'<path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M16 17H7M17 21H9"/>'
+};
+async function eveWeatherFill(chip,item){
+ try{
+  if(typeof fetch!=='function')return;
+  const hourly=await wxForecast(await wxPlace(item.location)),w=wxPick(hourly,item.date,item.time,item.endTime);
+  if(!w)return;
+  const code=hourly.weather_code[hourly.time.indexOf(item.date+'T'+String(item.time).slice(0,2)+':00')];
+  const shown=w.later?w.later.type:w.type,word=eveWxWord(w,code),temp=(w.temp>0?'+':'')+w.temp+'°';
+  const warn=code===45||code===48?{icon:'fog',text:'udu',say:'udu'}:w.wind>=10?{icon:'wind',text:Math.round(w.wind)+' m/s',say:'tuul '+Math.round(w.wind)+' m/s'}:null;
+  chip.className='wx wx-b eve-wx wx-'+shown;
+  chip.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true">'+WX_ICON[shown]+'</svg>';
+  savedText(chip,'span',temp);savedText(chip,'span',word,'eve-wx-word');
+  if(warn){const extra=document.createElement('span');extra.className='eve-wx-warn';extra.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true">'+EVE_WX_WARN[warn.icon]+'</svg>';savedText(extra,'span',warn.text);chip.append(extra);}
+  chip.setAttribute('aria-label','Homme ilm: '+temp+', '+word+(warn?', '+warn.say:''));
+  chip.hidden=false;
+ }catch(_){}
+}
+function renderEvening(box,plan){
+ const all=[...plan.events,...plan.tasks];
+ const sig=plan.date+'|'+all.map(item=>item.key+'~'+item.title+'~'+(item.time||'')+'~'+String(item.notes||'').length).join(',');
+ box.hidden=false;box.dataset.phase='evening';box.dataset.key='';box.removeAttribute('role');box.tabIndex=-1;
+ if(box.dataset.sig===sig)return;
+ box.dataset.sig=sig;box.setAttribute('aria-label','Homseks valmis: '+longDay(plan.date));
+ box.replaceChildren();
+ // Ülarida: silt vasakul, ilmakiip paremas nurgas. Ilm: esimese välitegevuse ajaks ja kohas, muidu homme hommikul kodus.
+ const top=document.createElement('div');top.className='eve-top';savedText(top,'div','Homseks valmis','nu-label');box.append(top);
+ const outdoor=plan.events.find(item=>item.date===plan.date&&isOutdoorEvent(item)),first=plan.events.find(item=>item.date===plan.date&&item.time);
+ try{const chip=document.createElement('div');chip.className='wx wx-b eve-wx';chip.hidden=true;top.append(chip);
+  eveWeatherFill(chip,{date:plan.date,time:outdoor?outdoor.time||'10:00':first?first.time:'08:00',endTime:outdoor?outdoor.endTime:'',location:outdoor?outdoor.location:''});}catch(_){}
+ const title=document.createElement('div');title.className='nu-title';savedText(title,'span',longDay(plan.date),'nu-name');box.append(title);
+ const rows=document.createElement('div');rows.className='eve-rows';
+ const row=(item,time,text)=>{
+  const button=document.createElement('button');button.type='button';button.className='eve-row';
+  savedText(button,'span',time,'eve-time');savedText(button,'span',text,'eve-name');if(item.person)savedText(button,'span',shortPerson(item.person),'nu-person');
+  button.onclick=event=>{event.stopPropagation();focusItemKey(item.key,true);};rows.append(button);
+ };
+ plan.events.forEach(item=>row(item,item.date<plan.date||!item.time?'Kogu päev':item.time,item.title));
+ plan.tasks.forEach(item=>row(item,'Tähtaeg',item.title+(item.kind==='invoice'&&item.amount?' · '+item.amount+' '+item.currency:'')));
+ box.append(rows);
+}
+// === /HOMSEKS ===
 // "Pere ülevaade" kõrval tänane kuupäev: kui ekraanile mahub (≥480 px), nädalapäev sõnana ("Esmaspäev 19.10.2026"), muidu lühike ("E 19.10.2026").
 const WEEKDAYS_LONG=['Pühapäev','Esmaspäev','Teisipäev','Kolmapäev','Neljapäev','Reede','Laupäev'];
 let overviewDateIso='',weekDrawing=false;
