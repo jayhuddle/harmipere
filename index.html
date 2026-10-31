@@ -1225,6 +1225,9 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 .wx-b svg{width:16px;height:16px;flex:none;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .wx-b .tip{font-weight:600;opacity:.9}
 .wx-sun{--wx:#f59e0b}.wx-cloud{--wx:#64748b}.wx-rain{--wx:#3b82f6}.wx-snow{--wx:#38bdf8}
+.wx-b{border-radius:18px}
+.wx-b>span:not(.tip){white-space:nowrap}
+.wx-b>svg{align-self:flex-start;margin-top:2px}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
@@ -2062,17 +2065,29 @@ function wxType(code){
 }
 function wxTip(w){
  const tips=[];
- if(w.type==='snow')tips.push('lumi');else if(w.rain>=50)tips.push('vihmariided');
+ if(w.later)tips.push((w.later.type==='snow'?'lumi':'vihm')+' '+w.later.time+'st');
+ if(w.type==='snow')tips.push('lumi');else if(w.rain>=50||(w.later&&w.later.type==='rain'))tips.push('vihmariided');
  if(w.temp<=0)tips.push('müts ja kindad');else if(w.temp<=8)tips.push('soojad riided');
  if(w.temp>=22)tips.push('päikesekaitse ja vesi');
  if(w.wind>=10)tips.push('tuulekindel jope');
  return tips.join(', ')||'ilm on hea';
 }
-function wxPick(hourly,date,time){
+// Ilm ürituse algustunniks; kui üritusel on algus- ja lõppaeg samal päeval, vaadatakse ka järgnevad tunnid ürituse lõpuni: kui vihm või lumi
+// (ilmakood või vihmatõenäosus ≥ 60%) hakkab peale ilma alguses olemata, tuleb w.later = {type:'rain'|'snow', time:'13:00'}.
+function wxWet(hourly,index){const type=wxType(hourly.weather_code[index]);return type==='snow'||type==='rain'||(hourly.precipitation_probability[index]||0)>=60;}
+function wxPick(hourly,date,time,endTime,endDate){
  if(!hourly||!hourly.time)return null;
  const hour=String(time||'12:00').slice(0,2),index=hourly.time.indexOf(date+'T'+hour+':00');
  if(index<0)return null;
- return {temp:Math.round(hourly.temperature_2m[index]),rain:hourly.precipitation_probability[index]||0,wind:hourly.wind_speed_10m[index]||0,type:wxType(hourly.weather_code[index])};
+ const w={temp:Math.round(hourly.temperature_2m[index]),rain:hourly.precipitation_probability[index]||0,wind:hourly.wind_speed_10m[index]||0,type:wxType(hourly.weather_code[index])};
+ if(time&&endTime&&(!endDate||endDate===date)&&!wxWet(hourly,index)){
+  const startH=Number(hour),endH=Number(endTime.slice(0,2)),last=Math.min(23,endTime.slice(3,5)==='00'?endH-1:endH);
+  for(let h=startH+1;h<=last;h++){
+   const at=hourly.time.indexOf(date+'T'+String(h).padStart(2,'0')+':00');
+   if(at>=0&&wxWet(hourly,at)){w.later={type:wxType(hourly.weather_code[at])==='snow'?'snow':'rain',time:String(h).padStart(2,'0')+':00'};break;}
+  }
+ }
+ return w;
 }
 const wxMem={};
 function wxStoreGet(key){
@@ -2099,10 +2114,11 @@ async function wxForecast(place){
 async function wxFill(chip,item){
  try{
   if(typeof fetch!=='function')return;
-  const hourly=await wxForecast(await wxPlace(item.location)),w=wxPick(hourly,item.date,item.time);
+  const hourly=await wxForecast(await wxPlace(item.location)),w=wxPick(hourly,item.date,item.time,item.endTime,item.endDate);
   if(!w)return;
-  chip.className='wx wx-b wx-'+w.type;
-  chip.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true">'+WX_ICON[w.type]+'</svg>';
+  const shown=w.later?w.later.type:w.type;
+  chip.className='wx wx-b wx-'+shown;
+  chip.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true">'+WX_ICON[shown]+'</svg>';
   const temp=document.createElement('span');temp.textContent=(w.temp>0?'+':'')+w.temp+'°';chip.append(temp);
   savedText(chip,'span',wxTip(w),'tip');
   chip.setAttribute('aria-label','Ilm: '+temp.textContent+', '+wxTip(w));
