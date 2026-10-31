@@ -1228,6 +1228,12 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 .wx-b{border-radius:18px}
 .wx-b>span:not(.tip){white-space:nowrap}
 .wx-b>svg{align-self:flex-start;margin-top:2px}
+
+/* Jagamisikoon muutmiskaardi paremas ülanurgas (ainult üritus). */
+.saved-card.editing{position:relative}
+.share-corner{position:absolute;top:10px;right:12px;display:grid;place-items:center;width:42px;height:42px;padding:0;border-radius:50%;border:1px solid color-mix(in srgb,var(--accent) 35%,transparent);background:color-mix(in srgb,var(--accent) 10%,transparent);color:var(--accent);box-shadow:none;cursor:pointer}
+.share-corner svg{width:20px;height:20px}
+.share-corner:active{transform:scale(.94)}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
@@ -1858,6 +1864,12 @@ function editorCard(item,card){
  if(!isEvent)[['+1 päev',1],['+1 nädal',7]].forEach(([text,days])=>make(text,'',()=>{draft.deadline=addDays(draft.deadline||savedOverview.today,days);submit();}));
  make('Loobu','',()=>{overviewEditing=null;renderOverview();});
  card.append(actions);
+ if(isEvent){
+  // Jagamisikoon (tavaline kolme ühendatud punktiga "share") kaardi paremas ülanurgas.
+  const button=document.createElement('button');button.type='button';button.className='share-corner';button.title='Jaga üritust';button.setAttribute('aria-label','Jaga üritust');
+  button.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"/></svg>';
+  buttons.push(button);button.onclick=()=>{shareEvent(item);};card.append(button);
+ }
  // Tühistamine/kustutamine on vormi all: kinnitus samas kohas, siis 5 s "Võta tagasi".
  {
   const danger=document.createElement('div');danger.className='edit-danger';
@@ -1872,6 +1884,30 @@ function editorCard(item,card){
   danger.append(ask);card.append(danger);
  }
 }
+// === JAGA ===
+// "Jaga üritust" (pliiatsimenüüs): valmis lühike tekst (pealkiri, aeg, koht, kaardilink) telefoni jagamismenüüsse (WhatsApp, SMS jne);
+// kui jagamist ei toetata, kopeeritakse tekst lõikelauale. Jagatakse salvestatud andmeid (mitte pooleli muudatusi); märkusi ei jagata.
+function eventShareText(item){
+ const date=item.date,end=item.endDate&&item.endDate>date?item.endDate:'';
+ let when;
+ if(end)when=longDay(date)+(item.time?' '+item.time:'')+' – '+longDay(end)+(item.endTime?' '+item.endTime:'');
+ else when=longDay(date)+', '+(item.time?item.time+(item.endTime?'–'+item.endTime:''):'kogu päev');
+ const lines=[item.title,when];
+ if(item.location){
+  lines.push(item.location);
+  const own=String(item.notes||'').match(/https?:\/\/\S*(?:maps|goo\.gl)\S*/i);
+  lines.push('Kaart: '+(own?own[0]:'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(item.location)));
+ }
+ return lines.join('\n');
+}
+async function shareEvent(item){
+ const text=eventShareText(item);
+ try{if(typeof navigator!=='undefined'&&typeof navigator.share==='function'){await navigator.share({text:text});return;}}
+ catch(error){if(error&&error.name==='AbortError')return;}
+ try{await navigator.clipboard.writeText(text);overviewStatus('Tekst kopeeritud. Kleebi see sinna, kuhu soovid saata.');}
+ catch(_){overviewStatus(text.replace(/\n/g,' · '));}
+}
+// === /JAGA ===
 function removeWithUndo(item){
  const isEvent=item.kind==='event';
  const list=savedOverview.items,index=list.indexOf(item);if(index<0){renderOverview();return;}
