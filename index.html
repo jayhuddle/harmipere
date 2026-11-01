@@ -1252,6 +1252,35 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 .next-up .eve-time{flex:none;min-width:52px;font-variant-numeric:tabular-nums;opacity:.86}
 .next-up .eve-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .next-up .eve-row .nu-person{flex:none}
+
+/* Motiiv "pere": logo viis täppi ja süda tuleb ka tühjadesse olekutesse, hero-kaardi taustale.
+   Tühjad olekud kasutavad sama lillat kahes toonis (täpid pulseerivad ükshaaval, kui liikumine on lubatud). */
+:root{
+ --spring:cubic-bezier(.34,1.5,.64,1);--glide:cubic-bezier(.2,.8,.2,1);
+ --mark:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22%238b7cff%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%224.4%22%20r%3D%222.4%22%3E%3Canimate%20attributeName%3D%22opacity%22%20values%3D%22.3%3B1%3B.3%22%20dur%3D%222.6s%22%20begin%3D%220.00s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fcircle%3E%3Ccircle%20cx%3D%2219.2%22%20cy%3D%229.6%22%20r%3D%222.4%22%3E%3Canimate%20attributeName%3D%22opacity%22%20values%3D%22.3%3B1%3B.3%22%20dur%3D%222.6s%22%20begin%3D%220.52s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fcircle%3E%3Ccircle%20cx%3D%2216.5%22%20cy%3D%2218.1%22%20r%3D%222.4%22%3E%3Canimate%20attributeName%3D%22opacity%22%20values%3D%22.3%3B1%3B.3%22%20dur%3D%222.6s%22%20begin%3D%221.04s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fcircle%3E%3Ccircle%20cx%3D%227.5%22%20cy%3D%2218.1%22%20r%3D%222.4%22%3E%3Canimate%20attributeName%3D%22opacity%22%20values%3D%22.3%3B1%3B.3%22%20dur%3D%222.6s%22%20begin%3D%221.56s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fcircle%3E%3Ccircle%20cx%3D%224.8%22%20cy%3D%229.6%22%20r%3D%222.4%22%3E%3Canimate%20attributeName%3D%22opacity%22%20values%3D%22.3%3B1%3B.3%22%20dur%3D%222.6s%22%20begin%3D%222.08s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fcircle%3E%3Cpath%20d%3D%22M12%2015l-2.6-2.5a1.6%201.6%200%200%201%202.6-2%201.6%201.6%200%200%201%202.6%202Z%22%3E%3Canimate%20attributeName%3D%22opacity%22%20values%3D%22.55%3B1%3B.55%22%20dur%3D%221.3s%22%20repeatCount%3D%22indefinite%22%2F%3E%3C%2Fpath%3E%3C%2Fsvg%3E");
+ --mark-still:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22%238b7cff%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%224.4%22%20r%3D%222.4%22%2F%3E%3Ccircle%20cx%3D%2219.2%22%20cy%3D%229.6%22%20r%3D%222.4%22%2F%3E%3Ccircle%20cx%3D%2216.5%22%20cy%3D%2218.1%22%20r%3D%222.4%22%2F%3E%3Ccircle%20cx%3D%227.5%22%20cy%3D%2218.1%22%20r%3D%222.4%22%2F%3E%3Ccircle%20cx%3D%224.8%22%20cy%3D%229.6%22%20r%3D%222.4%22%2F%3E%3Cpath%20d%3D%22M12%2015l-2.6-2.5a1.6%201.6%200%200%201%202.6-2%201.6%201.6%200%200%201%202.6%202Z%22%2F%3E%3C%2Fsvg%3E");
+ --mark-white:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22rgba(255%2C255%2C255%2C.16)%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%224.4%22%20r%3D%222.4%22%2F%3E%3Ccircle%20cx%3D%2219.2%22%20cy%3D%229.6%22%20r%3D%222.4%22%2F%3E%3Ccircle%20cx%3D%2216.5%22%20cy%3D%2218.1%22%20r%3D%222.4%22%2F%3E%3Ccircle%20cx%3D%227.5%22%20cy%3D%2218.1%22%20r%3D%222.4%22%2F%3E%3Ccircle%20cx%3D%224.8%22%20cy%3D%229.6%22%20r%3D%222.4%22%2F%3E%3Cpath%20d%3D%22M12%2015l-2.6-2.5a1.6%201.6%200%200%201%202.6-2%201.6%201.6%200%200%201%202.6%202Z%22%2F%3E%3C%2Fsvg%3E");
+}
+@media (prefers-reduced-motion:reduce){:root{--mark:var(--mark-still)}}
+.free-today:before{content:'';display:inline-block;flex:none;align-self:center;width:22px;height:22px;margin:0 8px 0 0;background:var(--mark) center/contain no-repeat}
+#savedWeek>p.empty,.empty-done{text-align:center}
+#savedWeek>p.empty:before,.empty-done:before{content:'';display:block;width:64px;height:64px;margin:6px auto 10px;background:var(--mark) center/contain no-repeat}
+.next-up{isolation:isolate}
+.next-up:after{content:'';position:absolute;z-index:-1;right:-26px;bottom:-30px;width:150px;height:150px;transform:rotate(-14deg);background:var(--mark-white) center/contain no-repeat;pointer-events:none}
+
+/* Ühtne liikumiskeel: kaks kõverat (--spring = vedru, --glide = sujuv aeglustus) ja kolm liikumist.
+   Vajumine ja kaartide ilmumine on motion.js-is (vajumine kasutab omadust scale, seega vanad :active transform'id lülituvad siin välja). */
+.card-enter{animation:card-in 420ms var(--glide) both;animation-delay:calc(var(--i,0)*40ms)}
+@keyframes card-in{from{opacity:0;transform:translateY(14px) scale(.985)}to{opacity:1;transform:none}}
+.cal-fab:active,.task-main>.complete-button:active,.mic-button:active,.next-up:active,.week-strip .ws-day:active,.share-corner:active{transform:none}
+.saved-card.completing .complete-button>span[aria-hidden]{animation:pere-pop 360ms var(--spring)}
+.nav-count.bump{animation:badge-bump .42s var(--spring)}
+.view-nav button.bump{animation:tab-bump .42s var(--spring)}
+.saved-card.flash{animation:pere-flash 1.8s ease,card-nudge 520ms var(--spring)}
+@keyframes card-nudge{0%{transform:scale(1)}35%{transform:scale(1.025)}100%{transform:scale(1)}}
+.undo-toast:not([hidden]){animation:toast-in 380ms var(--spring) both}
+@keyframes toast-in{from{opacity:0;translate:0 18px}to{opacity:1;translate:0 0}}
+@media(prefers-reduced-motion:reduce){.card-enter,.undo-toast:not([hidden]){animation:none}.saved-card.flash{animation:pere-flash 1.8s ease}}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
@@ -1599,9 +1628,10 @@ function bumpNode(node){
 function setBadgeText(node,text){if(!node)return;const before=node.textContent;node.textContent=text;if(before&&before!==text)bumpNode(node);}
 // Lehevahetus: kiire ristsulandus (menüü ja päis jäävad paigale).
 function showView(view){
- const target=typeof $==='function'&&$(view+'View');
- if(!canTransition()||busy||loadingImages||!target||!target.hidden){showViewNow(view);return;}
+ const target=typeof $==='function'&&$(view+'View'),switching=!!target&&target.hidden;
+ if(!canTransition()||busy||loadingImages||!target||!target.hidden){showViewNow(view);if(switching&&view==='overview')setTimeout(enterCards,60);return;}
  quiet(document.startViewTransition(()=>showViewNow(view)));
+ if(view==='overview')setTimeout(enterCards,60);
 }
 // Vahele jäetud või katkestatud üleminek (nt äpp läks taustale) ei ole viga: muutus tehakse ikkagi, lihtsalt ilma animatsioonita.
 function quiet(transition){if(transition){[transition.ready,transition.finished,transition.updateCallbackDone].forEach(promise=>promise&&promise.catch(()=>{}));}return transition;}
@@ -1627,7 +1657,7 @@ function collapseCard(card,done){
  const style=getComputedStyle(card);card.style.overflow='hidden';
  const animation=card.animate([
   {height:card.offsetHeight+'px',opacity:.78,marginTop:style.marginTop,marginBottom:style.marginBottom,paddingTop:style.paddingTop,paddingBottom:style.paddingBottom},
-  {height:'0px',opacity:0,marginTop:'0px',marginBottom:'0px',paddingTop:'0px',paddingBottom:'0px'}],{duration:280,easing:'cubic-bezier(.4,0,.2,1)',fill:'forwards'});
+  {height:'0px',opacity:0,marginTop:'0px',marginBottom:'0px',paddingTop:'0px',paddingBottom:'0px'}],{duration:300,easing:MOTION_GLIDE,fill:'forwards'});
  animation.onfinish=finish;setTimeout(finish,600);
 }
 // Salvestamine: väike täpp lendab salvestatud kaardilt Pere nupu poole, nupp teeb põrke.
@@ -1644,6 +1674,49 @@ function flyToPere(from){
   {transform:'translate(calc(-50% + '+dx+'px),calc(-50% + '+dy+'px)) scale(.4)',opacity:.85}],{duration:650,easing:'cubic-bezier(.45,0,.25,1)'});
  animation.onfinish=()=>{dot.remove();bumpNode(tab);};
 }
+// === LIIKUMISKEEL ===
+// Kolm ühist liikumist. Kõverad on samad mis CSS-is (--spring, --glide; glass-theme.css lõpp), nii et kogu äpp liigub ühtemoodi:
+// 1) vajumine: nupud, kiibid ja puudutatavad kaardid vajuvad puudutades veidi ja põrkavad vedruga tagasi (suured pinnad vähem);
+// 2) ilmumine: ülevaate kaardid libisevad 40 ms vahega sisse, ainult vaate avamisel ja esimesel joonistusel (mitte iga uuendusega);
+// 3) olekumuutused (tehtud, märgi põrge, tagasivõtmise riba, kaardile hüpe) kasutavad sama vedrukõverat CSS-is.
+// "Vähenda liikumist" lülitab 1) ja 2) välja. Vajumine kasutab omadust "scale", seega ei sega see CSS-i transform'e.
+const MOTION_SPRING='cubic-bezier(.34,1.5,.64,1)',MOTION_GLIDE='cubic-bezier(.2,.8,.2,1)';
+const PRESS_SELECTOR='button:not(:disabled),[role="button"],.chip,.ws-day,summary,.compact-past';
+(function(){
+ if(typeof document==='undefined'||typeof Element==='undefined'||typeof Element.prototype.animate!=='function')return;
+ let held=null,candidate=null,timer=0;
+ const depth=node=>node.offsetWidth>240?.985:.95;
+ function release(cancelled){
+  clearTimeout(timer);
+  if(held){const h=held;held=null;h.node.animate([{scale:h.d},{scale:1}],{duration:340,easing:MOTION_SPRING});h.hold.cancel();}
+  else if(candidate&&!cancelled){const d=depth(candidate);candidate.animate([{scale:1},{scale:d,offset:.3},{scale:1}],{duration:320,easing:MOTION_SPRING});}
+  candidate=null;
+ }
+ document.addEventListener('pointerdown',event=>{
+  if(reducedMotion()||event.button>0)return;
+  const node=event.target&&event.target.closest?event.target.closest(PRESS_SELECTOR):null;if(!node||node.disabled)return;
+  release(true);candidate=node;
+  // Lühike viivitus: kerimise alustamine (pointercancel) ei pea nuppu vajutama.
+  timer=setTimeout(()=>{if(candidate){const d=depth(candidate);held={node:candidate,d:d,hold:candidate.animate([{scale:1},{scale:d}],{duration:110,easing:MOTION_GLIDE,fill:'forwards'})};candidate=null;}},60);
+ },true);
+ document.addEventListener('pointerup',()=>release(false),true);
+ document.addEventListener('pointercancel',()=>release(true),true);
+})();
+// Ülevaate kaardid libisevad sisse: kuni 9 esimest nähtavat (kuum kaart, nädalariba, kaardid), --i määrab viivituse (CSS .card-enter).
+function enterCards(){
+ if(reducedMotion()||typeof document==='undefined'||typeof $!=='function')return;
+ const view=$('overviewView');if(!view||view.hidden||typeof view.querySelectorAll!=='function')return;
+ const nodes=[...view.querySelectorAll('.next-up:not([hidden]),.week-strip,.saved-card')].filter(node=>{const r=node.getBoundingClientRect();return r.height>0&&r.top<window.innerHeight&&r.bottom>0;}).slice(0,9);
+ nodes.forEach((node,index)=>{
+  node.style.setProperty('--i',String(index));node.classList.add('card-enter');
+  // Puhasta lõpus, tühistamisel (nt vaade peideti) ja ajapiiri järel, et klass ei jääks külge ega mängiks hiljem uuesti.
+  const clear=()=>{node.classList.remove('card-enter');node.style.removeProperty('--i');};
+  const onEnd=event=>{if(event.target!==node)return;clear();};
+  node.addEventListener('animationend',onEnd,{once:true});node.addEventListener('animationcancel',onEnd,{once:true});
+  setTimeout(clear,1500);
+ });
+}
+// === /LIIKUMISKEEL ===
 function showViewNow(view){
  if(busy||loadingImages)return;
  $('inputView').hidden=view!=='input';$('overviewView').hidden=view!=='overview';$('mailView').hidden=view!=='mail';
@@ -2392,7 +2465,9 @@ function renderOverview(){
    const line=$('savedTasks').lastElementChild;if(!item.deadline&&line&&line.classList)line.classList.add('undated-divider');}
   taskCard(item,$('savedTasks'));
  });
- if(!tasks.length)savedText($('savedTasks'),'p',items.some(item=>isTask(item)&&inWeek(item))?'Lähemad ülesanded on „See nädal” all.':items.some(isTask)?'Kõik ülesanded on tehtud, hea töö!':'Ülesandeid pole veel salvestatud.','empty');
+ // Logo motiiv (viis täppi + süda) ilmub ainult "kõik tehtud" olekus: klass empty-done.
+ if(!tasks.length){const allDone=!items.some(item=>isTask(item)&&inWeek(item))&&items.some(isTask);
+  savedText($('savedTasks'),'p',items.some(item=>isTask(item)&&inWeek(item))?'Lähemad ülesanded on „See nädal” all.':allDone?'Kõik ülesanded on tehtud, hea töö!':'Ülesandeid pole veel salvestatud.','empty'+(allDone?' empty-done':''));}
  const events=items.filter(item=>item.kind==='event').sort((a,b)=>(a.date+' '+a.time).localeCompare(b.date+' '+b.time));
  const later=events.filter(item=>item.date>weekEnd);
  $('eventCount').textContent='('+later.length+' hiljem)';
@@ -2403,6 +2478,8 @@ function renderOverview(){
  if(calOpen)renderCalendar();
  syncCalDock();
  if(typeof requestAnimationFrame==='function')requestAnimationFrame(alignCalendarButton);
+ // Esimene joonistus nähtavas ülevaates: kaardid ilmuvad 40 ms vahega (enterCards, motion.js). Hiljem uuesti joonistades ei ilmu midagi.
+ if(!window.pereEntered&&typeof enterCards==='function'&&typeof requestAnimationFrame==='function'&&$('overviewView')&&!$('overviewView').hidden&&savedOverview.items.length){window.pereEntered=true;requestAnimationFrame(enterCards);}
 }
 
 // Arvutis "See nädal" järel kuude kaupa ühised plokid: kuu pealkiri (hall arv + punktiir, taustata) üle mõlema tulba,
