@@ -1281,6 +1281,11 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 .undo-toast:not([hidden]){animation:toast-in 380ms var(--spring) both}
 @keyframes toast-in{from{opacity:0;translate:0 18px}to{opacity:1;translate:0 0}}
 @media(prefers-reduced-motion:reduce){.card-enter,.undo-toast:not([hidden]){animation:none}.saved-card.flash{animation:pere-flash 1.8s ease}}
+/* Tühja päeva rida: logo (22 px) ja tekst on samal keskjoonel. Rea kõrgus = logo kõrgus (varem 1.5em lõikas logo alt), tekst keskel ning
+   kasti trimmimine suurtähe kõrguseni (text-box), nii et joondus ei sõltu fondist (telefonis Roboto, arvutis Segoe UI). Negatiivsed veerised hoiavad
+   rea ümbruse samaks nagu enne (14 + 18 = 12 + 22 - 2). Teine rida ("Järgmine asi on ...") jääb endiselt peitu. */
+.free-today{align-items:center;height:22px;margin-top:12px;margin-bottom:-2px}
+.free-today>span{text-box:trim-both cap alphabetic}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
