@@ -1904,16 +1904,20 @@ function eventIconNode(item){
 }
 // Pere ülevaade (asendab Index-enne-klaasi.html renderOverview funktsiooni; build-glass-index.cjs paneb selle sisse).
 // "See nädal" (täna + 6 päeva, üle tähtaja ülesanded ülal), allpool kuude kaupa ülejäänu ilma kordusteta.
-// Asukoha tekst jääb samaks; selle kõrval on tagasihoidlik nööpnaela ikoon (ilma kastita), mis avab Waze navigeerimise.
+// Asukoha tekst jääb samaks; selle kõrval on tagasihoidlik nööpnaela ikoon (ilma kastita): telefonis ja tahvlis avab Waze navigeerimise,
+// arvutis (hiir) Google Mapsi (arvutis Wazet pole).
 const pinIcon='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>';
 const wazeUrl=location=>'https://waze.com/ul?q='+encodeURIComponent(String(location).trim())+'&navigate=yes';
+const mapsUrl=location=>'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(String(location).trim());
+const desktopPointer=()=>typeof window!=='undefined'&&typeof window.matchMedia==='function'&&window.matchMedia('(hover:hover) and (pointer:fine)').matches;
 function savedLocation(parent,location,prefix){
  const p=document.createElement('p');p.className='saved-meta';
  if(prefix)p.append(document.createTextNode(prefix+(location?' · ':'')));
  if(location){
   p.append(document.createTextNode(location));
-  const link=document.createElement('a');link.className='location-link';link.href=wazeUrl(location);link.target='_blank';link.rel='noopener noreferrer';
-  link.title='Ava Wazes';link.setAttribute('aria-label','Ava Wazes: '+location);link.innerHTML=pinIcon;
+  const maps=desktopPointer(),app=maps?'Google Mapsis':'Wazes';
+  const link=document.createElement('a');link.className='location-link';link.href=maps?mapsUrl(location):wazeUrl(location);link.target='_blank';link.rel='noopener noreferrer';
+  link.title='Ava '+app;link.setAttribute('aria-label','Ava '+app+': '+location);link.innerHTML=pinIcon;
   link.onclick=event=>event.stopPropagation();
   p.append(link);
  }
