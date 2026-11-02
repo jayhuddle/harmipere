@@ -1286,6 +1286,52 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
    rea ümbruse samaks nagu enne (14 + 18 = 12 + 22 - 2). Teine rida ("Järgmine asi on ...") jääb endiselt peitu. */
 .free-today{align-items:center;height:22px;margin-top:12px;margin-bottom:-2px}
 .free-today>span{text-box:trim-both cap alphabetic}
+
+/* Harmoneeritud inimeste palett (eelvaate lüliti data-pal="1"): neli tooni sama heleduse ja küllastusega (OKLCH L .60-.74, C .15), ainult hue erineb;
+   kõigil valge tekst (Eia oli varem kollane tumeda tekstiga, Pere väga tume lilla). Kui heaks kiidetakse, kolib see work/people.json-i. */
+:root[data-pal="1"] .saved-person.person-eia{background:linear-gradient(135deg,oklch(.74 .15 68),oklch(.60 .15 68));color:#fff;box-shadow:0 3px 10px oklch(.66 .15 68 / .35)}
+:root[data-pal="1"] .chip-eia{--chip:oklch(.66 .15 68);--chip-bg:linear-gradient(135deg,oklch(.74 .15 68),oklch(.60 .15 68))}
+:root[data-pal="1"] .chip-eia[aria-pressed="true"]{color:#fff}:root[data-pal="1"] .chip-eia[aria-pressed="true"]:before{background:#fff}
+:root[data-pal="1"] .saved-person.person-otto{background:linear-gradient(135deg,oklch(.74 .15 240),oklch(.60 .15 240));color:#fff;box-shadow:0 3px 10px oklch(.66 .15 240 / .35)}
+:root[data-pal="1"] .chip-otto{--chip:oklch(.66 .15 240);--chip-bg:linear-gradient(135deg,oklch(.74 .15 240),oklch(.60 .15 240))}
+:root[data-pal="1"] .chip-otto[aria-pressed="true"]{color:#fff}:root[data-pal="1"] .chip-otto[aria-pressed="true"]:before{background:#fff}
+:root[data-pal="1"] .saved-person.person-elle{background:linear-gradient(135deg,oklch(.74 .15 355),oklch(.60 .15 355));color:#fff;box-shadow:0 3px 10px oklch(.66 .15 355 / .35)}
+:root[data-pal="1"] .chip-elle{--chip:oklch(.66 .15 355);--chip-bg:linear-gradient(135deg,oklch(.74 .15 355),oklch(.60 .15 355))}
+:root[data-pal="1"] .chip-elle[aria-pressed="true"]{color:#fff}:root[data-pal="1"] .chip-elle[aria-pressed="true"]:before{background:#fff}
+:root[data-pal="1"] .saved-person.person-pere{background:linear-gradient(135deg,oklch(.74 .15 300),oklch(.60 .15 300));color:#fff;box-shadow:0 3px 10px oklch(.66 .15 300 / .35)}
+:root[data-pal="1"] .chip-pere{--chip:oklch(.66 .15 300);--chip-bg:linear-gradient(135deg,oklch(.74 .15 300),oklch(.60 .15 300))}
+:root[data-pal="1"] .chip-pere[aria-pressed="true"]{color:#fff}:root[data-pal="1"] .chip-pere[aria-pressed="true"]:before{background:#fff}
+
+/* Kuupäevaplaat ürituse kaardil (vaikimisi sees; JS ehitab .date-tile, kui tileMode(): jaluse lüliti "Kuupäevaplaat" või data-tile="0" lülitab välja): sama keel mis nädalaribal (päeva täht + suur number),
+   täna lilla. Kategooria ikoon liigub kellaaja rea ette. Kaardil on siis ainult kellaaeg (kuupäev on plaadil). */
+.date-tile{flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;width:44px;min-height:52px;margin-top:0;border-radius:14px;border:1px solid var(--tile-line);background:var(--tile-bg);color:var(--ink);box-shadow:0 5px 12px -5px var(--tile-glow)}
+.date-tile .dt-dow{font-size:11px;font-weight:700;letter-spacing:.8px;color:var(--tile-dow)}
+.date-tile .dt-num{font-family:'Outfit',system-ui,sans-serif;font-size:18px;font-weight:700;line-height:1.1}
+.date-tile.soon{border-color:var(--tile-line-strong)}
+/* Plaadi värvid: vaikimisi inimese toon (--chip tuleb plaadi klassist chip-<slug>, seega ka paletiga kaasas). data-tile="1" (eelvaate lüliti): pehme lilla toon. */
+.date-tile{--tile-bg:linear-gradient(160deg,color-mix(in srgb,var(--chip,var(--accent)) 32%,#fff),color-mix(in srgb,var(--chip,var(--accent)) 14%,#fff));--tile-line:color-mix(in srgb,var(--chip,var(--accent)) 40%,transparent);--tile-line-strong:color-mix(in srgb,var(--chip,var(--accent)) 70%,transparent);--tile-dow:color-mix(in srgb,var(--chip,var(--accent)) 78%,#000);--tile-glow:color-mix(in srgb,var(--chip,var(--accent)) 35%,transparent)}
+:root[data-tile="1"] .date-tile{--tile-bg:linear-gradient(160deg,color-mix(in srgb,var(--accent) 24%,#fff),color-mix(in srgb,var(--accent-2) 12%,#fff));--tile-line:color-mix(in srgb,var(--accent) 30%,transparent);--tile-line-strong:color-mix(in srgb,var(--accent) 60%,transparent);--tile-dow:var(--accent);--tile-glow:color-mix(in srgb,var(--accent) 35%,transparent)}
+:root[data-theme="dark"] .date-tile{--tile-bg:linear-gradient(160deg,color-mix(in srgb,var(--chip,var(--accent)) 36%,transparent),color-mix(in srgb,var(--chip,var(--accent)) 16%,transparent));--tile-line:color-mix(in srgb,var(--chip,var(--accent)) 50%,transparent);--tile-line-strong:color-mix(in srgb,var(--chip,var(--accent)) 80%,transparent);--tile-dow:color-mix(in srgb,var(--chip,var(--accent)) 55%,#fff);--tile-glow:rgba(0,0,0,.35)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .date-tile{--tile-bg:linear-gradient(160deg,color-mix(in srgb,var(--chip,var(--accent)) 36%,transparent),color-mix(in srgb,var(--chip,var(--accent)) 16%,transparent));--tile-line:color-mix(in srgb,var(--chip,var(--accent)) 50%,transparent);--tile-line-strong:color-mix(in srgb,var(--chip,var(--accent)) 80%,transparent);--tile-dow:color-mix(in srgb,var(--chip,var(--accent)) 55%,#fff);--tile-glow:rgba(0,0,0,.35)}}
+:root[data-theme="dark"][data-tile="1"] .date-tile{--tile-bg:linear-gradient(160deg,color-mix(in srgb,var(--accent) 30%,transparent),color-mix(in srgb,var(--accent-2) 14%,transparent));--tile-line:color-mix(in srgb,var(--accent) 45%,transparent);--tile-line-strong:color-mix(in srgb,var(--accent) 75%,transparent);--tile-dow:#b9b4ff;--tile-glow:rgba(0,0,0,.35)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"])[data-tile="1"] .date-tile{--tile-bg:linear-gradient(160deg,color-mix(in srgb,var(--accent) 30%,transparent),color-mix(in srgb,var(--accent-2) 14%,transparent));--tile-line:color-mix(in srgb,var(--accent) 45%,transparent);--tile-line-strong:color-mix(in srgb,var(--accent) 75%,transparent);--tile-dow:#b9b4ff;--tile-glow:rgba(0,0,0,.35)}}
+.date-tile.today{background:linear-gradient(160deg,#5b54e8,#8b5cf6);border-color:transparent;color:#fff;box-shadow:0 6px 16px rgba(91,84,232,.3)}
+.date-tile.today .dt-dow{color:rgba(255,255,255,.85)}
+.date-tile.past{opacity:.55;box-shadow:none}
+.saved-deadline>.event-icon.inline{display:inline-flex;width:15px;height:15px;margin:0 6px -2px 0;vertical-align:baseline;color:color-mix(in srgb,var(--accent) 70%,var(--muted))}
+.saved-deadline>.event-icon.inline svg{width:15px;height:15px}
+.saved-event-card.event-past .saved-deadline>.event-icon.inline{color:var(--soft)}
+/* Plaadi suuruse variandid (eelvaate lüliti data-tsize): a = väiksem plaat, nädalariba fondid (11/18 px); b = väiksem plaat, päeva täht 12 px ja number 16 px. */
+:root[data-tsize="a"] .date-tile,:root[data-tsize="b"] .date-tile{width:40px;min-height:46px}
+:root[data-tsize="b"] .date-tile .dt-dow{font-size:12px}
+:root[data-tsize="b"] .date-tile .dt-num{font-size:16px}
+/* Päevapäised (eelvaate lüliti data-nohead="1"): "See nädal" mobiilis peidetakse päeva pealkirjad ("HOMME · PÜHAPÄEV 11. OKT"), sest ürituse kuupäev on plaadil ja ülesandel tähtaja real.
+   Püha/vaheaja märkega päevapäis jääb, nagu ka tühja päeva rida. Päeva esimene kaart saab suurema vahe; nädalariba hüpe viib päeva esimesele kaardile. */
+#savedWeek .saved-card{scroll-margin-top:28px}
+:root[data-nohead="1"] #savedWeek .agenda-day:not(.free-today):not(:has(small)){display:none}
+:root[data-nohead="1"] #savedWeek .saved-card.day-start:not(:first-child){margin-top:16px}
+/* data-nohead="2": päevapäis jääb (rühmitus, täna/homme, püha), aga kuupäev ("11. OKT") peidetakse, sest see on ürituse plaadil ja ülesande tähtaja real. */
+:root[data-nohead="2"] #savedWeek .agenda-day .ad-date{display:none}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
@@ -1417,7 +1463,7 @@ body:after{content:'';position:absolute;top:0;left:0;right:0;height:180px;z-inde
 <div class="overview-grid"><section id="tasksSection" class="tasks-section collapsed" aria-label="Ülesannete loend"><h2><button id="tasksToggle" class="section-toggle" type="button" aria-expanded="false" aria-controls="savedTasks"><span>Ülesanded <span id="taskCount" class="count"></span></span><span id="taskUrgent" class="section-urgent" hidden></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></h2><div id="savedTasks"></div><label class="show-done"><input id="showDone" type="checkbox">Näita ka tehtud ülesandeid</label><div id="doneTasks"></div></section><section aria-label="Ürituste loend"><h2>Üritused <span id="eventCount" class="count"></span></h2><div id="savedEvents"></div></section></div>
 </section>
 <section id="mailView" hidden aria-label="Perepostkasti kirjad"><div class="overview-top"><h1>E-kirjad</h1><button id="refreshMail" class="icon-button" type="button" aria-label="Värskenda" title="Värskenda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg></button></div><p class="saved-meta mail-intro">Automaatika lisab selged sündmused ise. Siin on ebaselged, mis vajavad sind.</p><div class="overview-filters"><label><input id="showProcessedMail" type="checkbox">Näita ka automaatselt töödeldud kirju</label></div><p id="mailStatus" class="status" role="status" aria-live="polite"></p><div id="mailCards"></div></section>
-<footer>Kuni 40 töötluskatset päevas · AI tulemus vajab ülevaatamist · <button type="button" class="logout-link" onclick="pereLogout()">Logi välja</button><span id="pushWrap" hidden> · <button type="button" class="logout-link" id="pushToggle"></button></span><span id="diagWrap" hidden> · <button type="button" class="logout-link" onclick="pereDiag()">Veateave</button></span></footer><script>(function(){const KEY='pere-last-bad-response';function read(){try{return localStorage.getItem(KEY);}catch(_){return null;}}
+<footer>Kuni 40 töötluskatset päevas · AI tulemus vajab ülevaatamist · <button type="button" class="logout-link" onclick="pereLogout()">Logi välja</button><span id="pushWrap" hidden> · <button type="button" class="logout-link" id="pushToggle"></button></span><span id="tileWrap"> · <button type="button" class="logout-link" id="tileToggle"></button></span><span id="diagWrap" hidden> · <button type="button" class="logout-link" onclick="pereDiag()">Veateave</button></span></footer><script>(function(){const KEY='pere-last-bad-response';function read(){try{return localStorage.getItem(KEY);}catch(_){return null;}}
  function sync(){const wrap=document.getElementById('diagWrap');if(wrap)wrap.hidden=!read();}
  window.pereDiag=async()=>{const raw=read();if(!raw)return;let text=raw;try{const d=JSON.parse(raw);text='Aeg: '+d.at+'\nToiming: '+d.action+'\nHTTP: '+d.status+(d.attempt?'\nKatse: '+d.attempt+'/3':'')+'\nKordus aitas: '+(d.recovered?'jah (tõrget ei olnud näha)':'ei / teadmata')+'\nVastus: '+d.text;}catch(_){}
   let copied=false;try{await navigator.clipboard.writeText(text);copied=true;}catch(_){}
@@ -2204,6 +2250,24 @@ if(typeof window!=='undefined'&&typeof window.matchMedia==='function'){try{windo
 // Nädalariba "See nädal" pealkirja all: 7 päeva ühes reas, iga päeva all inimeste värvilised täpid (üritused + tähtajad).
 // Näitab ühe pilguga nädala kuju (tihe/vaba, kelle päev). Puudutus: mobiilis hüpe selle päeva sildini, arvutis (või kui silti pole) kalender sellel päeval.
 const STRIP_DOW=['P','E','T','K','N','R','L'];
+// Kuupäevaplaat ürituse kaardil: päeva täht + suur number kaardi vasakul, sama keel mis nädalaribal. Vaikimisi SEES; lülitab välja
+// jaluse "Kuupäevaplaat" (localStorage pere-tile=0) või eelvaate <html data-tile="0">. Testis (ilma documentElement'ita) alati väljas.
+const tileMode=()=>{try{const v=document.documentElement.dataset.tile;if(v==='0')return false;if(v==='1'||v==='2')return true;return localStorage.getItem('pere-tile')!=='0';}catch(_){return false;}};
+// Jaluse lüliti (ainult PWA jalus): tagasi vanale ilmele ilma uuendust ootamata.
+function initTileToggle(){
+ try{
+  const button=document.getElementById('tileToggle');if(!button)return;
+  const paint=()=>{button.textContent='Kuupäevaplaat: '+(tileMode()?'sees':'väljas');};
+  button.onclick=()=>{try{localStorage.setItem('pere-tile',tileMode()?'0':'1');}catch(_){}paint();if(typeof renderOverview==='function'&&typeof savedOverview!=='undefined'&&savedOverview)renderOverview();};
+  paint();
+ }catch(_){}
+}
+function dateTile(item,today,tomorrow,phase){
+ const tile=document.createElement('div');tile.className='date-tile chip-'+personSlug(canonicalPerson(item.person||''))+(item.date===today?' today':item.date===tomorrow?' soon':'')+(phase==='past'?' past':'');
+ tile.setAttribute('role','img');tile.setAttribute('aria-label',longDay(item.date));
+ savedText(tile,'span',STRIP_DOW[new Date(item.date+'T12:00:00Z').getUTCDay()],'dt-dow');savedText(tile,'span',String(Number(item.date.slice(8,10))),'dt-num');
+ return tile;
+}
 let weekStripNoteTimer=0;
 function weekStripNote(strip,text){
  let note=document.getElementById('weekStripNote');
@@ -2234,7 +2298,9 @@ function renderWeekStrip(weekTasks,weekEvents,today){
     // Tühi päev: lühike märge riba all ("Kolmapäev 14. okt on vaba"), kuhugi ei liiguta.
     if(!day.length){weekStripNote(strip,(i===0?'Täna':i===1?'Homme':longDay(date))+' on vaba');return;}
     const head=[...list.querySelectorAll('.agenda-day')].find(node=>node.dataset&&node.dataset.date===date);
-    if(head){head.scrollIntoView({behavior:'smooth',block:'start'});head.classList.add('flash');setTimeout(()=>head.classList.remove('flash'),1400);}
+    // Kui päevapäis on peidetud (offsetParent null), hüppa päeva esimesele kaardile.
+    const target=head&&head.offsetParent!==null?head:([...list.querySelectorAll('.saved-card')].find(node=>node.dataset&&node.dataset.date===date)||head);
+    if(target){target.scrollIntoView({behavior:'smooth',block:'start'});target.classList.add('flash');setTimeout(()=>target.classList.remove('flash'),1400);}
     else if(typeof openCalendarAt==='function')openCalendarAt(date);
    };
    strip.append(button);
@@ -2408,7 +2474,7 @@ function renderOverview(){
   savedText(heading,'h3',item.title);savedPersonTag(heading,item.person);card.append(heading);
   if(phase==='now')savedText(card,'p','Praegu'+(item.endTime?' · kuni '+item.endTime:item.time?' · algas '+item.time:''),'saved-deadline now-line');
   // Telefoni "See nädal" on päevade kaupa (päeva pealkiri ütleb kuupäeva): kaardil ainult kellaaeg; mitmepäevasel jääb täiskuupäev.
-  else if(parent===$('savedWeek')&&!(item.endDate&&item.endDate>item.date))savedText(card,'p',(phase==='past'?'Toimus · ':'')+(item.time?item.time+(item.endTime?'–'+item.endTime:''):'Kogu päev'),'saved-deadline');
+  else if((parent===$('savedWeek')||tileMode())&&!(item.endDate&&item.endDate>item.date))savedText(card,'p',(phase==='past'?'Toimus · ':'')+(item.time?item.time+(item.endTime?'–'+item.endTime:''):'Kogu päev'),'saved-deadline');
   else savedText(card,'p',(phase==='past'&&item.date===today?'Toimus täna · ':item.date===today?'Täna · ':item.date===tomorrow?'Homme · ':'')+(weekDrawing?longDay(item.date,item.date===today||item.date===tomorrow):shortDay(item.date))+(item.time?' · '+item.time+(item.endTime?'–'+item.endTime:''):' · kogu päev'),'saved-deadline');
   if(weekDrawing&&phase!=='past'&&isOutdoorEvent(item)){try{card.append(weatherChip(item));}catch(_){}}
   if(item.location)savedLocation(card,item.location);
@@ -2419,7 +2485,10 @@ function renderOverview(){
   const tools=document.createElement('div');tools.className='card-tools';tools.append(editButton(item));footer.append(content,tools);card.append(footer);
   // Kategooria ikoon vasakule (nagu ülesande rõngas): kaardi sisu liigub ikooni kõrvale.
   const main=document.createElement('div'),body=document.createElement('div');main.className='task-main event-main';body.className='task-body';
-  body.append(...[...card.children]);main.append(eventIconNode(item),body);card.replaceChildren(main);parent.append(card);
+  body.append(...[...card.children]);
+  if(tileMode()){main.append(dateTile(item,today,tomorrow,phase),body);const line=body.querySelector('.saved-deadline');if(line&&line.prepend){const icon=eventIconNode(item);icon.classList.add('inline');line.prepend(icon);}}
+  else main.append(eventIconNode(item),body);
+  card.replaceChildren(main);parent.append(card);
  }
  // See nädal: arvutis ülesanded vasakul (üle tähtaja ees) ja üritused paremal; mobiilis päevade kaupa segamini (üle tähtaja ülal; päeva sees ülesanded enne üritusi).
  const weekTasks=items.filter(item=>isTask(item)&&inWeek(item)).sort((a,b)=>a.deadline.localeCompare(b.deadline));
@@ -2444,8 +2513,13 @@ function renderOverview(){
    const date=addDays(today,i),dayEvents=weekEvents.filter(item=>item.date===date),dayTasks=weekTasks.filter(item=>item.deadline===date);
    if(!dayEvents.length&&!dayTasks.length)continue;
    const head=document.createElement('div');head.className='agenda-day'+(i===0?' today':'');if(head.dataset)head.dataset.date=date;
-   savedText(head,'span',(i===0?'Täna · ':i===1?'Homme · ':'')+longDay(date));const holiday=calOff(date).holiday;if(holiday)savedText(head,'small',holiday);week.append(head);
+   // Nädalapäev sõnana, kuupäev eraldi span'is (.ad-date): plaadiga ürituste puhul võib kuupäeva päisest peita (data-nohead="2").
+   const label=savedText(head,'span',(i===0?'Täna · ':i===1?'Homme · ':'')+WEEKDAYS_LONG[new Date(date+'T12:00:00Z').getUTCDay()]);savedText(label,'span',' '+shortDate(date),'ad-date');
+   const holiday=calOff(date).holiday;if(holiday)savedText(head,'small',holiday);week.append(head);
+   // Päeva kaardid saavad data-date ja esimene klassi day-start (kui päevapäiseid peidetakse, jääb päevade vahele suurem vahe ja nädalariba hüpe viib kaardile).
+   let from=0;try{from=week.children.length;}catch(_){}
    dayTasks.forEach(item=>taskCard(item,week));dayEvents.forEach(item=>eventCard(item,week));
+   try{[...week.children].slice(from).forEach((node,index)=>{if(node.dataset&&node.classList&&node.classList.contains('saved-card')){node.dataset.date=date;if(index===0)node.classList.add('day-start');}});}catch(_){}
   }
  }else [[weekTasks,'Ülesanded','Sel nädalal ülesandeid pole.',taskCard],[weekEvents,'Üritused','Sel nädalal üritusi pole.',eventCard]].forEach(([list,label,empty,draw])=>{
   const column=document.createElement('div');column.className='week-col';savedText(column,'div',label,'week-col-label');
@@ -3494,6 +3568,7 @@ if(window.pereSharing)(async()=>{
  function sync(){const mode=root.dataset.theme;metas.forEach((meta,index)=>meta.setAttribute('content',colors[mode]||(index?colors.dark:colors.light)));}
  sync();new MutationObserver(sync).observe(root,{attributes:true,attributeFilter:['data-theme']});})();
 window.pereApplyStart=()=>{if(window.pereSharing)return;if(!$('inputView').hidden&&!busy&&!loadingImages&&!$('text').value.trim()&&!images.length&&!result)(typeof showViewNow==='function'?showViewNow:showView)('overview');};
+if(typeof initTileToggle==='function')initTileToggle();
 pereApplyStart();</script>
 </body>
 </html>
