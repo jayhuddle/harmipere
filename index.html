@@ -62,7 +62,8 @@
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Righteous&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Righteous&family=Sora:wght@300;400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script>try{if(localStorage.getItem("pere-plakat")!=="0"&&!document.documentElement.dataset.plakat)document.documentElement.dataset.plakat="1";}catch(e){}</script>
 <style>
 /* Klaasiteema: kiht olemasoleva CSS-i peal. Värvid ainult muutujatest, tume teema süsteemi järgi. */
 :root{
@@ -1398,6 +1399,289 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 /* Libistamise ajal joonistub kaardi ringi linnuke (stroke-dashoffset JS-ist), värvilt aktsent. */
 .task-main>.complete-button .sw-check{position:absolute;inset:0;width:100%;height:100%;box-sizing:border-box;color:var(--accent);pointer-events:none;overflow:visible}
 .task-main>.complete-button .sw-check path{stroke-dasharray:1;stroke-dashoffset:1}
+
+/* ===== Vaade "Plakat" (html data-plakat="1", eelvaates paneel "Vaade"; vaikimisi väljas). Joonistab work/plakat.js. ===== */
+:root[data-plakat="1"]:has(#overviewView:not([hidden])){overflow:hidden}
+:root[data-plakat="1"]:has(#overviewView:not([hidden])) header{display:none}
+:root[data-plakat="1"] #overviewView .overview-top,:root[data-plakat="1"] #overviewView .overview-filters,:root[data-plakat="1"] #nextUp,:root[data-plakat="1"] #weekSection,:root[data-plakat="1"] #overviewView .overview-grid,:root[data-plakat="1"] #calendarButton{display:none!important}
+:root[data-plakat="1"] #overviewStatus:empty{display:none}
+:root[data-plakat="1"] #overviewStatus{position:fixed;left:16px;right:16px;bottom:calc(150px + env(safe-area-inset-bottom));z-index:30;text-align:center;font:600 13px/1.3 'Sora',system-ui,sans-serif}
+#plakatView{position:fixed;inset:0;z-index:5;font-family:'Sora',system-ui,-apple-system,sans-serif;color:var(--on,#fff)}
+#plakatView .pk-pager{position:absolute;inset:0;display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}
+#plakatView .pk-pager::-webkit-scrollbar{display:none}
+#plakatView .pk-page{flex:0 0 100%;scroll-snap-align:start;scroll-snap-stop:always;position:relative;background:var(--c);color:var(--on);padding:calc(18px + env(safe-area-inset-top)) max(20px,calc((100vw - 560px)/2)) 0;overflow:hidden;display:flex;flex-direction:column}
+:root[data-theme="dark"] #plakatView .pk-page{background:color-mix(in srgb,var(--c) 15%,#090910);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #plakatView .pk-page{background:color-mix(in srgb,var(--c) 15%,#090910);color:#fff}}
+#plakatView .pk-top{display:flex;justify-content:space-between;align-items:center;margin-top:10px;font:700 12px/1 'Sora',sans-serif;letter-spacing:.6px}
+#plakatView .pk-right{display:flex;gap:6px;align-items:center}
+#plakatView .pk-avs{display:flex;gap:6px}
+#plakatView .pk-av{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;border:2px solid #ffffff99;font:700 11px/1 'Sora',sans-serif;color:#17171c;background:#fff;padding:0;min-height:0;box-shadow:none;transition:opacity .2s,transform .2s}
+#plakatView .pk-av.off{opacity:.3;transform:scale(.88)}
+#plakatView .pk-av:after,#plakatView .pk-av:before{display:none}
+#plakatView .pk-wkb{font:600 11.5px/1 'Sora',sans-serif;background:rgba(0,0,0,.14);color:inherit;border:0;border-radius:99px;padding:8px 11px;min-height:0;box-shadow:none}
+#plakatView .pk-num{font:800 clamp(150px,52vw,230px)/.78 'Sora',sans-serif;letter-spacing:-.07em;margin:20px 0 0 -.04em;position:relative;flex:none}
+:root[data-theme="dark"] #plakatView .pk-num{color:var(--c)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #plakatView .pk-num{color:var(--c)}}
+#plakatView .pk-num small{position:absolute;right:0;top:6px;writing-mode:vertical-rl;font:700 15px/1 'Sora',sans-serif;letter-spacing:5px;text-transform:uppercase;opacity:.9;color:inherit}
+#plakatView .pk-num.pk-word{font-size:clamp(64px,22vw,96px);letter-spacing:-.04em;line-height:1;margin-top:34px}
+#plakatView .pk-st{display:flex;justify-content:space-between;align-items:center;margin:16px 0 8px;font:700 11px/1 'Space Mono',ui-monospace,monospace;letter-spacing:.8px;flex:none;gap:8px}
+#plakatView .pk-st b{background:var(--on);color:var(--c);padding:5px 8px;border-radius:99px;font:700 10.5px/1 'Sora',sans-serif;letter-spacing:.4px;white-space:nowrap}
+:root[data-theme="dark"] #plakatView .pk-st b{background:var(--c);color:#111}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #plakatView .pk-st b{background:var(--c);color:#111}}
+#plakatView .pk-list{flex:1;overflow-y:auto;scrollbar-width:none;padding-bottom:calc(190px + env(safe-area-inset-bottom));min-height:0}
+#plakatView .pk-list::-webkit-scrollbar{display:none}
+#plakatView .pk-li{display:grid;grid-template-columns:66px 1fr 26px;gap:10px;padding:12px 0;border-top:1.5px solid color-mix(in srgb,var(--on) 38%,transparent);align-items:start}
+:root[data-theme="dark"] #plakatView .pk-li{border-top-color:#ffffff22}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #plakatView .pk-li{border-top-color:#ffffff22}}
+#plakatView .pk-li time{font:700 17px/1 'Sora',sans-serif;letter-spacing:-.5px;cursor:pointer}
+#plakatView .pk-li time.tg{font:700 11px/1.15 'Sora',sans-serif;letter-spacing:.2px}
+#plakatView .pk-li time small{display:block;font:400 11px/1 'Sora',sans-serif;opacity:.75;margin-top:5px;letter-spacing:0}
+#plakatView .pk-body{cursor:pointer;min-width:0}
+#plakatView .pk-li h3{font:600 16.5px/1.15 'Sora',sans-serif;letter-spacing:-.4px;margin:0;color:inherit;transition:opacity .25s}
+#plakatView .pk-li p{font:400 12px/1.3 'Sora',sans-serif;opacity:.88;margin:4px 0 0}
+#plakatView .pk-pp{display:inline-block;font:700 10px/1 'Sora',sans-serif;color:#17171c;padding:3px 7px;border-radius:99px;margin-right:6px;vertical-align:1px;background:#fff}
+#plakatView .pk-pp.pk-eia,#plakatView .pk-av.pk-eia{background:#ffd24a}
+#plakatView .pk-pp.pk-otto,#plakatView .pk-av.pk-otto{background:#8cc7ff}
+#plakatView .pk-pp.pk-elle,#plakatView .pk-av.pk-elle{background:#ffb0d6}
+#plakatView .pk-pp.pk-pere,#plakatView .pk-av.pk-pere{background:#cdb8ff}
+#plakatView .pk-chk{width:26px;height:26px;border-radius:50%;border:2.2px solid currentColor;background:transparent;color:inherit;display:grid;place-items:center;padding:0;min-height:0;box-shadow:none;margin-top:-1px}
+#plakatView .pk-chk svg{opacity:0;transition:opacity .2s}
+#plakatView .pk-li.done h3{text-decoration:line-through;opacity:.5}
+#plakatView .pk-li.done .pk-chk{background:var(--on);color:var(--c)}
+#plakatView .pk-li.done .pk-chk svg{opacity:1}
+#plakatView .pk-li.late time{background:var(--on);color:var(--c);border-radius:8px;padding:5px;text-align:center;height:fit-content}
+:root[data-theme="dark"] #plakatView .pk-li.late time{background:var(--c);color:#111}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #plakatView .pk-li.late time{background:var(--c);color:#111}}
+#plakatView .pk-free{font:800 clamp(52px,17vw,76px)/.9 'Sora',sans-serif;letter-spacing:-.05em;margin:28px 0 12px}
+#plakatView .pk-fn{font:400 14px/1.45 'Sora',sans-serif;opacity:.9}
+#plakatView .pk-dots{position:absolute;left:0;right:0;bottom:calc(96px + env(safe-area-inset-bottom));display:flex;justify-content:center;gap:6px;z-index:3;pointer-events:none}
+#plakatView .pk-dots button{pointer-events:auto;min-width:26px;height:26px;border-radius:99px;display:grid;place-items:center;font:700 10px/1 'Sora',sans-serif;color:#fff;background:rgba(0,0,0,.18);border:0;padding:0 4px;min-height:0;box-shadow:none}
+#plakatView .pk-dots button.on{background:#fff;color:#111;min-width:40px}
+#plakatView .pk-week{position:absolute;inset:0;z-index:6;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .35s cubic-bezier(.2,.9,.2,1);visibility:hidden}
+#plakatView.week-open .pk-week{transform:none;visibility:visible}
+#plakatView .pk-week button{flex:1;display:flex;align-items:center;justify-content:space-between;padding:0 max(20px,calc((100vw - 560px)/2));color:var(--on);background:var(--c);border:0;border-radius:0;min-height:0;box-shadow:none;font-family:'Sora',sans-serif}
+:root[data-theme="dark"] #plakatView .pk-week button{background:color-mix(in srgb,var(--c) 22%,#090910);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #plakatView .pk-week button{background:color-mix(in srgb,var(--c) 22%,#090910);color:#fff}}
+#plakatView .pk-week button b{font:800 40px/1 'Sora',sans-serif;letter-spacing:-2px}
+#plakatView .pk-week button span{font:600 12px/1.3 'Sora',sans-serif;text-align:right;opacity:.9}
+#plakatView .pk-week button i{font:700 11px/1 'Space Mono',monospace;font-style:normal;letter-spacing:1px;width:34px;text-align:left}
+#plakatView .pk-sheet{position:absolute;left:0;right:0;bottom:0;top:calc(40px + env(safe-area-inset-top));z-index:8;overflow-y:auto;padding:14px 14px calc(110px + env(safe-area-inset-bottom));background:var(--bg,#eceefa);border-radius:28px 28px 0 0;box-shadow:0 -12px 40px rgba(0,0,0,.28);color:var(--ink,#1b2140)}
+#plakatView .pk-sheet .saved-card{margin:0 auto;max-width:560px}
+/* Plakat: tume ujuv riba päevavärvi peal. */
+:root[data-plakat="1"] .view-nav{background:rgba(17,17,20,.86)!important;border-color:rgba(255,255,255,.12)!important;box-shadow:0 10px 30px rgba(0,0,0,.35)!important}
+:root[data-plakat="1"] .view-nav button{color:#fff!important}
+:root[data-plakat="1"] .view-nav button[aria-pressed="true"]{background:#fff!important;color:#111!important}
+#plakatView .pk-week{padding-bottom:calc(84px + env(safe-area-inset-bottom));background:#2b2f4a}
+:root[data-theme="dark"] #plakatView .pk-num.pk-word{color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #plakatView .pk-num.pk-word{color:#fff}}
+/* Plakat: Nädal-nupp alla pöidla ulatusse, suur kuupäev avab ka nädala; alumine peamenüü Plakati keeles (päevavärv aktiivsel nupul, Sora, ilma klaasita). */
+#plakatView .pk-num{cursor:pointer}
+#plakatView .pk-dots{z-index:7;gap:5px}
+#plakatView .pk-dots button{min-width:28px;height:34px}
+#plakatView .pk-dots button.on{min-width:40px}
+#plakatView .pk-dots .pk-weekbtn{display:flex;align-items:center;gap:6px;min-width:0;height:34px;padding:0 13px;margin-left:5px;background:#fff;color:#111;font:700 11px/1 'Sora',sans-serif;letter-spacing:.5px;text-transform:uppercase;border-radius:99px}
+#plakatView.week-open .pk-dots .pk-weekbtn{background:#111;color:#fff}
+#plakatView .pk-week{padding-bottom:calc(150px + env(safe-area-inset-bottom))}
+:root[data-plakat="1"] .view-nav{background:#101014!important;border:0!important;border-radius:22px!important;box-shadow:0 10px 28px rgba(0,0,0,.3)!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+:root[data-plakat="1"] .view-nav button{border-radius:16px!important;box-shadow:none!important}
+:root[data-plakat="1"] .view-nav button:after{font-family:'Sora',system-ui,sans-serif!important;font-weight:700!important;font-size:9.5px!important;letter-spacing:.7px!important;text-transform:uppercase}
+:root[data-plakat="1"] .view-nav button[aria-pressed="true"]{background:var(--pk-c,#fff)!important;color:var(--pk-on,#111)!important}
+:root[data-plakat="1"] .view-nav .nav-count{background:#fff!important;color:#111!important;border:2px solid #101014!important;font-family:'Sora',sans-serif!important;font-weight:800!important}
+/* Plakat: nädalavaate ribad näitavad kuni kolm rida (inimese värv, kellaaeg, pealkiri). */
+#plakatView .pk-week button{gap:12px;justify-content:flex-start}
+#plakatView .pk-week button i{display:flex;flex-direction:column;gap:3px;width:40px;flex:none}
+#plakatView .pk-week button i em{font:600 9px/1 'Sora',sans-serif;font-style:normal;letter-spacing:.3px;text-transform:uppercase;opacity:.85}
+#plakatView .pk-week button b{flex:none;min-width:58px;text-align:left}
+#plakatView .pk-week button b.pk-wword{min-width:0;font-size:30px}
+#plakatView .pk-wl{flex:1;min-width:0;text-align:left;display:flex;flex-direction:column;gap:5px}
+#plakatView .pk-wline{display:flex;align-items:center;gap:7px;font:600 12.5px/1.15 'Sora',sans-serif;min-width:0}
+#plakatView .pk-wline span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;text-align:left;opacity:1;font:inherit}
+#plakatView .pk-wline.late span{font-weight:800}
+#plakatView .pk-wd{flex:none;width:11px;height:11px;border-radius:50%;background:#fff;border:2px solid rgba(255,255,255,.95);box-sizing:border-box;box-shadow:0 0 0 1.5px rgba(0,0,0,.18)}
+#plakatView .pk-wd.pk-eia{background:#ffd24a}#plakatView .pk-wd.pk-otto{background:#8cc7ff}#plakatView .pk-wd.pk-elle{background:#ffb0d6}#plakatView .pk-wd.pk-pere{background:#cdb8ff}
+#plakatView .pk-wmore,#plakatView .pk-wfree{font:600 11.5px/1 'Sora',sans-serif;opacity:.8;text-align:left}
+#plakatView .pk-wfree{font-size:13px;opacity:.9}
+#plakatView .pk-week button .pk-wd{display:block;width:11px;height:11px;flex:none;gap:0}
+
+/* ===== Plakat: Sisesta ja E-kirjad samas keeles (täisvärviline taust, hiiglaslik pealkiri, pillid, jooned). Värvid: --pv-*. ===== */
+:root[data-plakat="1"]:has(#inputView:not([hidden])){--pv-c:#d4f23a;--pv-on:#1d2300}
+:root[data-plakat="1"]:has(#mailView:not([hidden])){--pv-c:#c9b6ff;--pv-on:#1f1650}
+:root[data-plakat="1"]:has(#inputView:not([hidden])),:root[data-plakat="1"]:has(#mailView:not([hidden])){--pv-bg:var(--pv-c);--pv-fg:var(--pv-on);--pv-head:var(--pv-on);--pv-field:rgba(255,255,255,.88);--pv-field-fg:#14141c;--pv-err:#b3001b;background:var(--pv-bg)!important;color:var(--pv-fg)}
+:root[data-plakat="1"][data-theme="dark"]:has(#inputView:not([hidden])),:root[data-plakat="1"][data-theme="dark"]:has(#mailView:not([hidden])){--pv-bg:color-mix(in srgb,var(--pv-c) 15%,#090910);--pv-fg:#fff;--pv-head:var(--pv-c);--pv-field:rgba(255,255,255,.09);--pv-field-fg:#fff;--pv-err:#ff8a80}
+@media (prefers-color-scheme:dark){:root[data-plakat="1"]:not([data-theme="light"]):has(#inputView:not([hidden])),:root[data-plakat="1"]:not([data-theme="light"]):has(#mailView:not([hidden])){--pv-bg:color-mix(in srgb,var(--pv-c) 15%,#090910);--pv-fg:#fff;--pv-head:var(--pv-c);--pv-field:rgba(255,255,255,.09);--pv-field-fg:#fff;--pv-err:#ff8a80}}
+:root[data-plakat="1"]:has(#inputView:not([hidden])) body:before,:root[data-plakat="1"]:has(#mailView:not([hidden])) body:before{display:none}
+:root[data-plakat="1"]:has(#inputView:not([hidden])) .view-nav button[aria-pressed="true"],:root[data-plakat="1"]:has(#mailView:not([hidden])) .view-nav button[aria-pressed="true"]{background:var(--pv-c)!important;color:var(--pv-on)!important}
+/* päis ja jalus */
+:root[data-plakat="1"]:has(:is(#inputView,#mailView):not([hidden])) header{color:var(--pv-fg)}
+:root[data-plakat="1"]:has(:is(#inputView,#mailView):not([hidden])) .brand-icon,:root[data-plakat="1"]:has(:is(#inputView,#mailView):not([hidden])) .brand-name span{display:none}
+:root[data-plakat="1"]:has(:is(#inputView,#mailView):not([hidden])) .brand-name{font:700 12px/1 'Sora',sans-serif;letter-spacing:.6px;text-transform:uppercase;color:var(--pv-fg);-webkit-text-fill-color:var(--pv-fg);background:none}
+:root[data-plakat="1"]:has(:is(#inputView,#mailView):not([hidden])) header .theme-toggle{background:rgba(0,0,0,.14);color:var(--pv-fg);border:0;box-shadow:none}
+:root[data-plakat="1"]:has(:is(#inputView,#mailView):not([hidden])) footer,:root[data-plakat="1"]:has(:is(#inputView,#mailView):not([hidden])) footer *{color:var(--pv-fg);font-family:'Sora',sans-serif;opacity:.8}
+/* pealkirjad */
+:root[data-plakat="1"] #inputView h1,:root[data-plakat="1"] #mailView h1{font:800 clamp(44px,15vw,72px)/.92 'Sora',sans-serif;letter-spacing:-.05em;color:var(--pv-head)}
+:root[data-plakat="1"] #inputView .eyebrow{background:none;border:0;padding:0;box-shadow:none;font:700 11px/1 'Space Mono',monospace;letter-spacing:.8px;text-transform:uppercase;color:var(--pv-fg);opacity:.85}
+:root[data-plakat="1"] #inputView .panel,:root[data-plakat="1"] #inputView .panel.side{background:none;border:0;box-shadow:none;padding:0;-webkit-backdrop-filter:none;backdrop-filter:none;color:var(--pv-fg)}
+:root[data-plakat="1"] #inputView .panel label,:root[data-plakat="1"] #mailView label{font:700 11px/1.2 'Space Mono',monospace;letter-spacing:.7px;text-transform:uppercase;color:var(--pv-fg)}
+:root[data-plakat="1"] #inputView textarea,:root[data-plakat="1"] #inputView input[type="text"],:root[data-plakat="1"] #inputView select{background:var(--pv-field);color:var(--pv-field-fg);border:0;border-radius:20px;box-shadow:none;font:600 16px/1.35 'Sora',sans-serif}
+:root[data-plakat="1"] #inputView textarea::placeholder{color:color-mix(in srgb,var(--pv-field-fg) 55%,transparent)}
+:root[data-plakat="1"] #inputView textarea:focus,:root[data-plakat="1"] #inputView input:focus{outline:3px solid var(--pv-fg);outline-offset:2px;box-shadow:none}
+:root[data-plakat="1"] #inputView .mic-button{background:var(--pv-fg);color:var(--pv-bg);border:0;box-shadow:none}
+:root[data-plakat="1"] #inputView .drop{background:transparent;border:2px dashed color-mix(in srgb,var(--pv-fg) 45%,transparent);border-radius:22px}
+:root[data-plakat="1"] #inputView .image-actions button{background:var(--pv-fg);color:var(--pv-bg);border:0;border-radius:99px;box-shadow:none;font:700 14px/1 'Sora',sans-serif}
+:root[data-plakat="1"] #inputView .hint,:root[data-plakat="1"] #inputView .status,:root[data-plakat="1"] #mailView .status{font:400 12.5px/1.4 'Sora',sans-serif;color:var(--pv-fg);opacity:.85}
+:root[data-plakat="1"] #inputView .refine{background:none;border:0;border-top:1.5px solid color-mix(in srgb,var(--pv-fg) 35%,transparent);border-bottom:1.5px solid color-mix(in srgb,var(--pv-fg) 35%,transparent);border-radius:0;box-shadow:none}
+:root[data-plakat="1"] #inputView .refine summary,:root[data-plakat="1"] #inputView .refine-title,:root[data-plakat="1"] #inputView .refine-summary{font:600 14px/1.3 'Sora',sans-serif;color:var(--pv-fg)}
+:root[data-plakat="1"] #inputView .chip,:root[data-plakat="1"] #mailView .chip{background:transparent;color:var(--pv-fg);border:2px solid var(--pv-fg);box-shadow:none;font:700 13px/1 'Sora',sans-serif}
+:root[data-plakat="1"] #inputView .chip[aria-pressed="true"],:root[data-plakat="1"] #mailView .chip[aria-pressed="true"]{background:var(--pv-fg);color:var(--pv-bg)}
+:root[data-plakat="1"] #inputView .chip[aria-pressed="true"]:before{background:var(--pv-bg)}
+:root[data-plakat="1"] #inputView .actions #analyze,:root[data-plakat="1"] #inputView .actions #analyze.ready{background:var(--pv-fg);color:var(--pv-bg);border:0;border-radius:99px;box-shadow:none;font:800 17px/1 'Sora',sans-serif;min-height:58px}
+:root[data-plakat="1"] #inputView .actions #analyze:disabled{opacity:.45}
+:root[data-plakat="1"] #inputView .side h2{font:800 28px/1 'Sora',sans-serif;letter-spacing:-.04em;color:var(--pv-head)}
+:root[data-plakat="1"] #inputView .step{border-top:1.5px solid color-mix(in srgb,var(--pv-fg) 35%,transparent);padding-top:10px;font:500 14px/1.4 'Sora',sans-serif}
+:root[data-plakat="1"] #inputView .step .number{background:var(--pv-fg);color:var(--pv-bg);border:0;font:800 13px/1 'Sora',sans-serif}
+/* E-kirjad: read joonte ja pillidega */
+:root[data-plakat="1"] #mailView .mail-intro{font:400 14px/1.4 'Sora',sans-serif;color:var(--pv-fg);opacity:.9}
+:root[data-plakat="1"] #mailView .icon-button{background:rgba(0,0,0,.14);color:var(--pv-fg);border:0;box-shadow:none;border-radius:50%}
+:root[data-plakat="1"] #mailView .mail-card.saved-card{background:none;border:0;border-top:1.5px solid color-mix(in srgb,var(--pv-fg) 35%,transparent);border-radius:0;box-shadow:none;padding:16px 0;color:var(--pv-fg);-webkit-backdrop-filter:none;backdrop-filter:none}
+:root[data-plakat="1"] #mailView .mail-status{display:inline-block;background:var(--pv-fg);color:var(--pv-bg);font:700 10.5px/1 'Space Mono',monospace;letter-spacing:.6px;text-transform:uppercase;border-radius:99px;padding:6px 10px}
+:root[data-plakat="1"] #mailView .mail-status-error{background:var(--pv-err);color:#fff}
+:root[data-plakat="1"] #mailView .mail-card h3{font:700 19px/1.15 'Sora',sans-serif;letter-spacing:-.03em;color:var(--pv-fg);margin:10px 0 6px}
+:root[data-plakat="1"] #mailView .saved-meta,:root[data-plakat="1"] #mailView .saved-notes,:root[data-plakat="1"] #mailView .mail-quick-label{font:400 12.5px/1.4 'Sora',sans-serif;color:var(--pv-fg);opacity:.9}
+:root[data-plakat="1"] #mailView .error{color:var(--pv-err);font:600 13px/1.4 'Sora',sans-serif}
+:root[data-plakat="1"] #mailView .mail-quick{background:none;border:0;padding:0}
+:root[data-plakat="1"] #mailView .actions button{border-radius:99px;font:700 14px/1 'Sora',sans-serif;background:transparent;color:var(--pv-fg);border:2px solid var(--pv-fg);box-shadow:none;min-height:46px}
+:root[data-plakat="1"] #mailView .actions button.primary{background:var(--pv-fg);color:var(--pv-bg)}
+:root[data-plakat="1"] #mailView input[type="checkbox"]{accent-color:var(--pv-fg)}
+/* teemanupp plakati ülaribal */
+#plakatView .pk-theme{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:rgba(0,0,0,.14);color:inherit;border:0;padding:0;min-height:0;box-shadow:none}
+#plakatView .pk-theme svg{width:18px;height:18px}
+/* Plakat: Sisesta/E-kirjad päis = suur sümbol/number + lühike pealkiri + mono-rida (plakat.js plakatHeroes); inimese kiibid täisvärvilised nagu ülevaates. */
+.pk-hero-wrap{display:none}
+:root[data-plakat="1"] .pk-hero-wrap{display:block;margin:4px 0 18px;color:var(--pv-fg)}
+:root[data-plakat="1"] .pk-hero{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:center}
+:root[data-plakat="1"] .pk-hn{font:800 clamp(96px,30vw,128px)/.8 'Sora',sans-serif;letter-spacing:-.07em;color:var(--pv-head);min-width:84px;display:flex;align-items:center;margin-left:-4px}
+:root[data-plakat="1"] .pk-hero-input .pk-hn svg{color:var(--pv-head)}
+:root[data-plakat="1"] .pk-ht b{display:block;font:800 25px/1.02 'Sora',sans-serif;letter-spacing:-.045em;color:var(--pv-fg)}
+:root[data-plakat="1"] .pk-ht span{display:block;font:400 13px/1.35 'Sora',sans-serif;opacity:.85;margin-top:6px}
+:root[data-plakat="1"] .pk-hs{display:flex;justify-content:space-between;align-items:center;margin-top:16px;padding-top:12px;border-top:1.5px solid color-mix(in srgb,var(--pv-fg) 38%,transparent);font:700 11px/1 'Space Mono',monospace;letter-spacing:.8px;text-transform:uppercase}
+:root[data-plakat="1"] .pk-hs em{font:700 10.5px/1 'Sora',sans-serif;font-style:normal;background:var(--pv-fg);color:var(--pv-bg);padding:5px 9px;border-radius:99px;letter-spacing:.4px;text-transform:none}
+:root[data-plakat="1"] #inputView h1,:root[data-plakat="1"] #mailView h1{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+:root[data-plakat="1"] #inputView .eyebrow,:root[data-plakat="1"] #mailView .mail-intro{display:none}
+:root[data-plakat="1"] #mailView{position:relative}
+:root[data-plakat="1"] #mailView .overview-top{position:absolute;right:0;top:0;margin:0;z-index:2}
+:root[data-plakat="1"] .pk-hero-mail .pk-ht{padding-right:50px}
+/* inimese kiibid: sama värvid kui ülevaates (kollane/sinine/roosa/lilla), valitud = ring */
+:root[data-plakat="1"] .chip-eia,:root[data-plakat="1"] #inputView .chip-eia,:root[data-plakat="1"] #mailView .chip-eia{--pk-chip:#ffd24a}
+:root[data-plakat="1"] .chip-otto,:root[data-plakat="1"] #inputView .chip-otto,:root[data-plakat="1"] #mailView .chip-otto{--pk-chip:#8cc7ff}
+:root[data-plakat="1"] .chip-elle,:root[data-plakat="1"] #inputView .chip-elle,:root[data-plakat="1"] #mailView .chip-elle{--pk-chip:#ffb0d6}
+:root[data-plakat="1"] .chip-pere,:root[data-plakat="1"] #inputView .chip-pere,:root[data-plakat="1"] #mailView .chip-pere{--pk-chip:#cdb8ff}
+:root[data-plakat="1"] .chip-eia,:root[data-plakat="1"] .chip-otto,:root[data-plakat="1"] .chip-elle,:root[data-plakat="1"] .chip-pere,:root[data-plakat="1"] #inputView .chip-eia,:root[data-plakat="1"] #inputView .chip-otto,:root[data-plakat="1"] #inputView .chip-elle,:root[data-plakat="1"] #inputView .chip-pere,:root[data-plakat="1"] #mailView .chip-eia,:root[data-plakat="1"] #mailView .chip-otto,:root[data-plakat="1"] #mailView .chip-elle,:root[data-plakat="1"] #mailView .chip-pere{background:var(--pk-chip);color:#17171c;border:2px solid transparent;box-shadow:none;font:700 13px/1 'Sora',sans-serif}
+:root[data-plakat="1"] .chip-eia:before,:root[data-plakat="1"] .chip-otto:before,:root[data-plakat="1"] .chip-elle:before,:root[data-plakat="1"] .chip-pere:before{display:none}
+:root[data-plakat="1"] .chip-eia[aria-pressed="true"],:root[data-plakat="1"] .chip-otto[aria-pressed="true"],:root[data-plakat="1"] .chip-elle[aria-pressed="true"],:root[data-plakat="1"] .chip-pere[aria-pressed="true"],:root[data-plakat="1"] #inputView .chip-eia[aria-pressed="true"],:root[data-plakat="1"] #inputView .chip-otto[aria-pressed="true"],:root[data-plakat="1"] #inputView .chip-elle[aria-pressed="true"],:root[data-plakat="1"] #inputView .chip-pere[aria-pressed="true"]{background:var(--pk-chip);color:#17171c;border-color:var(--pv-fg,var(--ink));box-shadow:0 0 0 3px color-mix(in srgb,var(--pv-fg,var(--ink)) 28%,transparent)}
+:root[data-plakat="1"] #inputView .chip-all,:root[data-plakat="1"] #mailView .chip-all{background:var(--pv-field);color:var(--pv-field-fg);border:2px solid transparent}
+:root[data-plakat="1"] #inputView .chip-all[aria-pressed="true"],:root[data-plakat="1"] #mailView .chip-all[aria-pressed="true"]{background:var(--pv-fg);color:var(--pv-bg)}
+:root[data-plakat="1"] #inputView .chip-eia,:root[data-plakat="1"] #inputView .chip-otto,:root[data-plakat="1"] #inputView .chip-elle,:root[data-plakat="1"] #inputView .chip-pere,:root[data-plakat="1"] #mailView .chip-eia,:root[data-plakat="1"] #mailView .chip-otto,:root[data-plakat="1"] #mailView .chip-elle,:root[data-plakat="1"] #mailView .chip-pere{border-color:color-mix(in srgb,var(--pv-fg) 30%,transparent)}
+/* Plakat: Sisesta info nupp = Lisa pildid / PDF mõõtu; ürituse ikoon ja asukoha (Waze / Google Maps) nupp ridadel; alumine menüü ilma siltideta, aktiivne nupp laieneb sildiga. */
+:root[data-plakat="1"] #inputView .actions #analyze,:root[data-plakat="1"] #inputView .actions #analyze.ready{flex:0 0 auto;min-width:150px;min-height:52px;padding:10px 18px;font:700 14px/1 'Sora',sans-serif}
+#plakatView .pk-li h3 .pk-ei{display:inline-grid;place-items:center;width:22px;height:22px;margin-right:7px;vertical-align:-4px;border-radius:50%;background:rgba(0,0,0,.16);color:inherit}
+:root[data-theme="dark"] #plakatView .pk-li h3 .pk-ei{background:rgba(255,255,255,.14)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #plakatView .pk-li h3 .pk-ei{background:rgba(255,255,255,.14)}}
+#plakatView .pk-li h3 .pk-ei svg{width:14px;height:14px;color:inherit}
+#plakatView .pk-li p{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+#plakatView .pk-pp{margin-right:0}
+#plakatView .pk-loc{display:inline-flex;align-items:center;gap:5px;min-height:28px;padding:0 10px 0 8px;border-radius:99px;background:rgba(0,0,0,.18);color:inherit;font:600 12px/1 'Sora',sans-serif;text-decoration:none;max-width:100%}
+:root[data-theme="dark"] #plakatView .pk-loc{background:rgba(255,255,255,.14)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #plakatView .pk-loc{background:rgba(255,255,255,.14)}}
+#plakatView .pk-loc svg{width:14px;height:14px;flex:none}
+@media(max-width:740px){
+ :root[data-plakat="1"] .view-nav{display:flex!important;gap:4px!important;padding:6px!important;align-items:center}
+ :root[data-plakat="1"] .view-nav button{flex:0 0 56px!important;flex-direction:row!important;gap:0!important;min-height:52px!important;padding:0!important;justify-content:center;transition:flex-basis .42s cubic-bezier(.2,.9,.2,1),background .3s,color .3s;overflow:hidden}
+ :root[data-plakat="1"] .view-nav button:after{display:none!important;font-size:12px!important;white-space:nowrap}
+ :root[data-plakat="1"] .view-nav button[aria-pressed="true"]{flex:1 1 0!important;gap:8px!important}
+ :root[data-plakat="1"] .view-nav button[aria-pressed="true"]:after{display:inline-block!important}
+ :root[data-plakat="1"] .view-nav>.search-toggle{flex:0 0 52px!important;margin-left:auto!important}
+ :root[data-plakat="1"] .view-nav>.search-toggle:after{display:none!important}
+ :root[data-plakat="1"] .view-nav .nav-count{top:2px!important;right:6px!important}
+ :root[data-plakat="1"] .view-nav button[aria-pressed="true"] .nav-count{right:10px!important}
+}
+/* Plakat: E-kirjad = sügav indigo (kõik neli inimese värvi paistavad ilma ääreta); muutmislehe stiil = päeva plakat. */
+:root[data-plakat="1"][data-plakat="1"][data-plakat="1"]:has(#mailView:not([hidden])){--pv-bg:#17173a;--pv-fg:#fff;--pv-head:#cdb8ff;--pv-field:rgba(255,255,255,.09);--pv-field-fg:#fff;--pv-err:#ff8a80}
+:root[data-plakat="1"] #inputView .chip-eia,:root[data-plakat="1"] #inputView .chip-otto,:root[data-plakat="1"] #inputView .chip-elle,:root[data-plakat="1"] #inputView .chip-pere,:root[data-plakat="1"] #mailView .chip-eia,:root[data-plakat="1"] #mailView .chip-otto,:root[data-plakat="1"] #mailView .chip-elle,:root[data-plakat="1"] #mailView .chip-pere{border-color:transparent}
+#plakatView .pk-sheet{--pv-bg:var(--c);--pv-fg:var(--on);--pv-head:var(--on);--pv-field:rgba(255,255,255,.9);--pv-field-fg:#14141c;--pv-err:#b3001b;inset:0;top:0;border-radius:0;box-shadow:none;background:var(--c);color:var(--on);padding:calc(26px + env(safe-area-inset-top)) max(20px,calc((100vw - 560px)/2)) calc(120px + env(safe-area-inset-bottom))}
+:root[data-theme="dark"] #plakatView .pk-sheet{--pv-bg:color-mix(in srgb,var(--c) 15%,#090910);--pv-fg:#fff;--pv-head:var(--c);--pv-field:rgba(255,255,255,.09);--pv-field-fg:#fff;--pv-err:#ff8a80;background:var(--pv-bg);color:#fff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #plakatView .pk-sheet{--pv-bg:color-mix(in srgb,var(--c) 15%,#090910);--pv-fg:#fff;--pv-head:var(--c);--pv-field:rgba(255,255,255,.09);--pv-field-fg:#fff;--pv-err:#ff8a80;background:var(--pv-bg);color:#fff}}
+#plakatView .pk-sheet .saved-card.editing{background:none;border:0;box-shadow:none;padding:0;margin:0 auto;max-width:560px;color:inherit;-webkit-backdrop-filter:none;backdrop-filter:none;position:relative}
+#plakatView .pk-sheet .kind{font:800 clamp(30px,10vw,40px)/1 'Sora',sans-serif;letter-spacing:-.045em;color:var(--pv-head);margin:6px 0 18px;text-transform:none}
+#plakatView .pk-sheet label{font:700 11px/1.2 'Space Mono',monospace;letter-spacing:.7px;text-transform:uppercase;color:var(--pv-fg)}
+#plakatView .pk-sheet input,#plakatView .pk-sheet textarea,#plakatView .pk-sheet select{background:var(--pv-field);color:var(--pv-field-fg);border:0;border-radius:18px;box-shadow:none;font:600 16px/1.3 'Sora',sans-serif}
+#plakatView .pk-sheet input:focus,#plakatView .pk-sheet textarea:focus{outline:3px solid var(--pv-fg);outline-offset:2px}
+#plakatView .pk-sheet .hint,#plakatView .pk-sheet .error,#plakatView .pk-sheet .status{font:500 12.5px/1.4 'Sora',sans-serif;color:var(--pv-fg)}
+#plakatView .pk-sheet .chip-other,#plakatView .pk-sheet .chip-all{background:var(--pv-field);color:var(--pv-field-fg);border:2px solid transparent;box-shadow:none;font:700 13px/1 'Sora',sans-serif}
+#plakatView .pk-sheet .chip-other[aria-pressed="true"]{background:var(--pv-fg);color:var(--pv-bg)}
+#plakatView .pk-sheet .chip:before{display:none}
+#plakatView .pk-sheet .edit-actions{display:flex;gap:10px;margin-top:18px}
+#plakatView .pk-sheet .edit-actions button{min-height:52px;padding:10px 18px;border-radius:99px;font:700 14px/1 'Sora',sans-serif;box-shadow:none;background:transparent;color:var(--pv-fg);border:2px solid var(--pv-fg)}
+#plakatView .pk-sheet .edit-actions button.primary{background:var(--pv-fg);color:var(--pv-bg);border-color:var(--pv-fg);min-width:150px}
+#plakatView .pk-sheet .share-corner{position:absolute;right:0;top:4px;width:44px;height:44px;border-radius:50%;background:rgba(0,0,0,.16);color:var(--pv-fg);border:0;box-shadow:none}
+#plakatView .pk-sheet .edit-danger{margin-top:16px}
+#plakatView .pk-sheet .danger-link{background:none;border:0;box-shadow:none;color:var(--pv-fg);font:600 13px/1 'Sora',sans-serif;text-decoration:underline;opacity:.9;padding:10px 0}
+#plakatView .pk-sheet .saved-related,#plakatView .pk-sheet .related-link{background:rgba(0,0,0,.14);color:var(--pv-fg);border:0}
+#plakatView .pk-li .wx,#plakatView .pk-li .wx.wx-b,#plakatView .pk-li .wx.wx-sun,#plakatView .pk-li .wx.wx-cloud,#plakatView .pk-li .wx.wx-rain,#plakatView .pk-li .wx.wx-snow{color:inherit!important;border:0!important;background:rgba(0,0,0,.2)!important}
+:root[data-theme="dark"] #plakatView .pk-li .wx,:root[data-theme="dark"] #plakatView .pk-li .wx.wx-b{background:rgba(255,255,255,.14)!important}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #plakatView .pk-li .wx,:root:not([data-theme="light"]) #plakatView .pk-li .wx.wx-b{background:rgba(255,255,255,.14)!important}}
+#plakatView .pk-li .wx .tip{color:inherit!important}
+/* Plakat: väiksem ürituse ikoon; lahtiklõpsatavad Märkused nagu klassikalises vaates. */
+#plakatView .pk-li time .pk-ei{width:22px;height:22px;margin-top:7px}
+#plakatView .pk-li time .pk-ei svg{width:22px;height:22px;stroke-width:1.8}
+#plakatView .pk-li details{margin-top:8px}
+#plakatView .pk-li details summary{display:inline-flex;align-items:center;gap:6px;cursor:pointer;list-style:none;font:600 12px/1 'Sora',sans-serif;opacity:.95;padding:4px 0}
+#plakatView .pk-li details summary::-webkit-details-marker{display:none}
+#plakatView .pk-li details summary:before{content:'';width:7px;height:7px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(-45deg);transition:transform .2s}
+#plakatView .pk-li details[open] summary:before{transform:rotate(45deg)}
+#plakatView .pk-li .saved-notes{display:block;font:400 12.5px/1.45 'Sora',sans-serif;white-space:pre-wrap;margin:6px 0 0;opacity:.95;color:inherit}
+#plakatView .pk-li .saved-notes a,#plakatView .pk-li p a{color:inherit;text-decoration:underline;font-size:inherit}
+#plakatView .pk-li details summary,#plakatView .pk-li details summary:hover{color:inherit!important;background:none!important}
+#plakatView .pk-li .pk-loc,#plakatView .pk-li p a.pk-loc{text-decoration:none!important}
+#plakatView .pk-li details summary:before{width:8px;height:8px;margin-right:2px}
+/* Plakat: ürituse ikoon paremas veerus (sama koht, kus ülesandel on ring), ilma taustata; märkused päeva tekstivärvis. */
+#plakatView .pk-li .pk-slot{display:flex;justify-content:flex-end;align-items:flex-start}
+#plakatView .pk-li .pk-slot .pk-ei{display:block;width:26px;height:26px;margin:0;background:none;border-radius:0;color:inherit;opacity:.95}
+#plakatView .pk-li .pk-slot .pk-ei svg{width:26px;height:26px;stroke-width:1.8}
+#plakatView .pk-li details,#plakatView .pk-li details summary,#plakatView .pk-li .saved-notes,#plakatView .pk-li .saved-notes *{color:inherit!important;opacity:1}
+/* Plakat: alumine menüü on ainus juhtimine: Pere-nupp näitab päeva ("L 10") ja nädalapunkte, puudutus avab Nädala; eraldi punktirida ja Nädal-nupp on ära. */
+#plakatView .pk-list{padding-bottom:calc(120px + env(safe-area-inset-bottom))}
+#plakatView .pk-week{padding-bottom:calc(92px + env(safe-area-inset-bottom))}
+:root[data-plakat="1"] #overviewTab[aria-pressed="true"][data-pk-label]:after{content:attr(data-pk-label)!important}
+:root[data-plakat="1"] #overviewTab .pk-pdots{position:absolute;left:0;right:0;bottom:6px;display:flex;justify-content:center;gap:4px;pointer-events:none}
+:root[data-plakat="1"] #overviewTab .pk-pdots i{width:4px;height:4px;border-radius:2px;background:currentColor;opacity:.4;transition:width .3s cubic-bezier(.2,.9,.2,1),opacity .3s}
+:root[data-plakat="1"] #overviewTab .pk-pdots i.on{width:14px;opacity:1}
+:root[data-plakat="1"] #overviewTab:not([aria-pressed="true"]) .pk-pdots{display:none}
+@media(max-width:740px){
+ :root[data-plakat="1"] .view-nav button{min-height:56px!important}
+ :root[data-plakat="1"] #overviewTab[aria-pressed="true"]{padding-bottom:7px!important}
+}
+/* Plakat laias vaates (>=741 px): alumine menüü liigub päisest alla ujuvaks pilliks (nagu telefonis), päis ise jääb ülevaates peitu. */
+@media(min-width:741px){
+ :root[data-plakat="1"]:has(#overviewView:not([hidden])) header{display:block!important;height:0!important;min-height:0!important;padding:0!important;margin:0!important;border:0!important;overflow:visible!important}
+ :root[data-plakat="1"]:has(#overviewView:not([hidden])) header .brand,:root[data-plakat="1"]:has(#overviewView:not([hidden])) header .header-tools{display:none!important}
+ :root[data-plakat="1"] body.nav-top>header .view-nav{position:fixed!important;left:50%!important;right:auto!important;top:auto!important;bottom:calc(14px + env(safe-area-inset-bottom))!important;transform:translateX(-50%)!important;width:min(440px,calc(100vw - 32px))!important;margin:0!important;z-index:60!important;display:flex!important;height:auto!important;align-self:auto!important;gap:4px!important;padding:6px!important;align-items:center;border-radius:22px!important}
+ :root[data-plakat="1"] body.nav-top>header .view-nav button{flex:0 0 56px!important;width:auto!important;height:auto!important;min-height:56px!important;flex-direction:row!important;gap:0!important;padding:0!important;justify-content:center;border-radius:16px!important;border-bottom:0!important;transition:flex-basis .42s cubic-bezier(.2,.9,.2,1),background .3s,color .3s;overflow:hidden;position:relative}
+ :root[data-plakat="1"] body.nav-top>header .view-nav button:after{display:none!important;font-size:12px!important;white-space:nowrap;font-family:'Sora',sans-serif!important;font-weight:700!important;letter-spacing:.7px!important;text-transform:uppercase}
+ :root[data-plakat="1"] body.nav-top>header .view-nav button[aria-pressed="true"]{flex:1 1 0!important;gap:8px!important;background:var(--pk-c,#fff)!important;color:var(--pk-on,#111)!important;padding-bottom:7px!important}
+ :root[data-plakat="1"] body.nav-top>header .view-nav button[aria-pressed="true"]:after{display:inline-block!important}
+ :root[data-plakat="1"] body.nav-top>header .view-nav button:not([aria-pressed="true"]){color:#fff!important}
+ :root[data-plakat="1"] body.nav-top>header .view-nav>.search-toggle{flex:0 0 52px!important;margin-left:auto!important}
+ :root[data-plakat="1"] body.nav-top>header .view-nav>.search-toggle:after{display:none!important}
+ :root[data-plakat="1"] body.nav-top>header .view-nav .nav-count{top:2px!important;right:6px!important}
+ :root[data-plakat="1"]:has(#inputView:not([hidden])) body.nav-top>header .view-nav button[aria-pressed="true"],:root[data-plakat="1"]:has(#mailView:not([hidden])) body.nav-top>header .view-nav button[aria-pressed="true"]{background:var(--pv-c)!important;color:var(--pv-on)!important}
+}
+@media(min-width:741px){
+ :root[data-plakat="1"] body.nav-top>header{-webkit-backdrop-filter:none!important;backdrop-filter:none!important;filter:none!important;transform:none!important;background:none!important;box-shadow:none!important}
+}
+/* E-kirjad: heledas teemas värske türkiis (kõik neli inimese värvi paistavad ilma ääreta), tumedas jääb sügav indigo. */
+:root[data-plakat="1"][data-plakat="1"][data-plakat="1"][data-plakat="1"]:has(#mailView:not([hidden])){--pv-c:#34d1bf;--pv-on:#05332e;--pv-bg:#34d1bf;--pv-fg:#05332e;--pv-head:#05332e;--pv-field:rgba(255,255,255,.55);--pv-field-fg:#05332e;--pv-err:#a3001a}
+:root[data-plakat="1"][data-plakat="1"][data-plakat="1"][data-plakat="1"][data-theme="dark"]:has(#mailView:not([hidden])){--pv-c:#cdb8ff;--pv-on:#1f1650;--pv-bg:#17173a;--pv-fg:#fff;--pv-head:#cdb8ff;--pv-field:rgba(255,255,255,.09);--pv-field-fg:#fff;--pv-err:#ff8a80}
+@media (prefers-color-scheme:dark){:root[data-plakat="1"][data-plakat="1"][data-plakat="1"][data-plakat="1"]:not([data-theme="light"]):has(#mailView:not([hidden])){--pv-c:#cdb8ff;--pv-on:#1f1650;--pv-bg:#17173a;--pv-fg:#fff;--pv-head:#cdb8ff;--pv-field:rgba(255,255,255,.09);--pv-field-fg:#fff;--pv-err:#ff8a80}}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
@@ -1529,7 +1813,7 @@ body:after{content:'';position:absolute;top:0;left:0;right:0;height:180px;z-inde
 <div class="overview-grid"><section id="tasksSection" class="tasks-section collapsed" aria-label="Ülesannete loend"><h2><button id="tasksToggle" class="section-toggle" type="button" aria-expanded="false" aria-controls="savedTasks"><span>Ülesanded <span id="taskCount" class="count"></span></span><span id="taskUrgent" class="section-urgent" hidden></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></h2><div id="savedTasks"></div><label class="show-done"><input id="showDone" type="checkbox">Näita ka tehtud ülesandeid</label><div id="doneTasks"></div></section><section aria-label="Ürituste loend"><h2>Üritused <span id="eventCount" class="count"></span></h2><div id="savedEvents"></div></section></div>
 </section>
 <section id="mailView" hidden aria-label="Perepostkasti kirjad"><div class="overview-top"><h1>E-kirjad</h1><button id="refreshMail" class="icon-button" type="button" aria-label="Värskenda" title="Värskenda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg></button></div><p class="saved-meta mail-intro">Automaatika lisab selged sündmused ise. Siin on ebaselged, mis vajavad sind.</p><div class="overview-filters"><label><input id="showProcessedMail" type="checkbox">Näita ka automaatselt töödeldud kirju</label></div><p id="mailStatus" class="status" role="status" aria-live="polite"></p><div id="mailCards"></div></section>
-<footer>Kuni 40 töötluskatset päevas · AI tulemus vajab ülevaatamist · <button type="button" class="logout-link" onclick="pereLogout()">Logi välja</button><span id="pushWrap" hidden> · <button type="button" class="logout-link" id="pushToggle"></button></span><span id="tileWrap"> · <button type="button" class="logout-link" id="tileToggle"></button></span><span id="swipeWrap"> · <button type="button" class="logout-link" id="swipeToggle"></button></span><span id="diagWrap" hidden> · <button type="button" class="logout-link" onclick="pereDiag()">Veateave</button></span></footer><script>(function(){const KEY='pere-last-bad-response';function read(){try{return localStorage.getItem(KEY);}catch(_){return null;}}
+<footer>Kuni 40 töötluskatset päevas · AI tulemus vajab ülevaatamist · <button type="button" class="logout-link" onclick="pereLogout()">Logi välja</button><span id="pushWrap" hidden> · <button type="button" class="logout-link" id="pushToggle"></button></span><span id="tileWrap"> · <button type="button" class="logout-link" id="tileToggle"></button></span><span id="swipeWrap"> · <button type="button" class="logout-link" id="swipeToggle"></button></span><span id="plakatWrap"> · <button type="button" class="logout-link" id="plakatToggle"></button></span><span id="diagWrap" hidden> · <button type="button" class="logout-link" onclick="pereDiag()">Veateave</button></span></footer><script>(function(){const KEY='pere-last-bad-response';function read(){try{return localStorage.getItem(KEY);}catch(_){return null;}}
  function sync(){const wrap=document.getElementById('diagWrap');if(wrap)wrap.hidden=!read();}
  window.pereDiag=async()=>{const raw=read();if(!raw)return;let text=raw;try{const d=JSON.parse(raw);text='Aeg: '+d.at+'\nToiming: '+d.action+'\nHTTP: '+d.status+(d.attempt?'\nKatse: '+d.attempt+'/3':'')+'\nKordus aitas: '+(d.recovered?'jah (tõrget ei olnud näha)':'ei / teadmata')+'\nVastus: '+d.text;}catch(_){}
   let copied=false;try{await navigator.clipboard.writeText(text);copied=true;}catch(_){}
@@ -2108,6 +2392,221 @@ function postponeTask(item){
  document.addEventListener('click',event=>{if(performance.now()<suppressUntil){event.stopPropagation();event.preventDefault();}},true);
 })();
 // === /LIBISTAMINE ===
+// Vaade "Plakat" (html data-plakat="1"; vaikimisi väljas): iga päev on täisekraani plakat, külgsuunas libistatav (7 päeva + "Hiljem").
+// Joonistab savedOverview andmetest; ülesande ring ja muutmine kasutavad olemasolevaid (peidetud) kaarte, seega salvestus, tagasivõtt ja vead on samad.
+const PLAKAT_DAYS={0:['pühapäev','#6b4dff','#fff'],1:['esmaspäev','#14a37f','#fff'],2:['teisipäev','#ffbf1f','#2b2100'],3:['kolmapäev','#ff4f8b','#fff'],4:['neljapäev','#1f6bff','#fff'],5:['reede','#0fc3d6','#04323a'],6:['laupäev','#ff6a2b','#fff']};
+let plakatIndex=0;
+const plakatMode=()=>{try{return document.documentElement.dataset.plakat==='1';}catch(_){return false;}};
+function plakatDow(date){return new Date(date+'T12:00:00Z').getUTCDay();}
+function plakatShort(date){return date?date.slice(8,10).replace(/^0/,'')+'.'+date.slice(5,7).replace(/^0/,''):'';}
+function plakatClick(key,selector){
+ const sel='.saved-card[data-key="'+key+'"]';let card=document.querySelector(sel);
+ if(card&&card.classList.contains('compact-past')){card.click();card=document.querySelector(sel);}
+ const target=card&&card.querySelector(selector);if(target)target.click();
+}
+function plakatItems(day,today,items){
+ const isTask=item=>['task','invoice'].includes(item.kind);
+ const open=item=>isTask(item)&&(item.status!=='Tehtud'||completing.has(item.key));
+ const late=day===today?items.filter(item=>open(item)&&item.deadline&&item.deadline<today).sort((a,b)=>a.deadline.localeCompare(b.deadline)):[];
+ const events=items.filter(item=>item.kind==='event'&&item.date<=day&&(item.endDate&&item.endDate>item.date?item.endDate:item.date)>=day).sort((a,b)=>(a.time||'99').localeCompare(b.time||'99'));
+ const tasks=items.filter(item=>open(item)&&item.deadline===day);
+ return {late,events,tasks};
+}
+function plakatRow(item,kind,day,today){
+ const row=document.createElement('div');row.className='pk-li'+(kind==='late'?' late':'')+(item.status==='Tehtud'?' done':'');
+ const time=document.createElement('time');
+ if(kind==='event'&&item.time){time.textContent=item.time;if(item.endTime){const small=document.createElement('small');small.textContent='–'+item.endTime;time.append(small);}}
+ else if(kind==='event'){time.className='tg';time.textContent=item.date<day?'JÄTKUB':'KOGU PÄEV';}
+ else{time.className='tg';time.textContent=kind==='late'?'ÜLE TÄHTAJA':item.deadline===today?'TÄNA':'TÄHTAEG';}
+ const body=document.createElement('div');body.className='pk-body';
+ const title=document.createElement('h3');title.textContent=item.title+(item.kind==='invoice'&&item.amount?' · '+item.amount+' '+(item.currency||''):'');
+ body.append(title);
+ const meta=document.createElement('p');
+ const slug=personSlug(canonicalPerson(item.person||'')),tag=document.createElement('span');tag.className='pk-pp pk-'+slug;tag.textContent=shortPerson(item.person||'')||'—';meta.append(tag);
+ const bits=[];
+ if(kind==='late')bits.push('tähtaeg '+plakatShort(item.deadline));
+ if(kind!=='event'&&item.relatedEvent)bits.push('üritus '+plakatShort(item.relatedEvent.date));
+ const kaasa=(item.notes||'').split('\n').find(line=>/^Kaasa:/i.test(line.trim()));
+ if(kaasa)bits.push(kaasa.trim().toLowerCase());
+ if(kind==='event'&&item.location&&typeof pinIcon!=='undefined'){
+  const maps=desktopPointer(),app=maps?'Google Mapsis':'Wazes',link=document.createElement('a');link.className='pk-loc';link.href=maps?mapsUrl(item.location):wazeUrl(item.location);link.target='_blank';link.rel='noopener noreferrer';
+  link.title='Ava '+app;link.setAttribute('aria-label','Ava '+app+': '+item.location);link.innerHTML=pinIcon;link.append(document.createTextNode(item.location));link.onclick=event=>event.stopPropagation();meta.append(link);
+ }
+ if(bits.length)meta.append(document.createTextNode(bits.join(' · ')));
+ if(kind==='event'&&typeof isOutdoorEvent==='function'&&typeof weatherChip==='function'&&savedOverview&&item.date>=savedOverview.today&&item.date<=addDays(savedOverview.today,6)&&isOutdoorEvent(item)){try{meta.append(weatherChip(item));}catch(_){}}
+ body.append(meta);
+ // Märkused: sama lahtiklõpsatav "Märkused" nagu klassikalises vaates (lingid ja pildid sees); rea puudutus avab muutmise, märkuste puudutus ainult laiendab.
+ const nl=String.fromCharCode(10),rest=(item.notes||'').split(nl).filter(line=>!/^Kaasa:/i.test(line.trim())).join(nl).trim(),shown=Object.assign({},item,{notes:rest});
+ if(rest||(item.imageUrls&&item.imageUrls.length)){savedNotes(body,shown);const det=body.querySelector('details');if(det)det.onclick=event=>event.stopPropagation();const imgs=body.lastElementChild;if(imgs&&imgs.tagName==='P'&&!imgs.className)imgs.onclick=event=>event.stopPropagation();}
+ row.append(time,body);
+ if(kind!=='event'){const chk=document.createElement('button');chk.type='button';chk.className='pk-chk';chk.setAttribute('aria-label','Märgi tehtuks: '+item.title);chk.innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>';chk.onclick=event=>{event.stopPropagation();plakatClick(item.key,'.complete-button');};row.append(chk);}
+ else{const slot=document.createElement('span');slot.className='pk-slot';if(typeof eventIconNode==='function'){const ic=eventIconNode(item);ic.classList.add('pk-ei');slot.append(ic);}row.append(slot);}
+ body.onclick=time.onclick=()=>plakatClick(item.key,'.edit-item');
+ return row;
+}
+// Nädalavaate riba parempool: kuni 3 rida (inimese värvipunkt, kellaaeg, pealkiri), ülejäänu "+N veel".
+function plakatWeekLines(entries,today){
+ const wrap=document.createElement('div');wrap.className='pk-wl';
+ if(!entries.length){const free=document.createElement('div');free.className='pk-wfree';free.textContent='vaba';wrap.append(free);return wrap;}
+ const show=entries.length>3?2:entries.length;
+ entries.slice(0,show).forEach(entry=>{
+  const line=document.createElement('div');line.className='pk-wline'+(entry.late?' late':'');
+  const dot=document.createElement('i');dot.className='pk-wd pk-'+personSlug(canonicalPerson(entry.item.person||''));
+  const text=document.createElement('span');text.textContent=(entry.late?'! ':entry.item.time?entry.item.time+' ':'')+entry.item.title;
+  line.append(dot,text);wrap.append(line);
+ });
+ if(entries.length>show){const more=document.createElement('div');more.className='pk-wmore';more.textContent='+'+(entries.length-show)+' veel';wrap.append(more);}
+ return wrap;
+}
+
+// Teemanupp (automaatne / hele / tume) ülaribal: kasutab päises olevat olemasolevat nuppu, ikoon näitab praegust valikut.
+function plakatThemeButton(){
+ const button=document.createElement('button');button.type='button';button.className='pk-theme';
+ const paint=()=>{try{button.innerHTML=themeIcons[themeMode];button.title='Teema: '+themeNames[themeMode];button.setAttribute('aria-label','Teema: '+themeNames[themeMode]+'. Vajuta vahetamiseks.');}catch(_){}};
+ button.onclick=()=>{const real=document.getElementById('themeToggle');if(real)real.click();paint();};
+ paint();return button;
+}
+// Alumise menüü Pere-nupp: silt = praegune päev ("L 10" / "Hiljem" / "Nädal") ja kaheksa väikest punkti nädalaasendi jaoks.
+function plakatNav(view){
+ const tab=document.getElementById('overviewTab');if(!tab||!tab.dataset||!view)return;
+ const pager=view.querySelector('.pk-pager');if(!pager)return;
+ const i=Math.round(pager.scrollLeft/Math.max(1,pager.clientWidth)),page=pager.children[i];
+ tab.dataset.pkLabel=view.classList.contains('week-open')?'Nädal':i>=7?'Hiljem':(page&&page.dataset.lbl)||'Pere';
+ let dots=tab.querySelector('.pk-pdots');
+ if(!dots){dots=document.createElement('span');dots.className='pk-pdots';dots.setAttribute('aria-hidden','true');for(let k=0;k<8;k++)dots.append(document.createElement('i'));tab.append(dots);}
+ [...dots.children].forEach((d,k)=>d.classList.toggle('on',k===i));
+}
+function plakatNavClean(){
+ try{const tab=document.getElementById('overviewTab');if(!tab||!tab.dataset)return;
+ delete tab.dataset.pkLabel;const dots=tab.querySelector('.pk-pdots');if(dots)dots.remove();}catch(_){}
+}
+function renderPlakat(){
+ const host=document.getElementById('overviewView');if(!host)return;
+ let view=document.getElementById('plakatView');
+ if(!plakatMode()||!savedOverview){if(view)view.remove();plakatNavClean();return;}
+ const keep=view&&view.querySelector('.pk-pager')?Math.round(view.querySelector('.pk-pager').scrollLeft/Math.max(1,view.querySelector('.pk-pager').clientWidth)):plakatIndex;
+ plakatIndex=keep;
+ if(view)view.remove();
+ view=document.createElement('section');view.id='plakatView';view.setAttribute('aria-label','Pere päevaplakat');
+ const today=savedOverview.today,items=savedOverview.items;
+ const now=tallinnNow().slice(11,16),pager=document.createElement('div');pager.className='pk-pager';
+ const dots=document.createElement('div');dots.className='pk-dots';const week=document.createElement('div');week.className='pk-week';
+ for(let i=0;i<7;i++){
+  const day=addDays(today,i),[name,color,ink]=PLAKAT_DAYS[plakatDow(day)],g=plakatItems(day,today,items),total=g.late.length+g.events.length+g.tasks.length;
+  const page=document.createElement('section');page.className='pk-page';page.style.setProperty('--c',color);page.style.setProperty('--on',ink);page.dataset.lbl=name.charAt(0).toUpperCase()+' '+(+day.slice(8,10));
+  const top=document.createElement('div');top.className='pk-top';const brand=document.createElement('span');brand.textContent='PERE';
+  top.append(brand,plakatThemeButton());
+  const num=document.createElement('div');num.className='pk-num';num.textContent=String(+day.slice(8,10));const sm=document.createElement('small');sm.textContent=name;num.append(sm);num.onclick=()=>view.classList.add('week-open');
+  const st=document.createElement('div');st.className='pk-st';
+  const month=new Intl.DateTimeFormat('et-EE',{month:'long',year:'numeric'}).format(new Date(day+'T12:00:00')).toUpperCase();
+  const rel=i===0?'TÄNA · '+now:i===1?'HOMME':i===2?'ÜLEHOMME':i+' PÄEVA PÄRAST';
+  const left=document.createElement('span');left.textContent=month+' · '+rel;const badge=document.createElement('b');badge.textContent=total?total+' asja':'vaba';st.append(left,badge);
+  const list=document.createElement('div');list.className='pk-list';
+  if(!total){
+   const free=document.createElement('div');free.className='pk-free';free.textContent='Vaba.';list.append(free);
+   let next='';
+   for(let j=i+1;j<7&&!next;j++){const d2=addDays(today,j),g2=plakatItems(d2,today,items),first=g2.events[0]||g2.tasks[0];
+    if(first)next=PLAKAT_DAYS[plakatDow(d2)][0].replace(/^./,c=>c.toUpperCase())+' '+(+d2.slice(8,10))+' · '+first.title+(first.time?' '+first.time:'')+(first.person?' ('+shortPerson(first.person)+')':'');}
+   const fn=document.createElement('div');fn.className='pk-fn';fn.textContent='Mitte midagi planeeritud.'+(next?' Järgmine: '+next:'');list.append(fn);
+  }else{
+   g.late.forEach(item=>list.append(plakatRow(item,'late',day,today)));
+   g.events.forEach(item=>list.append(plakatRow(item,'event',day,today)));
+   g.tasks.forEach(item=>list.append(plakatRow(item,'task',day,today)));
+  }
+  page.append(top,num,st,list);pager.append(page);
+  const dot=document.createElement('button');dot.type='button';dot.textContent=name.charAt(0).toUpperCase();dot.setAttribute('aria-label',name+' '+(+day.slice(8,10)));dot.onclick=()=>pager.scrollTo({left:i*pager.clientWidth,behavior:'smooth'});dots.append(dot);
+  const stripe=document.createElement('button');stripe.type='button';stripe.style.setProperty('--c',color);stripe.style.setProperty('--on',ink);
+  stripe.innerHTML='<i>'+name.charAt(0).toUpperCase()+(i===0?'<em>täna</em>':'')+'</i><b>'+(+day.slice(8,10))+'</b>';
+  stripe.append(plakatWeekLines([...g.late.map(item=>({item,late:true})),...g.events.map(item=>({item})),...g.tasks.map(item=>({item}))],today));
+  stripe.onclick=()=>{view.classList.remove('week-open');pager.scrollTo({left:i*pager.clientWidth,behavior:'smooth'});};week.append(stripe);
+ }
+ // "Hiljem": tähtajata ülesanded, hilisemad tähtajad ja hilisemad üritused.
+ {
+  const weekEnd=addDays(today,6),isTask=item=>['task','invoice'].includes(item.kind),open=item=>isTask(item)&&(item.status!=='Tehtud'||completing.has(item.key));
+  const tasks=items.filter(item=>open(item)&&(!item.deadline||item.deadline>weekEnd)).sort((a,b)=>(a.deadline||'9').localeCompare(b.deadline||'9')).slice(0,8);
+  const events=items.filter(item=>item.kind==='event'&&item.date>weekEnd).sort((a,b)=>(a.date+(a.time||'')).localeCompare(b.date+(b.time||''))).slice(0,6);
+  const page=document.createElement('section');page.className='pk-page pk-later';page.style.setProperty('--c','#2b2f4a');page.style.setProperty('--on','#fff');
+  const top=document.createElement('div');top.className='pk-top';const brand=document.createElement('span');brand.textContent='PERE';
+  top.append(brand,plakatThemeButton());
+  const num=document.createElement('div');num.className='pk-num pk-word';num.textContent='Hiljem';num.onclick=()=>view.classList.add('week-open');
+  const st=document.createElement('div');st.className='pk-st';const left=document.createElement('span');left.textContent='TÄHTAJATA JA TULEVAD';const badge=document.createElement('b');badge.textContent=(tasks.length+events.length)+' asja';st.append(left,badge);
+  const list=document.createElement('div');list.className='pk-list';
+  events.forEach(item=>{const row=plakatRow(item,'event',item.date,today);row.querySelector('time').className='tg';row.querySelector('time').textContent=plakatShort(item.date)+(item.time?' '+item.time:'');list.append(row);});
+  tasks.forEach(item=>{const row=plakatRow(item,'task',item.deadline||'',today);const t=row.querySelector('time');t.className='tg';t.textContent=item.deadline?plakatShort(item.deadline):'TÄHTAJATA';list.append(row);});
+  if(!tasks.length&&!events.length){const fn=document.createElement('div');fn.className='pk-fn';fn.textContent='Hilisemaid asju pole.';list.append(fn);}
+  page.append(top,num,st,list);pager.append(page);
+  const dot=document.createElement('button');dot.type='button';dot.textContent='…';dot.setAttribute('aria-label','Hiljem');dot.onclick=()=>pager.scrollTo({left:7*pager.clientWidth,behavior:'smooth'});dots.append(dot);
+  const stripe=document.createElement('button');stripe.type='button';stripe.style.setProperty('--c','#2b2f4a');stripe.style.setProperty('--on','#fff');
+  stripe.innerHTML='<i>…</i><b class="pk-wword">Hiljem</b>';
+  stripe.append(plakatWeekLines([...events.map(item=>({item:Object.assign({},item,{time:''})})),...tasks.map(item=>({item}))],today));stripe.onclick=()=>{view.classList.remove('week-open');pager.scrollTo({left:7*pager.clientWidth,behavior:'smooth'});};week.append(stripe);
+ }
+ week.addEventListener('click',event=>{if(event.target===week)view.classList.remove('week-open');});
+ view.append(pager,week);
+ const sync=()=>{const i=Math.round(pager.scrollLeft/Math.max(1,pager.clientWidth));plakatIndex=i;[...dots.children].forEach((d,j)=>{if(j<8)d.classList.toggle('on',j===i);});
+  // Alumine peamenüü kasutab selle päeva värvi (CSS --pk-c / --pk-on).
+  const pg=pager.children[i];if(pg){const root=document.documentElement.style;root.setProperty('--pk-c',pg.style.getPropertyValue('--c'));root.setProperty('--pk-on',pg.style.getPropertyValue('--on'));}plakatNav(view);};
+ pager.addEventListener('scroll',sync);
+ new MutationObserver(()=>plakatNav(view)).observe(view,{attributes:true,attributeFilter:['class']});
+ // Muutmine: olemasolev muutmiskaart (peidetud ülevaates) tuuakse lehena plakati peale.
+ if(overviewEditing){
+  const card=overviewEventCards.get(overviewEditing.key)||overviewTaskCards.get(overviewEditing.key);
+  if(card){const sheet=document.createElement('div');sheet.className='pk-sheet';const pg=pager.children[plakatIndex];if(pg){sheet.style.setProperty('--c',pg.style.getPropertyValue('--c'));sheet.style.setProperty('--on',pg.style.getPropertyValue('--on'));}sheet.append(card);view.append(sheet);}
+ }
+ host.append(view);
+ pager.scrollLeft=plakatIndex*pager.clientWidth;sync();
+}
+// Sisesta ja E-kirjad: pealkirja asemel plakati-keelne päis (suur sümbol/number + lühike pealkiri + mono-rida). Joonistatakse alati, näitab CSS ainult Plakati režiimis.
+function plakatHeroes(){
+ try{
+  const input=document.getElementById('inputView'),mail=document.getElementById('mailView');
+  const build=(cls,numHtml,title,sub,mono,badge)=>{const wrap=document.createElement('div');wrap.className='pk-hero-wrap '+cls;wrap.setAttribute('aria-hidden','true');
+   wrap.innerHTML='<div class="pk-hero"><div class="pk-hn">'+numHtml+'</div><div class="pk-ht"><b></b><span></span></div></div><div class="pk-hs"><span></span><em></em></div>';
+   wrap.querySelector('.pk-ht b').textContent=title;wrap.querySelector('.pk-ht span').textContent=sub;wrap.querySelector('.pk-hs span').textContent=mono;wrap.querySelector('.pk-hs em').textContent=badge;return wrap;};
+  if(input&&!input.querySelector('.pk-hero-wrap')){
+   const h1=input.querySelector('h1');
+   const plus='<svg viewBox="0 0 100 100" width="92" height="92" fill="none" stroke="currentColor" stroke-width="17" stroke-linecap="round"><path d="M50 12v76M12 50h76"/></svg>';
+   input.insertBefore(build('pk-hero-input',plus,'Lisa info',h1?h1.textContent.replace(/\.$/,''):'','tekst · foto · pdf · hääl','AI'),input.firstChild);
+  }
+  if(mail&&!mail.querySelector('.pk-hero-wrap')){
+   mail.insertBefore(build('pk-hero-mail','0','kirja ootab ülevaatamist','Automaatika lisab selged sündmused ise.','e-kirjad','Gmail'),mail.firstChild);
+  }
+  const hero=mail&&mail.querySelector('.pk-hero-wrap');
+  if(hero){
+   const badge=document.getElementById('mailCount'),n=badge&&!badge.hidden?(parseInt(badge.textContent,10)||0):0;
+   hero.querySelector('.pk-hn').textContent=String(n);
+   hero.querySelector('.pk-ht b').textContent=n===0?'Postkast on puhas':n===1?'kiri ootab ülevaatamist':'kirja ootab ülevaatamist';
+  }
+ }catch(_){}
+}
+if(typeof document!=='undefined'){
+ plakatHeroes();
+ try{const badge=document.getElementById('mailCount');if(badge&&typeof MutationObserver==='function')new MutationObserver(plakatHeroes).observe(badge,{childList:true,characterData:true,subtree:true,attributes:true});}catch(_){}
+ try{if(typeof document.addEventListener==='function')document.addEventListener('DOMContentLoaded',plakatHeroes);}catch(_){}
+}
+
+// Alumine menüü: kui ülevaade on juba lahti, avab/sulgeb Pere-nupu puudutus nädalavaate (Nädal-silt); päeva vahetab libistamine.
+if(typeof document!=='undefined'){
+ try{const tab=document.getElementById('overviewTab');if(tab)tab.addEventListener('click',event=>{
+  const view=document.getElementById('plakatView'),ov=document.getElementById('overviewView');
+  if(!view||!plakatMode()||!ov||ov.hidden)return;
+  event.stopImmediatePropagation();event.preventDefault();view.classList.toggle('week-open');
+ },true);}catch(_){}
+}
+// Jaluse lüliti "Vaade: Plakat / klassikaline" (localStorage pere-plakat=0 = klassikaline); vaikimisi Plakat. Atribuudi paneb <head> varane skript.
+function initPlakatToggle(){
+ try{
+  const root=document.documentElement,button=document.getElementById('plakatToggle');if(!button)return;
+  const on=()=>{try{return localStorage.getItem('pere-plakat')!=='0';}catch(_){return true;}};
+  const paint=()=>{button.textContent='Vaade: '+(on()?'Plakat':'klassikaline');};
+  button.onclick=()=>{
+   try{localStorage.setItem('pere-plakat',on()?'0':'1');}catch(_){}
+   if(on())root.dataset.plakat='1';else delete root.dataset.plakat;
+   paint();
+   try{if(typeof renderOverview==='function'&&savedOverview)renderOverview();else renderPlakat();}catch(_){}
+  };
+  paint();
+ }catch(_){}
+}
 function showViewNow(view){
  if(busy||loadingImages)return;
  $('inputView').hidden=view!=='input';$('overviewView').hidden=view!=='overview';$('mailView').hidden=view!=='mail';
@@ -2903,6 +3402,8 @@ function renderOverview(){
  if(typeof requestAnimationFrame==='function')requestAnimationFrame(alignCalendarButton);
  // Esimene joonistus nähtavas ülevaates: kaardid ilmuvad 40 ms vahega (enterCards, motion.js). Hiljem uuesti joonistades ei ilmu midagi.
  if(!window.pereEntered&&typeof enterCards==='function'&&typeof requestAnimationFrame==='function'&&$('overviewView')&&!$('overviewView').hidden&&savedOverview.items.length){window.pereEntered=true;requestAnimationFrame(enterCards);}
+ // Plakat on lisavaade: kui selle joonistus ebaõnnestub, lülitub see välja ja klassikaline ülevaade jääb alles.
+ if(typeof renderPlakat==='function'){try{renderPlakat();}catch(error){try{delete document.documentElement.dataset.plakat;}catch(_){}}}
 }
 
 // Arvutis "See nädal" järel kuude kaupa ühised plokid: kuu pealkiri (hall arv + punktiir, taustata) üle mõlema tulba,
@@ -3910,6 +4411,7 @@ if(window.pereSharing)(async()=>{
 window.pereApplyStart=()=>{if(window.pereSharing)return;if(!$('inputView').hidden&&!busy&&!loadingImages&&!$('text').value.trim()&&!images.length&&!result)(typeof showViewNow==='function'?showViewNow:showView)('overview');};
 if(typeof initTileToggle==='function')initTileToggle();
 if(typeof initSwipeToggle==='function')initSwipeToggle();
+if(typeof initPlakatToggle==='function')initPlakatToggle();
 pereApplyStart();</script>
 </body>
 </html>
