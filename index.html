@@ -2081,6 +2081,8 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 /* Sisesta: pealkiri samale x-kohale kui E-kirjade lehel (plussi veerg 92 vs number 84 px). */
 :root[data-plakat="1"] .pk-hero-input .pk-hero{column-gap:6px}
 :root[data-plakat="1"] .pk-hero-input .pk-hero{column-gap:14px}
+/* Kuu: möödunud päevade ürituste täpid hallid (nagu klassikalises vaates). */
+#plakatView .pk-month .pk-c.past .pk-dd i:not(.pk-tk){background:color-mix(in srgb,var(--mfg) 28%,transparent)!important}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
@@ -3471,7 +3473,11 @@ function plakatHome(view,pager,items,today){
    chip.append(phEl('small','',di.letter),phEl('b','',String(+day.slice(8,10))));
    const dots=phEl('span','ph-dots');[...new Set(all.map(phSlug))].slice(0,3).forEach(slug=>dots.append(phEl('i','pk-'+slug)));
    if(g.tasks.length||(i===0&&g.late.length))dots.append(phEl('i','t'));
-   chip.append(dots);chip.onclick=()=>{plakatHomeSel=day===info.day?'':day;paint();};chips.append(chip);
+   chip.append(dots);chip.onclick=()=>{
+    // Esimene puudutus tõstab päeva fookusesse; teine puudutus sama päeva peal (juba fookuses) avab selle päeva lehe.
+    if(day===focus){plakatHomeGoto(view,pager,Math.max(0,Math.min(6,phDaysBetween(today,day))),sel?b:a);return;}
+    plakatHomeSel=day===info.day?'':day;paint();
+   };chips.append(chip);
   }
   // ülesannete slaab (ilma ringideta)
   const open=phOpenTasks(items).filter(item=>!completing.has(item.key)),dated=open.filter(item=>item.deadline).sort((x,y)=>x.deadline.localeCompare(y.deadline)),und=open.filter(item=>!item.deadline).length;
