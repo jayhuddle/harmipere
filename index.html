@@ -2066,6 +2066,10 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 #plakatView .ph-er.hi .ph-r2{font-size:9.5px}
 /* Ülesannete leht on fixed, et suletuna (translate 102%) ei laiendaks ülevaate kerimisala: allakerimisel ei ilmu enam pooleldi lahti leht. */
 #plakatView .ph-ov{position:fixed}
+/* Kuu: joon kalendri ja legendi vahelt ära, legend ja päeva sektsioon natuke üles. */
+#plakatView .pk-month .pk-leg{border-top:0;margin:0 -20px;padding:2px 20px 16px}
+/* Kuu: legend natuke allapoole (päeva sektsioon jääb samale kohale). */
+#plakatView .pk-month .pk-leg{padding:12px 20px 6px}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
@@ -4718,8 +4722,16 @@ $('searchInput').onkeydown=event=>{if(event.key==='Enter'){event.preventDefault(
  const node=$('ptr'),THRESH=72,MAX=120;let startY=null,pull=0,ready=false,tracking=false,working=false;
  const icon=()=>node.querySelector('svg')||{style:{}};
  const atTop=()=>(window.scrollY||(document.documentElement&&document.documentElement.scrollTop)||0)<=0;
+ // Kui puudutus algab sisemises kerivas alas (Plakati päeva loend, ülesannete leht, kuu loend), mis pole päris üleval, kerib sõrm seda, mitte ei värskenda.
+ const scrolledInside=target=>{
+  for(let el=target&&target.nodeType===1?target:target&&target.parentElement;el&&el!==document.body&&el!==document.documentElement;el=el.parentElement){
+   try{if(el.scrollTop>0&&el.scrollHeight>el.clientHeight+1){const oy=getComputedStyle(el).overflowY;if(oy==='auto'||oy==='scroll')return true;}}catch(_){}
+  }
+  return false;
+ };
  const blocked=target=>{
   if(calOpen||searchOpen||working)return true;
+  if(scrolledInside(target))return true;
   const login=document.getElementById('loginOverlay');if(login&&!login.hidden)return true;
   if(document.getElementById('splash'))return true;
   const tag=target&&target.closest?target.closest('textarea,select,input,details,.editing,#personChips'):null;return !!tag;
@@ -4740,7 +4752,7 @@ $('searchInput').onkeydown=event=>{if(event.key==='Enter'){event.preventDefault(
  document.addEventListener('touchmove',event=>{
   if(startY===null)return;
   const dy=event.touches[0].clientY-startY;
-  if(dy<=0||!atTop()){if(tracking){tracking=false;ready=false;reset();}startY=null;return;}
+  if(dy<=0||!atTop()||scrolledInside(event.target)){if(tracking){tracking=false;ready=false;reset();}startY=null;return;}
   tracking=true;pull=Math.min(MAX,dy*0.5);node.classList.remove('anim');place(pull);
   const nowReady=pull>=THRESH;
   if(nowReady!==ready){ready=nowReady;node.classList.toggle('ready',ready);if(ready&&typeof navigator!=='undefined'&&navigator.vibrate)navigator.vibrate(8);}
