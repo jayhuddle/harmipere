@@ -1754,8 +1754,8 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 /* Päeva ilm Plakati päises (plakat.js PÄEVA ILM). Paigutus <html data-pkwx>: a = staatuse real, b = suur numbri kõrval, c = ülaribal (vaikimisi). */
 #plakatView .pk-wx{display:none;align-items:center;gap:5px;white-space:nowrap;color:inherit}
 #plakatView .pk-wx svg{fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;flex:none}
-:root:not([data-pkwx]) #plakatView .pk-wx-c:not([hidden]),:root[data-pkwx="c"] #plakatView .pk-wx-c:not([hidden]),:root[data-pkwx="a"] #plakatView .pk-wx-a:not([hidden]){display:inline-flex}
-:root[data-pkwx="b"] #plakatView .pk-wx-b:not([hidden]){display:grid}
+:root[data-pkwx="c"] #plakatView .pk-wx-c:not([hidden]),:root[data-pkwx="a"] #plakatView .pk-wx-a:not([hidden]){display:inline-flex}
+:root:not([data-pkwx]) #plakatView .pk-wx-b:not([hidden]),:root[data-pkwx="b"] #plakatView .pk-wx-b:not([hidden]){display:grid}
 #plakatView .pk-wx-c{margin:0 10px 0 auto;font:700 12px/1 'Sora',sans-serif;letter-spacing:.2px}
 #plakatView .pk-wx-c svg{width:17px;height:17px}
 #plakatView .pk-wx-a{margin-left:auto;font:inherit}
@@ -2550,7 +2550,7 @@ function plakatWeekLines(entries,today){
 
 // === PÄEVA ILM === Plakati päises päeva ilm (Tallinn, Open-Meteo; sama vahemälu wxForecast/wxType/wxWet mis ürituse ilmal).
 // Päev = kell 8–20, täna praegusest tunnist. Viga, puuduv võrk või päev prognoosist väljas: ei näidata. Paigutus: <html data-pkwx="a|b|c">
-// (a = staatuse real, b = suur numbri kõrval, c = ülaribal; vaikimisi c).
+// (a = staatuse real, b = suur numbri kõrval, c = ülaribal; vaikimisi b).
 function plakatWxDay(hourly,date,fromHour){
  if(!hourly||!hourly.time)return null;
  const temps=[],wet=[];let sun=0,snow=false,n=0,wind=0;
