@@ -1778,6 +1778,209 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 :root[data-plakat="1"] #inputView label[for="text"]{margin-bottom:14px;padding-bottom:12px;border-bottom:1.5px solid color-mix(in srgb,var(--pv-fg) 38%,transparent)}
 /* Plakat: hele/tume teema ikooni taga pole enam eraldi kasti (puudutusala jääb samaks). */
 :root[data-plakat="1"]:has(:is(#inputView,#mailView):not([hidden])) header .theme-toggle,#plakatView .pk-theme,#plakatView .pk-month .pk-theme{background:none;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none}
+/* === Plakat: ülevaade (kodu) === plakat-home.js. Fookusplokk (A kodupäev, B valitud päev peale), nädal, ülesanded, kuu; ülesannete täisleht. */
+#plakatView .pk-home{--dc:#6b4dff;--ph-ink:#1a1624;--ph-px:max(16px,calc((100vw - 560px)/2));
+ --ph-wb:color-mix(in srgb,var(--dc) 16%,#fff);--ph-tb:color-mix(in srgb,var(--dc) 28%,#fff);--ph-kb:color-mix(in srgb,var(--dc) 9%,#fff);--ph-pb:color-mix(in srgb,var(--dc) 4%,#fff);
+ position:absolute;inset:0;z-index:6;display:flex;flex-direction:column;overflow-x:hidden;overflow-y:auto;scrollbar-width:none;transform:translateY(100%);transition:transform .4s cubic-bezier(.2,.9,.2,1);visibility:hidden;background:var(--ph-wb);color:var(--ph-ink);font-family:'Sora',sans-serif}
+#plakatView .pk-home::-webkit-scrollbar{display:none}
+#plakatView.week-open .pk-home{transform:none;visibility:visible}
+:root[data-theme="dark"] #plakatView .pk-home{--ph-ink:#f1eeff;--ph-wb:color-mix(in srgb,var(--dc) 15%,#0b0b14);--ph-tb:color-mix(in srgb,var(--dc) 22%,#0b0b14);--ph-kb:color-mix(in srgb,var(--dc) 11%,#0b0b14);--ph-pb:color-mix(in srgb,var(--dc) 8%,#0b0b14)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #plakatView .pk-home{--ph-ink:#f1eeff;--ph-wb:color-mix(in srgb,var(--dc) 15%,#0b0b14);--ph-tb:color-mix(in srgb,var(--dc) 22%,#0b0b14);--ph-kb:color-mix(in srgb,var(--dc) 11%,#0b0b14);--ph-pb:color-mix(in srgb,var(--dc) 8%,#0b0b14)}}
+#plakatView .ph-mono{font:700 10.5px/1.2 'Space Mono',monospace;letter-spacing:.8px;text-transform:uppercase}
+/* fookuszoon */
+#plakatView .ph-zone{flex:0 0 auto;position:relative;z-index:1;height:calc(clamp(290px,44vh,350px) + env(safe-area-inset-top))}
+#plakatView .ph-a,#plakatView .ph-b{position:absolute;left:0;right:0;background:var(--c);color:var(--on);cursor:pointer}
+#plakatView .ph-a{top:0;bottom:0;padding:calc(14px + env(safe-area-inset-top)) var(--ph-px) 0;transition:background .45s,scale .5s,filter .5s;transform-origin:50% 0}
+#plakatView .ph-b{top:calc(60px + env(safe-area-inset-top));bottom:0;border-radius:26px 26px 0 0;padding:12px var(--ph-px) 0;translate:0 105%;transition:translate .55s cubic-bezier(.2,.9,.2,1),background .45s;z-index:2;box-shadow:0 -10px 24px rgba(0,0,0,.22)}
+#plakatView .ph-zone.b-open .ph-b{translate:0 0}
+#plakatView .ph-zone.b-open .ph-a{scale:.97;filter:brightness(.92)}
+#plakatView .ph-zone.b-open .ph-a .ph-layer{opacity:0}
+#plakatView .ph-layer{transition:opacity .25s}
+#plakatView .ph-a .pk-top{margin-top:0}
+#plakatView .ph-tab{position:absolute;left:var(--ph-px);right:var(--ph-px);top:calc(38px + env(safe-area-inset-top));height:20px;border:0;background:none;color:inherit;display:flex;align-items:center;gap:9px;font:700 10px/1 'Space Mono',monospace;letter-spacing:.6px;text-transform:uppercase;text-align:left;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .3s .2s;z-index:3;padding:0;min-height:0;box-shadow:none}
+#plakatView .ph-tab b{font:800 17px/1 'Sora',sans-serif;letter-spacing:-.04em}
+#plakatView .ph-tab .ph-tt2{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#plakatView .ph-zone.b-open .ph-tab{opacity:1;pointer-events:auto}
+#plakatView .ph-fbody{position:relative}
+#plakatView .ph-hd{display:flex;justify-content:space-between;align-items:center;height:22px}
+#plakatView .ph-sdate{display:flex;align-items:flex-end;gap:12px;height:80px;margin:8px 0 10px}
+#plakatView .ph-sn{font:800 100px/.78 'Sora',sans-serif;letter-spacing:-.07em;margin-left:-5px}
+#plakatView .ph-sm{padding-bottom:3px}
+#plakatView .ph-sw{display:block;font:700 11px/1 'Sora',sans-serif;letter-spacing:3px;text-transform:uppercase}
+#plakatView .ph-sx{display:block;font:700 9.5px/1 'Space Mono',monospace;letter-spacing:.7px;text-transform:uppercase;opacity:.85;margin-top:6px}
+#plakatView .ph-wx{position:absolute;right:0;top:44px;width:108px;display:flex;align-items:center;gap:8px;z-index:2}
+#plakatView .ph-wx[hidden]{display:none}
+#plakatView .ph-wx svg{width:28px;height:28px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex:none}
+#plakatView .ph-wx b{display:block;font:300 18px/1 'Sora',sans-serif}
+#plakatView .ph-wx small{display:block;font:400 8.5px/1.2 'Space Mono',monospace;letter-spacing:.6px;text-transform:uppercase;margin-top:3px}
+#plakatView .ph-er{padding:5px 0;border-top:1.5px solid rgba(255,255,255,.3);font:600 13px/1.2 'Sora',sans-serif}
+#plakatView [data-ink="dark"] .ph-er{border-top-color:rgba(20,19,15,.22)}
+#plakatView .ph-r1{display:flex;align-items:baseline;gap:9px;white-space:nowrap;overflow:hidden}
+#plakatView .ph-er time{font:700 10px/1.2 'Space Mono',monospace;width:50px;flex:none;text-transform:uppercase}
+#plakatView .ph-tx{overflow:hidden;text-overflow:ellipsis}
+#plakatView .ph-pp{margin-left:6px}
+#plakatView .ph-er.past{opacity:.45}
+#plakatView .ph-er.hi{background:rgba(255,255,255,.26);border-radius:14px;padding:7px 10px 8px;margin:3px -10px;border-top-color:transparent;animation:phPulse 2.6s 1.4s infinite}
+#plakatView [data-ink="dark"] .ph-er.hi{background:rgba(20,19,15,.12)}
+#plakatView .ph-r2{display:flex;align-items:center;gap:10px;margin-top:6px;font:700 9px/1 'Space Mono',monospace;letter-spacing:.6px;text-transform:uppercase}
+#plakatView .ph-r2 span:first-child{flex:none}
+#plakatView .ph-pb{flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.4);overflow:hidden}
+#plakatView .ph-pb i{display:block;height:100%;background:currentColor;border-radius:2px}
+#plakatView .ph-free{font:600 13px/1.35 'Sora',sans-serif;opacity:.85;padding-top:6px}
+#plakatView .ph-more{font:700 10px/1 'Space Mono',monospace;letter-spacing:.5px;text-transform:uppercase;opacity:.8;padding-top:4px}
+:root[data-theme="dark"] #plakatView .ph-a,:root[data-theme="dark"] #plakatView .ph-b{background:color-mix(in srgb,var(--c) 15%,#090910);color:#fff}
+:root[data-theme="dark"] #plakatView .ph-sn{color:var(--c)}
+:root[data-theme="dark"] #plakatView .ph-er,:root[data-theme="dark"] #plakatView [data-ink="dark"] .ph-er{border-top-color:rgba(255,255,255,.2)}
+:root[data-theme="dark"] #plakatView .ph-er.hi,:root[data-theme="dark"] #plakatView [data-ink="dark"] .ph-er.hi{background:rgba(255,255,255,.12)}
+@media (prefers-color-scheme:dark){
+ :root:not([data-theme="light"]) #plakatView .ph-a,:root:not([data-theme="light"]) #plakatView .ph-b{background:color-mix(in srgb,var(--c) 15%,#090910);color:#fff}
+ :root:not([data-theme="light"]) #plakatView .ph-sn{color:var(--c)}
+ :root:not([data-theme="light"]) #plakatView .ph-er,:root:not([data-theme="light"]) #plakatView [data-ink="dark"] .ph-er{border-top-color:rgba(255,255,255,.2)}
+ :root:not([data-theme="light"]) #plakatView .ph-er.hi,:root:not([data-theme="light"]) #plakatView [data-ink="dark"] .ph-er.hi{background:rgba(255,255,255,.12)}
+}
+/* slaabid */
+#plakatView .ph-slab{position:relative;border-radius:26px 26px 0 0;margin-top:-24px;box-shadow:0 -10px 24px rgba(0,0,0,.2);padding:12px var(--ph-px) 0;flex:none}
+#plakatView .ph-sb{height:130px;z-index:3;background:var(--ph-wb);color:var(--ph-ink);transition:background .45s}
+#plakatView .ph-bd{font:700 10px/1 'Sora',sans-serif;letter-spacing:.3px;background:currentColor;padding:4px 8px;border-radius:99px;white-space:nowrap}
+#plakatView .ph-sb .ph-bd span{color:var(--ph-wb)}#plakatView .ph-sc .ph-bd span{color:var(--ph-tb)}#plakatView .ph-sd .ph-bd span{color:var(--ph-kb)}
+#plakatView .ph-paper{background:var(--ph-pb);border-radius:18px;padding:6px;margin-top:6px;color:var(--ph-ink);transition:background .45s}
+#plakatView .ph-chips{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+#plakatView .ph-ch{border:0;background:color-mix(in srgb,var(--ph-ink) 7%,transparent);color:var(--ph-ink);border-radius:11px;padding:6px 0 5px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;font-family:'Sora',sans-serif;transition:background .3s,color .3s;min-height:0;box-shadow:none}
+#plakatView .ph-ch small{font:800 9px/1 'Sora',sans-serif;opacity:.6}
+#plakatView .ph-ch b{font:800 16px/1 'Sora',sans-serif;letter-spacing:-.04em}
+#plakatView .ph-ch.free0{opacity:.5}
+#plakatView .ph-ch.td b{text-decoration:underline;text-decoration-color:#ff6a2b;text-decoration-thickness:3px;text-underline-offset:3px}
+#plakatView .ph-ch.sel{background:var(--c);color:var(--on);opacity:1}
+#plakatView .ph-ch.sel small{opacity:.9}
+#plakatView .ph-dots{display:flex;gap:3px;height:5px;align-items:center}
+#plakatView .ph-dots i{display:block;width:4.5px;height:4.5px;border-radius:50%;background:currentColor;opacity:.5}
+#plakatView .ph-dots i.t{border-radius:1.5px;background:transparent;box-shadow:inset 0 0 0 1.4px currentColor;opacity:.8}
+#plakatView .ph-dots i.pk-eia{background:#ffd24a;opacity:1}#plakatView .ph-dots i.pk-otto{background:#8cc7ff;opacity:1}#plakatView .ph-dots i.pk-elle{background:#ffb0d6;opacity:1}#plakatView .ph-dots i.pk-pere{background:#cdb8ff;opacity:1}
+#plakatView .ph-row2{flex:1;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;background:var(--ph-wb);margin-top:-24px;position:relative;z-index:4;min-height:230px;transition:background .45s}
+#plakatView .ph-row2 .ph-slab{margin-top:0;height:100%;padding:12px 16px calc(100px + env(safe-area-inset-bottom));overflow:hidden;cursor:pointer}
+#plakatView .ph-sc{background:var(--ph-tb);color:var(--ph-ink);transition:background .45s}
+#plakatView .ph-sd{background:var(--ph-kb);color:var(--ph-ink);transition:background .45s}
+#plakatView .ph-hint{position:absolute;left:16px;right:16px;bottom:calc(104px + env(safe-area-inset-bottom));display:flex;justify-content:space-between;font:700 9.5px/1 'Space Mono',monospace;letter-spacing:.5px;text-transform:uppercase;opacity:.7}
+#plakatView .ph-trs{margin-top:6px}
+#plakatView .ph-tr{padding:6px 0;border-top:1.5px solid color-mix(in srgb,currentColor 24%,transparent);font:600 12px/1.25 'Sora',sans-serif}
+#plakatView .ph-ttx{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#plakatView .ph-tr small{display:block;font:700 9px/1.2 'Space Mono',monospace;letter-spacing:.3px;text-transform:uppercase;opacity:.7;margin-top:3px}
+#plakatView .ph-tr.late small{opacity:1;text-decoration:underline;text-underline-offset:2px}
+#plakatView .ph-big{font:800 25px/1 'Sora',sans-serif;letter-spacing:-.04em;margin:6px 0 0}
+#plakatView .ph-dg{display:grid;grid-template-columns:repeat(7,1fr);gap:6px 0;justify-items:center;margin-top:10px}
+#plakatView .ph-dt{width:11px;height:11px;border-radius:50%;background:color-mix(in srgb,currentColor 16%,transparent)}
+#plakatView .ph-dt.o{visibility:hidden}
+#plakatView .ph-dt.ev{box-shadow:inset 0 0 0 1.5px rgba(0,0,0,.22);background:#ccc}
+#plakatView .ph-dt.pk-eia{background:#ffd24a}#plakatView .ph-dt.pk-otto{background:#8cc7ff}#plakatView .ph-dt.pk-elle{background:#ffb0d6}#plakatView .ph-dt.pk-pere{background:#cdb8ff}
+#plakatView .ph-dt.td{background:#ff6a2b;width:15px;height:15px;margin:-2px 0;box-shadow:0 0 0 2.5px color-mix(in srgb,#ff6a2b 35%,transparent)}
+/* täisleht: ülesanded */
+#plakatView .ph-ov{position:absolute;inset:0;z-index:15;translate:0 102%;transition:translate .55s cubic-bezier(.2,.9,.2,1);padding:calc(16px + env(safe-area-inset-top)) var(--ph-px) calc(100px + env(safe-area-inset-bottom));display:flex;flex-direction:column;overflow-y:auto;border-radius:26px 26px 0 0;background:var(--ph-tb);color:var(--ph-ink)}
+#plakatView .ph-ov.open{translate:0 0}
+#plakatView .ph-ov.instant{transition:none}
+#plakatView .ph-ovt{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;min-height:32px}
+#plakatView .ph-ovt button{font:700 12px/1 'Sora',sans-serif;border:0;background:color-mix(in srgb,currentColor 14%,transparent);border-radius:99px;padding:9px 13px;cursor:pointer;color:inherit;min-height:0;box-shadow:none}
+#plakatView .ph-ovh{display:flex;align-items:flex-end;justify-content:space-between;margin:2px 0 10px}
+#plakatView .ph-ovh b{font:800 56px/.85 'Sora',sans-serif;letter-spacing:-.06em}
+#plakatView .ph-ovh small{font:700 12px/1 'Space Mono',monospace;letter-spacing:2px;opacity:.7;text-transform:uppercase}
+#plakatView .ph-sec{font:700 10.5px/1 'Space Mono',monospace;letter-spacing:.7px;text-transform:uppercase;opacity:.7;margin:12px 0 2px}
+#plakatView .ph-tk{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1.5px solid color-mix(in srgb,currentColor 22%,transparent);font:600 14px/1.25 'Sora',sans-serif;cursor:pointer;transition:opacity .3s}
+#plakatView .ph-tk.empty{opacity:.6;cursor:default}
+#plakatView .ph-tk small{display:block;font:700 9.5px/1.2 'Space Mono',monospace;letter-spacing:.4px;text-transform:uppercase;opacity:.7;margin-top:4px}
+#plakatView .ph-tk.late small{opacity:1;text-decoration:underline;text-underline-offset:2px}
+#plakatView .ph-ring{width:30px;height:30px;flex:none;border:0;background:none;padding:0;color:inherit;min-height:0;box-shadow:none;display:grid;place-items:center}
+#plakatView .ph-ring svg{width:26px;height:26px;display:block}
+#plakatView .ph-ring circle{fill:rgba(0,0,0,0);stroke:currentColor;stroke-width:2.4;transition:fill .25s}
+#plakatView .ph-ring path{fill:none;stroke:var(--ph-tb);stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:22;stroke-dashoffset:22;transition:stroke-dashoffset .35s .1s}
+#plakatView .ph-tk.done{opacity:.55}#plakatView .ph-tk.done .ph-ttl{text-decoration:line-through}
+#plakatView .ph-tk.done .ph-ring circle{fill:currentColor}#plakatView .ph-tk.done .ph-ring path{stroke-dashoffset:0}
+/* avanemise liikumine (ainult esimesel joonistamisel) */
+@keyframes phSlam{from{scale:1.6;opacity:0;filter:blur(16px)}60%{scale:.96;opacity:1;filter:blur(0)}to{scale:1}}
+@keyframes phUp{from{translate:0 110%}to{translate:0 0}}
+@keyframes phFade{from{opacity:0;translate:0 12px}to{opacity:1;translate:0 0}}
+@keyframes phPop{from{opacity:0;scale:.4}to{opacity:1;scale:1}}
+@keyframes phPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,0)}50%{box-shadow:0 0 0 5px rgba(255,255,255,.18)}}
+#plakatView .ph-go .ph-a .ph-sn{animation:phSlam .9s cubic-bezier(.2,.9,.2,1) both}
+#plakatView .ph-go .ph-a .ph-sm,#plakatView .ph-go .ph-a .ph-wx,#plakatView .ph-go .ph-a .ph-er,#plakatView .ph-go .ph-a .ph-hd{animation:phFade .6s .4s both}
+#plakatView .ph-go .ph-sb{animation:phUp .8s .55s cubic-bezier(.2,.9,.2,1) both}
+#plakatView .ph-go .ph-row2 .ph-sc{animation:phUp .8s .7s cubic-bezier(.2,.9,.2,1) both}
+#plakatView .ph-go .ph-row2 .ph-sd{animation:phUp .8s .85s cubic-bezier(.2,.9,.2,1) both}
+#plakatView .ph-go .ph-ch{animation:phPop .5s cubic-bezier(.2,1.5,.4,1) both;animation-delay:calc(.7s + var(--r)*60ms)}
+#plakatView .ph-go .ph-dt{animation:phPop .55s cubic-bezier(.2,1.5,.4,1) both;animation-delay:calc(.9s + var(--w)*38ms)}
+@media (prefers-reduced-motion:reduce){#plakatView .pk-home *{animation:none!important;transition:none!important}}
+/* Ülesannete lehe tagasilink all, pöidla ulatuses */
+#plakatView .ph-ov{padding-bottom:calc(92px + env(safe-area-inset-bottom))}
+#plakatView .ph-back{position:sticky;bottom:calc(92px + env(safe-area-inset-bottom));margin-top:auto;align-self:center;flex:none;min-width:190px;height:46px;padding:0 22px;border:0;border-radius:99px;background:var(--ph-ink);color:var(--ph-tb);font:700 13px/1 'Sora',sans-serif;letter-spacing:.3px;box-shadow:0 8px 22px rgba(0,0,0,.28);cursor:pointer;min-height:0}
+#plakatView .ph-back:active{filter:brightness(1.15)}
+/* Ülevaatelt päeva lehele: laienev värvikiht (.ph-morph) + päeva plakati sissetulek (.ph-in). */
+#plakatView .ph-morph{position:absolute;z-index:40;pointer-events:none;margin:0;will-change:left,top,width,height}
+#plakatView .pk-home.ph-snap{transition:none!important}
+@keyframes phNumIn{from{scale:1.3;opacity:.35;filter:blur(8px)}to{scale:1;opacity:1;filter:blur(0)}}
+@keyframes phRowIn{from{opacity:0;translate:0 14px}to{opacity:1;translate:0 0}}
+#plakatView .pk-page.ph-in .pk-num{animation:phNumIn .38s cubic-bezier(.2,.9,.2,1) both;transform-origin:0 60%}
+#plakatView .pk-page.ph-in .pk-top,#plakatView .pk-page.ph-in .pk-st{animation:phRowIn .26s .05s both}
+#plakatView .pk-page.ph-in .pk-li,#plakatView .pk-page.ph-in .pk-free,#plakatView .pk-page.ph-in .pk-fn{animation:phRowIn .28s both;animation-delay:calc(.08s + var(--i,0)*35ms)}
+/* Seotud ürituse link ülesandel (päeva plakat .pk-rel, ülesannete leht .ph-rel) ja rea esiletõstmine pärast sinna hüppamist. */
+#plakatView .pk-rel,#plakatView .ph-rel{display:inline-flex;align-items:center;gap:6px;max-width:100%;margin-top:7px;padding:5px 10px;border:0;border-radius:99px;background:color-mix(in srgb,currentColor 13%,transparent);color:inherit;font:700 11px/1.2 'Sora',sans-serif;text-align:left;cursor:pointer;min-height:0;box-shadow:none}
+#plakatView .pk-rel .pk-rel-t,#plakatView .ph-rel .pk-rel-t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+#plakatView .pk-rel svg,#plakatView .ph-rel svg{width:13px;height:13px;flex:none;display:block}
+#plakatView .pk-rel:active,#plakatView .ph-rel:active{filter:brightness(.93)}
+@keyframes phFlash{0%{background:rgba(255,255,255,0)}18%{background:rgba(255,255,255,.38)}100%{background:rgba(255,255,255,0)}}
+#plakatView .pk-li.pk-flash{animation:phFlash 1.6s ease-out;border-radius:14px}
+/* Kuu leht: kattumise hoiatus ilma taustata (lihtsalt punane tekst), kalendrisse hüüumärki ei panda. */
+#plakatView .pk-month .pk-warn{background:none;padding:0;min-height:0;border-radius:0;color:var(--late);font:700 11px/1.3 'Sora',sans-serif}
+/* Ülesannete lehe rea esiletõstmine pärast sinna hüppamist (Ava ülevaates). */
+@keyframes phFlash2{0%{background:transparent}18%{background:color-mix(in srgb,currentColor 18%,transparent)}100%{background:transparent}}
+#plakatView .ph-tk.pk-flash{animation:phFlash2 1.6s ease-out;border-radius:12px}
+/* Otsing Plakat-vaates: lame värvipaneel (aktiivse lehe värv --pk-c/--pk-on), Sora + Space Mono, jooned ridade vahel, ilma klaasita. */
+:root[data-plakat="1"] #searchScrim{background:rgba(10,10,20,.42);-webkit-backdrop-filter:none;backdrop-filter:none}
+:root[data-plakat="1"] .search-overlay{padding:0}
+:root[data-plakat="1"] .search-sheet{background:var(--pk-c,#6b4dff);color:var(--pk-on,#fff);border:0;border-radius:0 0 26px 26px;-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:0 14px 34px rgba(0,0,0,.28);padding:calc(14px + env(safe-area-inset-top)) max(16px,calc((100vw - 560px)/2)) 16px;max-height:min(84vh,700px);width:100%;max-width:none;font-family:'Sora',sans-serif;transition:background .3s}
+:root[data-plakat="1"][data-theme="dark"] .search-sheet{background:color-mix(in srgb,var(--pk-c,#6b4dff) 15%,#090910);color:#fff}
+@media (prefers-color-scheme:dark){:root[data-plakat="1"]:not([data-theme="light"]) .search-sheet{background:color-mix(in srgb,var(--pk-c,#6b4dff) 15%,#090910);color:#fff}}
+:root[data-plakat="1"] .search-field{height:52px;border-radius:18px;border:0;background:color-mix(in srgb,currentColor 16%,transparent);padding:0 4px 0 16px}
+:root[data-plakat="1"] .search-glass{color:inherit}
+:root[data-plakat="1"] .search-glass svg{width:20px;height:20px;stroke-width:2.2}
+:root[data-plakat="1"] .search-field input{font:600 17px/1 'Sora',sans-serif;color:inherit;letter-spacing:-.01em}
+:root[data-plakat="1"] .search-field input::placeholder{color:inherit;opacity:.6;font-weight:500}
+:root[data-plakat="1"] .search-close{color:inherit;width:42px;height:42px;border-radius:50%;background:color-mix(in srgb,currentColor 14%,transparent);font-size:14px;min-height:0}
+:root[data-plakat="1"] .search-results{margin-top:6px}
+:root[data-plakat="1"] .search-label,:root[data-plakat="1"] .search-count{font:700 10.5px/1.2 'Space Mono',monospace;letter-spacing:.8px;text-transform:uppercase;color:inherit;opacity:.75;margin:14px 2px 4px}
+:root[data-plakat="1"] .search-count{margin-top:12px;margin-bottom:2px}
+:root[data-plakat="1"] .search-row{background:none;border:0;border-top:1.5px solid color-mix(in srgb,currentColor 28%,transparent);border-radius:0;box-shadow:none;margin:0;padding:11px 2px;gap:4px;color:inherit}
+:root[data-plakat="1"] .search-title{font:700 16px/1.25 'Sora',sans-serif;color:inherit;letter-spacing:-.01em}
+:root[data-plakat="1"] .search-meta,:root[data-plakat="1"] .search-hit{font:700 10px/1.35 'Space Mono',monospace;letter-spacing:.5px;text-transform:uppercase;color:inherit;opacity:.78}
+:root[data-plakat="1"] .search-row mark{background:color-mix(in srgb,currentColor 24%,transparent);color:inherit;border-radius:5px;padding:0 2px}
+:root[data-plakat="1"] .search-row:active,:root[data-plakat="1"] .search-row:focus-visible{background:color-mix(in srgb,currentColor 12%,transparent);box-shadow:none;outline:none}
+@media (hover:hover){:root[data-plakat="1"] .search-row:hover{background:color-mix(in srgb,currentColor 9%,transparent)}}
+:root[data-plakat="1"] .search-empty{font:600 14px/1.4 'Sora',sans-serif;color:inherit;opacity:.8;padding:22px 2px;text-align:left}
+/* Kuu leht: õrn lilla toon valge/musta asemel (hele ja tume), nooled pealkirja kõrval, kuu vahetus libistades. */
+#plakatView .pk-page.pk-month{--mfg:#221b4a;--mbg:#efebff;--band:rgba(107,77,255,.10);--mline:rgba(107,77,255,.20);--pill:rgba(107,77,255,.12);--mac:#6b4dff;--mac-on:#fff;background:#efebff;color:#221b4a}
+:root[data-theme="dark"] #plakatView .pk-page.pk-month{--mfg:#ece8ff;--mbg:#171335;--band:rgba(169,155,255,.12);--mline:rgba(169,155,255,.22);--pill:rgba(169,155,255,.14);--mac:#8e7bff;--mac-on:#fff;background:color-mix(in srgb,#6b4dff 16%,#0b0b14);color:#ece8ff}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #plakatView .pk-page.pk-month{--mfg:#ece8ff;--mbg:#171335;--band:rgba(169,155,255,.12);--mline:rgba(169,155,255,.22);--pill:rgba(169,155,255,.14);--mac:#8e7bff;--mac-on:#fff;background:color-mix(in srgb,#6b4dff 16%,#0b0b14);color:#ece8ff}}
+#plakatView .pk-month .pk-c.today{background:var(--mac);color:var(--mac-on)}
+#plakatView .pk-month .pk-c.today b{color:var(--mac-on)}
+#plakatView .pk-month .pk-c.sel{box-shadow:inset 0 0 0 2px var(--mac)}
+#plakatView .pk-month .pk-c.today.sel{box-shadow:0 0 0 2px var(--mbg),0 0 0 4px var(--mac)}
+#plakatView .pk-month .pk-open{background:var(--mac);color:var(--mac-on)}
+#plakatView .pk-month .pk-dd i:not(.pk-tk){box-shadow:0 0 0 1px rgba(34,27,74,.16);background:color-mix(in srgb,var(--mfg) 35%,transparent)}
+#plakatView .pk-month .pk-dd i.pk-eia{background:#ffd24a}#plakatView .pk-month .pk-dd i.pk-otto{background:#8cc7ff}#plakatView .pk-month .pk-dd i.pk-elle{background:#ffb0d6}#plakatView .pk-month .pk-dd i.pk-pere{background:#cdb8ff}
+:root[data-theme="dark"] #plakatView .pk-month .pk-dd i:not(.pk-tk){box-shadow:0 0 0 1px rgba(255,255,255,.22)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #plakatView .pk-month .pk-dd i:not(.pk-tk){box-shadow:0 0 0 1px rgba(255,255,255,.22)}}
+/* pealkiri + nooled */
+#plakatView .pk-mh{touch-action:pan-y;user-select:none}
+#plakatView .pk-mr{display:flex;flex-direction:column;align-items:flex-end;gap:10px;margin-bottom:2px}
+#plakatView .pk-arrs{display:flex;align-items:center;gap:6px}
+#plakatView .pk-arr{width:38px;height:38px;border-radius:50%;border:0;background:var(--pill);color:inherit;display:grid;place-items:center;padding:0;min-height:0;box-shadow:none;touch-action:manipulation}
+#plakatView .pk-arr:disabled{opacity:.3}
+#plakatView .pk-arr:active{background:color-mix(in srgb,var(--mac) 24%,transparent)}
+#plakatView .pk-mtd{height:34px;padding:0 10px;border:0;border-radius:99px;background:none;color:var(--mac);font:700 12px/1 'Sora',sans-serif;min-height:0;box-shadow:none}
+#plakatView .pk-mtd[hidden]{display:none}
+@keyframes pkSlideN{from{opacity:0;translate:28px 0}to{opacity:1;translate:0 0}}
+@keyframes pkSlideP{from{opacity:0;translate:-28px 0}to{opacity:1;translate:0 0}}
+#plakatView .pk-grid.pk-snext{animation:pkSlideN .26s cubic-bezier(.2,.9,.2,1)}
+#plakatView .pk-grid.pk-sprev{animation:pkSlideP .26s cubic-bezier(.2,.9,.2,1)}
+@media (prefers-reduced-motion:reduce){#plakatView .pk-grid{animation:none!important}}
+#plakatView .pk-month .pk-st{margin:10px 0 8px}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
@@ -2500,6 +2703,42 @@ function plakatClick(key,selector){
  if(card&&card.classList.contains('compact-past')){card.click();card=document.querySelector(sel);}
  const target=card&&card.querySelector(selector);if(target)target.click();
 }
+// Seotud ürituse link ülesandel ("Üritus: pealkiri · kuupäev ↗"), nagu klassikalises vaates; vajutus avab ürituse päeva plakati ja tõstab rea esile.
+function plakatRelatedLink(item,cls){
+ const rel=item&&item.relatedEvent;if(!rel)return null;
+ const link=document.createElement('button');link.type='button';link.className=cls;link.title='Ava seotud üritus';
+ const label=document.createElement('span');label.className='pk-rel-t';label.textContent='Üritus: '+rel.title+' · '+(typeof shortDay==='function'?shortDay(rel.date):plakatShort(rel.date));
+ const icon=document.createElement('span');icon.setAttribute('aria-hidden','true');icon.innerHTML=typeof linkIcon!=='undefined'?linkIcon:'↗';
+ link.append(label,icon);link.onclick=event=>{event.stopPropagation();plakatOpenEvent(rel);};
+ return link;
+}
+function plakatOpenEvent(rel){
+ const items=savedOverview?savedOverview.items:[];
+ const found=items.find(it=>it.kind==='event'&&it.title===rel.title&&it.date===rel.date&&(!rel.time||it.time===rel.time));
+ if(!found){try{overviewStatus('Seotud üritust ei leitud (võib olla tühistatud).',true);}catch(_){}return;}
+ plakatJumpToDate(found.date,found.key,false);
+}
+// Hüpe päeva plakatile (0–6 päeva) või Kuu lehele selle päevaga; rida vilgub. Üle tähtaja ülesanded on tänase päeva plakatil.
+function plakatJumpToDate(date,key,isTask){
+ const today=savedOverview.today;let idx=Math.round((Date.parse(date+'T12:00:00Z')-Date.parse(today+'T12:00:00Z'))/86400000);
+ if(isTask&&idx<0)idx=0;
+ const flash=()=>setTimeout(()=>{const row=document.querySelector('#plakatView .pk-li[data-key="'+key+'"],#plakatView .ph-tk[data-key="'+key+'"]');if(!row)return;row.classList.add('pk-flash');setTimeout(()=>row.classList.remove('pk-flash'),1800);},380);
+ if(idx>=0&&idx<=6){const view=document.getElementById('plakatView'),pager=view&&view.querySelector('.pk-pager');if(view&&pager){plakatHomeGoto(view,pager,idx);flash();}return;}
+ // Väljaspool nädalat: Kuu leht selle päevaga.
+ plakatMonth=date.slice(0,7);plakatSel=date;
+ renderPlakat();
+ const view=document.getElementById('plakatView'),pager=view&&view.querySelector('.pk-pager');if(view&&pager){plakatHomeGoto(view,pager,7);flash();}
+}
+// "Ava ülevaates" (Sisesta salvestuskaart) ja muud focusItemKey kutsed: Plakatis viib kirjeni (päeva plakat / Kuu / ülesannete leht). Tagastab true, kui käsitles.
+function plakatFocusKey(key){
+ try{
+  if(!plakatMode()||!savedOverview||!document.getElementById('plakatView'))return false;
+  const item=savedOverview.items.find(it=>it.key===key);if(!item)return false;
+  const date=item.kind==='event'?item.date:item.deadline;
+  if(!date){if(typeof plakatHomeShowTasks==='function'){plakatHomeShowTasks(key);return true;}return false;}
+  plakatJumpToDate(date,key,item.kind!=='event');return true;
+ }catch(_){return false;}
+}
 function plakatItems(day,today,items){
  const isTask=item=>['task','invoice'].includes(item.kind);
  const open=item=>isTask(item)&&(item.status!=='Tehtud'||completing.has(item.key));
@@ -2509,7 +2748,7 @@ function plakatItems(day,today,items){
  return {late,events,tasks};
 }
 function plakatRow(item,kind,day,today){
- const row=document.createElement('div');row.className='pk-li'+(kind==='late'?' late':'')+(item.status==='Tehtud'?' done':'');
+ const row=document.createElement('div');row.className='pk-li'+(kind==='late'?' late':'')+(item.status==='Tehtud'?' done':'');row.dataset.key=item.key;
  const time=document.createElement('time');
  if(kind==='event'&&item.time){time.textContent=item.time;if(item.endTime){const small=document.createElement('small');small.textContent='–'+item.endTime;time.append(small);}}
  else if(kind==='event'){time.className='tg';time.textContent=item.date<day?'JÄTKUB':'KOGU PÄEV';}
@@ -2521,7 +2760,6 @@ function plakatRow(item,kind,day,today){
  const slug=personSlug(canonicalPerson(item.person||'')),tag=document.createElement('span');tag.className='pk-pp pk-'+slug;tag.textContent=shortPerson(item.person||'')||'—';meta.append(tag);
  const bits=[];
  if(kind==='late')bits.push('tähtaeg '+plakatShort(item.deadline));
- if(kind!=='event'&&item.relatedEvent)bits.push('üritus '+plakatShort(item.relatedEvent.date));
  const kaasa=(item.notes||'').split('\n').find(line=>/^Kaasa:/i.test(line.trim()));
  if(kaasa)bits.push(kaasa.trim().toLowerCase());
  if(kind==='event'&&item.location&&typeof pinIcon!=='undefined'){
@@ -2532,6 +2770,8 @@ function plakatRow(item,kind,day,today){
  if(kind==='event'&&plakatConf.has(item.key)){const list=plakatConf.get(item.key),warn=document.createElement('span');warn.className='pk-warn';warn.textContent='⚠ Kattub: '+list[0]+(list.length>1?' +'+(list.length-1):'');meta.append(warn);}
  if(kind==='event'&&typeof isOutdoorEvent==='function'&&typeof weatherChip==='function'&&savedOverview&&item.date>=savedOverview.today&&item.date<=addDays(savedOverview.today,6)&&isOutdoorEvent(item)){try{meta.append(weatherChip(item));}catch(_){}}
  body.append(meta);
+ // Seotud ürituse link (nagu klassikalises vaates): viib ürituse päeva plakatile.
+ if(kind!=='event'&&item.relatedEvent){const rel=plakatRelatedLink(item,'pk-rel');if(rel)body.append(rel);}
  // Märkused: sama lahtiklõpsatav "Märkused" nagu klassikalises vaates (lingid ja pildid sees); rea puudutus avab muutmise, märkuste puudutus ainult laiendab.
  const nl=String.fromCharCode(10),rest=(item.notes||'').split(nl).filter(line=>!/^Kaasa:/i.test(line.trim())).join(nl).trim(),shown=Object.assign({},item,{notes:rest});
  if(rest||(item.imageUrls&&item.imageUrls.length)){savedNotes(body,shown);const det=body.querySelector('details');if(det)det.onclick=event=>event.stopPropagation();const imgs=body.lastElementChild;if(imgs&&imgs.tagName==='P'&&!imgs.className)imgs.onclick=event=>event.stopPropagation();}
@@ -2631,20 +2871,27 @@ function plakatMonthData(items,today){
  });
  return {byDay,undated};
 }
-function plakatMonthDraw(page,view,pager,items,today){
+function plakatMonthDraw(page,view,pager,items,today,dir){
  const {byDay,undated}=plakatMonthData(items,today);
  page.replaceChildren();
  const el=(tag,cls,text)=>{const node=document.createElement(tag);if(cls)node.className=cls;if(text!==undefined)node.textContent=text;return node;};
  const [y,m]=plakatMonth.split('-').map(Number);
  const top=el('div','pk-top');top.append(el('span','','PERE'),plakatThemeButton());
  const head=el('div','pk-mh');const abbr=['Jaan','Veebr','Märts','Apr','Mai','Juuni','Juuli','Aug','Sept','Okt','Nov','Dets'][m-1];
- head.append(el('b','',abbr),el('small','',String(y)));
  const first=plakatMonth+'-01',last=plakatMonth+'-31',brk=calSchoolBreaks().find(b=>b.from<=last&&b.to>=first);
- let evCount=0,tkCount=0;byDay.forEach((entry,d)=>{if(d.slice(0,7)===plakatMonth){evCount+=entry.events.length;tkCount+=entry.tasks.length;}});
- const st=el('div','pk-st');st.append(el('span','',(brk?brk.name:calMonthLabel(plakatMonth)).toUpperCase()),el('b','',evCount||tkCount?evCount+' üritust · '+tkCount+' ül.':'tühi kuu'));
+ // Ainult vaheaja nimi (kui kuus on vaheaeg); kuu pealkiri on juba suur number-sõna.
+ const st=brk?el('div','pk-st'):null;if(st)st.append(el('span','',brk.name.toUpperCase()));
  const dow=el('div','pk-dow');['E','T','K','N','R','L','P'].forEach(x=>dow.append(el('span','',x)));
  const grid=el('div','pk-grid');
- const shift=delta=>{const next=calShift(plakatMonth,delta);if(next<calMinMonth())return;plakatMonth=next;plakatSel=next===today.slice(0,7)?today:next+'-01';plakatMonthDraw(page,view,pager,items,today);};
+ const shift=delta=>{const next=calShift(plakatMonth,delta);if(next<calMinMonth())return;plakatMonth=next;plakatSel=next===today.slice(0,7)?today:next+'-01';plakatMonthDraw(page,view,pager,items,today,delta);};
+ // Kuu pealkiri vasakul; paremal aasta ja nooled (eelmine/järgmine kuu), "Täna" ainult siis, kui oled mujal kui tänases kuus.
+ {const mr=el('div','pk-mr'),arrs=el('div','pk-arrs');
+  const chev=d=>'<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="'+(d<0?'M15 5l-7 7 7 7':'M9 5l7 7-7 7')+'"/></svg>';
+  const prevB=el('button','pk-arr');prevB.type='button';prevB.setAttribute('aria-label','Eelmine kuu');prevB.innerHTML=chev(-1);prevB.disabled=calShift(plakatMonth,-1)<calMinMonth();prevB.onclick=()=>shift(-1);
+  const nextB=el('button','pk-arr');nextB.type='button';nextB.setAttribute('aria-label','Järgmine kuu');nextB.innerHTML=chev(1);nextB.onclick=()=>shift(1);
+  const todayB=el('button','pk-mtd','Täna');todayB.type='button';todayB.hidden=plakatMonth===today.slice(0,7)&&plakatSel===today;
+  todayB.onclick=()=>{const was=plakatMonth;plakatMonth=today.slice(0,7);plakatSel=today;plakatMonthDraw(page,view,pager,items,today,was<plakatMonth?-1:1);};
+  arrs.append(todayB,prevB,nextB);mr.append(el('small','',String(y)),arrs);head.append(el('b','',abbr),mr);}
  const offset=(new Date(Date.UTC(y,m-1,1,12)).getUTCDay()+6)%7,count=new Date(Date.UTC(y,m,0,12)).getUTCDate(),total=Math.ceil((offset+count)/7)*7;
  for(let k=0;k<total;k++){
   const dt=new Date(Date.UTC(y,m-1,k-offset+1,12)),date=dt.toISOString().slice(0,10),inMonth=date.slice(0,7)===plakatMonth;
@@ -2656,19 +2903,13 @@ function plakatMonthDraw(page,view,pager,items,today){
   cell.append(el('b','',String(dt.getUTCDate())));
   const dots=el('span','pk-dd');[...new Set(entry.events.map(e=>personSlug(canonicalPerson(e.person||''))))].slice(0,3).forEach(slug=>dots.append(el('i','pk-'+slug)));
   if(entry.tasks.length)dots.append(el('i','pk-tk'));cell.append(dots);
-  if(entry.events.some(e=>plakatConf.has(e.key)&&e.date>=today))cell.append(el('span','pk-w','!'));
   cell.onclick=()=>{plakatSel=date;if(!inMonth)plakatMonth=date.slice(0,7);plakatMonthDraw(page,view,pager,items,today);};
   grid.append(cell);
  }
- // Libistamine ruudustikul vahetab kuud (touch-action: pan-y hoiab päevade pagineri paigal).
- {let sx=null,sy=0;grid.addEventListener('pointerdown',e=>{sx=e.clientX;sy=e.clientY;});
-  grid.addEventListener('pointerup',e=>{if(sx===null)return;const dx=e.clientX-sx,dy=e.clientY-sy;sx=null;if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.5)shift(dx<0?1:-1);});
-  grid.addEventListener('pointercancel',()=>{sx=null;});}
- const navRow=el('div','pk-mnav');
- const prev=el('button','pk-mbtn','‹ '+calMonthLabel(calShift(plakatMonth,-1)).split(' ')[0]);prev.type='button';prev.disabled=calShift(plakatMonth,-1)<calMinMonth();prev.onclick=()=>shift(-1);
- const nextB=el('button','pk-mbtn',calMonthLabel(calShift(plakatMonth,1)).split(' ')[0]+' ›');nextB.type='button';nextB.onclick=()=>shift(1);
- const todayB=el('button','pk-mbtn pk-mtoday','Täna');todayB.type='button';todayB.hidden=plakatMonth===today.slice(0,7)&&plakatSel===today;todayB.onclick=()=>{plakatMonth=today.slice(0,7);plakatSel=today;plakatMonthDraw(page,view,pager,items,today);};
- navRow.append(prev,todayB,nextB);
+ // Libistamine ruudustikul ja pealkirjal vahetab kuud (touch-action: pan-y hoiab päevade pagineri paigal); vasakule = järgmine kuu.
+ [grid,head].forEach(zone=>{let sx=null,sy=0;zone.addEventListener('pointerdown',e=>{sx=e.clientX;sy=e.clientY;});
+  zone.addEventListener('pointerup',e=>{if(sx===null)return;const dx=e.clientX-sx,dy=e.clientY-sy;sx=null;if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.5)shift(dx<0?1:-1);});
+  zone.addEventListener('pointercancel',()=>{sx=null;});});
  // valitud päev
  const sheet=el('div','pk-list pk-msheet');
  const dh=el('div','pk-dh');
@@ -2689,17 +2930,18 @@ function plakatMonthDraw(page,view,pager,items,today){
   if(!evs.length&&!dayEntry.tasks.length)sheet.append(el('div','pk-fn',plakatSel<today?'Midagi polnud kirjas.':'Vaba päev. Mitte midagi planeeritud.'));
  }
  if(undated.length&&plakatSel!=='undated'){const u=el('button','pk-mbtn pk-undated','Tähtajata · '+undated.length+' ›');u.type='button';u.onclick=()=>{plakatSel='undated';plakatMonthDraw(page,view,pager,items,today);};sheet.append(u);}
- const leg=el('div','pk-leg');leg.innerHTML='<span><i class="pk-lg pk-elle"></i><i class="pk-lg pk-otto"></i>üritus</span><span><i class="pk-lg pk-tk"></i>ülesanne</span><span><b class="pk-lw">!</b>kattub</span><span><i class="pk-lh"></i>püha</span><span><i class="pk-lb"></i>vaheaeg</span>';sheet.append(leg);
- page.append(top,head,st,dow,grid,navRow,sheet);
+ const leg=el('div','pk-leg');leg.innerHTML='<span><i class="pk-lg pk-elle"></i><i class="pk-lg pk-otto"></i>üritus</span><span><i class="pk-lg pk-tk"></i>ülesanne</span><span><i class="pk-lh"></i>püha</span><span><i class="pk-lb"></i>vaheaeg</span>';sheet.append(leg);
+ page.append(top,head);if(st)page.append(st);page.append(dow,grid,sheet);
+ if(dir)grid.classList.add(dir>0?'pk-snext':'pk-sprev');
  page.scrollTop=0;sheet.scrollTop=0;
 }
 function plakatMonthPage(view,pager,week,dots,items,today){
  if(!plakatMonth)plakatMonth=today.slice(0,7);
  if(!plakatSel)plakatSel=today;
- const page=document.createElement('section');page.className='pk-page pk-month';page.style.setProperty('--c','#f3eee3');page.style.setProperty('--on','#14130f');page.dataset.lbl='Kuu';
+ const page=document.createElement('section');page.className='pk-page pk-month';page.style.setProperty('--c','#efebff');page.style.setProperty('--on','#221b4a');page.dataset.lbl='Kuu';
  pager.append(page);plakatMonthDraw(page,view,pager,items,today);
  const dot=document.createElement('button');dot.type='button';dot.textContent='K';dot.setAttribute('aria-label','Kuu');dots.append(dot);
- const stripe=document.createElement('button');stripe.type='button';stripe.style.setProperty('--c','#f3eee3');stripe.style.setProperty('--on','#14130f');
+ const stripe=document.createElement('button');stripe.type='button';stripe.style.setProperty('--c','#efebff');stripe.style.setProperty('--on','#221b4a');
  stripe.innerHTML='<i>K</i><b class="pk-wword">Kuu</b>';
  const wl=document.createElement('div');wl.className='pk-wl';
  const mine=items.filter(i=>i.kind==='event'&&i.date&&i.date.slice(0,7)===today.slice(0,7)).length;
@@ -2718,7 +2960,7 @@ function plakatNav(view){
  const tab=document.getElementById('overviewTab');if(!tab||!tab.dataset||!view)return;
  const pager=view.querySelector('.pk-pager');if(!pager)return;
  const i=Math.round(pager.scrollLeft/Math.max(1,pager.clientWidth)),page=pager.children[i];
- tab.dataset.pkLabel=view.classList.contains('week-open')?'Nädal':i>=7?'Kuu':(page&&page.dataset.lbl)||'Pere';
+ tab.dataset.pkLabel=view.classList.contains('week-open')?'Ülevaade':i>=7?'Kuu':(page&&page.dataset.lbl)||'Pere';
  let dots=tab.querySelector('.pk-pdots');
  if(!dots){dots=document.createElement('span');dots.className='pk-pdots';dots.setAttribute('aria-hidden','true');for(let k=0;k<8;k++)dots.append(document.createElement('i'));tab.append(dots);}
  [...dots.children].forEach((d,k)=>d.classList.toggle('on',k===i));
@@ -2772,19 +3014,23 @@ function renderPlakat(){
  }
   plakatMonthPage(view,pager,week,dots,items,today);
  week.addEventListener('click',event=>{if(event.target===week)view.classList.remove('week-open');});
- view.append(pager,week);
+ // Ülevaate leht (plakat-home.js) asendab nädalaülekatte; vea korral jääb vana nädalariba.
+ try{view.append(pager,plakatHome(view,pager,items,today));}catch(error){try{console.error('Plakati ülevaade:',error);}catch(_){}view.append(pager,week);}
+ if(plakatHomeOpen)view.classList.add('week-open');
  const sync=()=>{const i=Math.round(pager.scrollLeft/Math.max(1,pager.clientWidth));plakatIndex=i;[...dots.children].forEach((d,j)=>{if(j<8)d.classList.toggle('on',j===i);});
   // Alumine peamenüü kasutab selle päeva värvi (CSS --pk-c / --pk-on).
   const pg=pager.children[i];if(pg){const root=document.documentElement.style;root.setProperty('--pk-c',pg.style.getPropertyValue('--c'));root.setProperty('--pk-on',pg.style.getPropertyValue('--on'));}plakatNav(view);};
  pager.addEventListener('scroll',sync);
- new MutationObserver(()=>plakatNav(view)).observe(view,{attributes:true,attributeFilter:['class']});
+ new MutationObserver(()=>{plakatHomeOpen=view.classList.contains('week-open');if(plakatHomeOpen&&typeof pkNav!=='undefined')pkNav.drop('day');plakatNav(view);plakatHomeSync(view,pager);}).observe(view,{attributes:true,attributeFilter:['class']});
  // Muutmine: olemasolev muutmiskaart (peidetud ülevaates) tuuakse lehena plakati peale.
  if(overviewEditing){
   const card=overviewEventCards.get(overviewEditing.key)||overviewTaskCards.get(overviewEditing.key);
-  if(card){const sheet=document.createElement('div');sheet.className='pk-sheet';const pg=pager.children[plakatIndex];if(pg){sheet.style.setProperty('--c',pg.style.getPropertyValue('--c'));sheet.style.setProperty('--on',pg.style.getPropertyValue('--on'));}sheet.append(card);view.append(sheet);}
- }
+  if(card){const sheet=document.createElement('div');sheet.className='pk-sheet';const pg=pager.children[plakatIndex];if(pg){sheet.style.setProperty('--c',pg.style.getPropertyValue('--c'));sheet.style.setProperty('--on',pg.style.getPropertyValue('--on'));}sheet.append(card);view.append(sheet);
+   // Tagasinupp sulgeb muutmise (loobub), nagu "Loobu".
+   if(typeof pkNav!=='undefined')pkNav.push('edit',()=>{overviewEditing=null;renderOverview();});}
+ }else if(typeof pkNav!=='undefined')pkNav.drop('edit');
  host.append(view);
- pager.scrollLeft=plakatIndex*pager.clientWidth;sync();
+ pager.scrollLeft=plakatIndex*pager.clientWidth;sync();plakatHomeSync(view,pager);
 }
 // Sisesta ja E-kirjad: pealkirja asemel plakati-keelne päis (suur sümbol/number + lühike pealkiri + mono-rida). Joonistatakse alati, näitab CSS ainult Plakati režiimis.
 function plakatHeroes(){
@@ -2838,6 +3084,332 @@ function initPlakatToggle(){
   paint();
  }catch(_){}
 }
+// === ÜLEVAADE (kodu) === Plakati ülevaate leht: fookusplokk (kodupäev), nädal, ülesanded, kuu. Asendab nädalaülekatte (.pk-week); avaneb
+// rakenduse käivitumisel ja alumise menüü Pere-nupust. Fookus: 03:00–19:00 täna (käib praegu / kohe järgmine esile tõstetud), 19:00–03:00 homne
+// päev ("Homseks valmis"), välja arvatud kui täna veel midagi käib. Nädala päeva vajutus tõstab selle päeva slaabi peale (tänane jääb sakiks).
+// Fookusploki vajutus avab päeva plakati, kuu slaab avab Kuu lehe, ülesannete slaab avab ülesannete lehe ringidega ja tähtajatutega.
+let plakatHomeOpen=true,plakatHomeSel='',plakatHomeOv='',plakatHomeAnimated=false,plakatHomePaint=null;
+const PH_PERSONS=['eia','otto','elle','pere'];
+function phEl(tag,cls,text){const node=document.createElement(tag);if(cls)node.className=cls;if(text!==undefined)node.textContent=text;return node;}
+function phDay(day){const [name,color,ink]=PLAKAT_DAYS[plakatDow(day)];return {lower:name,name:name.charAt(0).toUpperCase()+name.slice(1),letter:name.charAt(0).toUpperCase(),color:color,on:ink,dark:ink!=='#fff'};}
+function phDaysBetween(a,b){return Math.round((Date.parse(b+'T12:00:00Z')-Date.parse(a+'T12:00:00Z'))/86400000);}
+function phSlug(item){return personSlug(canonicalPerson(item.person||''));}
+function phPill(item){const tag=phEl('span','pk-pp pk-'+phSlug(item),shortPerson(item.person||'')||'—');tag.classList.add('ph-pp');return tag;}
+function phTitle(item){return item.title+(item.kind==='invoice'&&item.amount?' · '+item.amount+' '+(item.currency||''):'');}
+function phOpenTasks(items){return items.filter(item=>['task','invoice'].includes(item.kind)&&(item.status!=='Tehtud'||completing.has(item.key)));}
+// Kodupäev: kas täna või (õhtul/öösel) homne päev.
+function phHome(items,today,now){
+ const hour=Number(now.slice(11,13));let running=false;
+ try{const pick=nextUpPick(items.filter(item=>item.kind==='event'&&item.time&&item.date),now);running=!!(pick&&pick.phase==='now');}catch(_){}
+ if((hour>=19||hour<3)&&!running){
+  const day=hour<3?today:addDays(today,1),g=plakatItems(day,today,items);
+  if(g.events.length||g.tasks.length)return {day:day,mode:'eve'};
+ }
+ return {day:today,mode:'day'};
+}
+// Päeva read olekuga: käib praegu / kohe järgmine / möödunud (ainult täna), "Homme esimene" (õhtune fookus).
+function phRows(day,today,items,now,mode){
+ const g=plakatItems(day,today,items),list=[];let upSet=false,firstSet=false;
+ g.events.forEach(item=>{
+  let state='';
+  if(day===today&&mode==='day'&&item.time){const phase=eventPhase(item,now);if(phase==='past')state='past';else if(phase==='now')state='now';else if(!upSet){state='next';upSet=true;}}
+  else if(mode==='eve'&&item.time&&!firstSet){state='first';firstSet=true;}
+  list.push({kind:'event',item:item,state:state});
+ });
+ if(mode==='day')g.late.forEach(item=>list.push({kind:'late',item:item,state:''}));
+ g.tasks.forEach(item=>list.push({kind:'task',item:item,state:''}));
+ return list;
+}
+function phRowNode(entry,day,today,now){
+ const item=entry.item,state=entry.state,hi=state==='now'||state==='next'||state==='first';
+ const row=phEl('div','ph-er'+(state==='past'?' past':'')+(hi?' hi':''));
+ const r1=phEl('div','ph-r1'),time=phEl('time');
+ if(entry.kind==='event'){time.textContent=item.time||'KOGU PÄEV';if(!item.time)time.className='tg';}
+ else if(entry.kind==='late'){time.textContent='!';time.className='tg';}
+ else{time.textContent=item.deadline===today?'TÄNA':'TÄHTAEG';time.className='tg';}
+ const text=phEl('span','ph-tx',phTitle(item));text.append(phPill(item));
+ r1.append(time,text);row.append(r1);
+ if(hi){
+  const r2=phEl('div','ph-r2');
+  if(state==='now'){
+   const end=nextUpEnd(item),start=item.date+' '+item.time,total=Math.max(1,nextUpMinutes(start,end)),done=Math.min(total,Math.max(0,nextUpMinutes(start,now)));
+   r2.append(phEl('span','','Käib praegu · lõpeb '+nextUpSpan(Math.max(0,nextUpMinutes(now,end)))+' pärast'));
+   const bar=phEl('span','ph-pb'),fill=document.createElement('i');fill.style.width=Math.round(done/total*100)+'%';bar.append(fill);r2.append(bar);
+  }else if(state==='next')r2.append(phEl('span','','Kohe järgmine · algab '+nextUpSpan(Math.max(0,nextUpMinutes(now,item.date+' '+item.time)))+' pärast'));
+  else r2.append(phEl('span','','Homme esimene'));
+  row.append(r2);
+ }
+ row.onclick=event=>{event.stopPropagation();plakatClick(item.key,'.edit-item');};
+ return row;
+}
+async function phWxFill(box,date,fromHour){
+ try{
+  if(typeof fetch!=='function')return;
+  const w=plakatWxDay(await wxForecast(WX_HOME),date,fromHour);if(!w)return;
+  box.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true">'+WX_ICON[w.type]+'</svg>';
+  const col=document.createElement('div'),temp=document.createElement('b'),small=document.createElement('small');
+  temp.textContent=(w.hi>0?'+':'')+w.hi+'°';small.textContent=w.text;col.append(temp,small);box.append(col);
+  box.setAttribute('aria-label','Ilm: '+temp.textContent+', '+w.text);box.hidden=false;
+ }catch(_){}
+}
+// Üks fookuskiht: päis (silt), kuupäevarida (suur number, nädalapäev, kuu), ilm paremal, read.
+function phFill(layer,day,mode,today,items,now){
+ const info=phDay(day),g=plakatItems(day,today,items),withLate=day===today&&mode!=='eve',total=g.events.length+g.tasks.length+(withLate?g.late.length:0);
+ layer.style.setProperty('--c',info.color);layer.style.setProperty('--on',info.on);layer.dataset.ink=info.dark?'dark':'light';
+ layer.replaceChildren();
+ const body=phEl('div','ph-fbody');
+ const label=mode==='eve'?'Homseks valmis':mode==='sel'?(day===today?'Täna':day===addDays(today,1)?'Homme':'Valitud päev'):'Täna';
+ const hd=phEl('div','ph-hd');hd.append(phEl('span','ph-mono',label+' · '+(total?total+(total===1?' asi':' asja'):'vaba')));body.append(hd);
+ const date=phEl('div','ph-sdate');date.append(phEl('span','ph-sn',String(+day.slice(8,10))));
+ const sm=phEl('span','ph-sm');sm.append(phEl('span','ph-sw',info.name));
+ const month=new Intl.DateTimeFormat('et-EE',{month:'short',year:'numeric'}).format(new Date(day+'T12:00:00')).replace('.','');
+ sm.append(phEl('span','ph-sx',month+(day===today?' · täna':day===addDays(today,1)?' · homme':'')));date.append(sm);body.append(date);
+ const wx=phEl('div','ph-wx');wx.hidden=true;body.append(wx);
+ phWxFill(wx,day,day===today?Number(now.slice(11,13)):0);
+ const list=phRows(day,today,items,now,mode==='sel'?(day===today?'day':''):mode),max=4;
+ if(!list.length){body.append(phEl('div','ph-free','Vaba päev. Midagi pole planeeritud.'));}
+ else{list.slice(0,max).forEach(entry=>body.append(phRowNode(entry,day,today,now)));if(list.length>max)body.append(phEl('div','ph-more','+'+(list.length-max)+' veel'));}
+ layer.append(body);
+ return {total:total,list:list};
+}
+function phTabText(home,today,items,now){
+ if(home.mode==='eve')return 'Homseks valmis · '+(plakatItems(home.day,today,items).events.length+plakatItems(home.day,today,items).tasks.length)+' asja';
+ const events=plakatItems(today,today,items).events.filter(item=>item.time),run=events.find(item=>eventPhase(item,now)==='now'),next=events.find(item=>eventPhase(item,now)==='');
+ if(run)return 'Käib praegu '+run.time+' '+run.title;
+ if(next)return 'Kohe järgmine '+next.time+' '+next.title;
+ const g=plakatItems(today,today,items);return 'Täna · '+(g.events.length+g.tasks.length+g.late.length)+' asja';
+}
+// Päeva plakati sissetulek: number "lööb sisse", read ilmuvad ükshaaval (klass .ph-in kestab ~1 s).
+function phPageIn(page){
+ if(!page)return;
+ [...page.querySelectorAll('.pk-li,.pk-free,.pk-fn')].forEach((el,i)=>el.style.setProperty('--i',String(i)));
+ page.classList.add('ph-in');setTimeout(()=>page.classList.remove("ph-in"),750);
+}
+// Ülevaatelt päeva (või kuu) lehele: puudutatud plokk laieneb värvikihina üle ekraani, sulab sihtlehe taustaks ja leht tuleb sisse.
+// Ilma liikumiseta (prefers-reduced-motion või puuduv Web Animations) vahetub leht kohe.
+let plakatHomeBusy=false;
+function plakatHomeGoto(view,pager,idx,source){
+ if(plakatHomeBusy)return;
+ const finish=()=>{
+  view.classList.remove('week-open');plakatHomeSel='';plakatHomeOv='';
+  // Tagasinupp: päeva lehelt tagasi ülevaatele; ülesannete leht (kui oli lahti) sulgub.
+  if(typeof pkNav!=='undefined'){pkNav.drop('tasks');pkNav.push('day',plakatHomeBackToHome);}
+  try{if(plakatHomePaint)plakatHomePaint();}catch(_){}
+  plakatIndex=idx;
+  // Kui vaade pole veel nähtav (laius 0, nt just Sisestast tulles), oota kuni kuvatakse.
+  const apply=tries=>{if(!pager.clientWidth&&tries<40){requestAnimationFrame(()=>apply(tries+1));return;}pager.scrollLeft=idx*pager.clientWidth;plakatIndex=idx;pager.dispatchEvent(new Event('scroll'));phPageIn(pager.children[idx]);};
+  apply(0);
+ };
+ let morph=null;
+ try{
+  const reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(source&&!reduce&&typeof Element.prototype.animate==='function'){
+   const r=source.getBoundingClientRect(),vr=view.getBoundingClientRect(),cs=getComputedStyle(source),page=pager.children[idx];
+   const from={left:(r.left-vr.left)+'px',top:(r.top-vr.top)+'px',width:r.width+'px',height:r.height+'px',borderRadius:cs.borderRadius,backgroundColor:cs.backgroundColor};
+   const to={left:'0px',top:'0px',width:vr.width+'px',height:vr.height+'px',borderRadius:'0px',backgroundColor:page?getComputedStyle(page).backgroundColor:cs.backgroundColor};
+   morph=document.createElement('div');morph.className='ph-morph';Object.assign(morph.style,from);view.append(morph);
+   plakatHomeBusy=true;
+   const grow=morph.animate([from,to],{duration:270,easing:'cubic-bezier(.2,.9,.2,1)',fill:'forwards'});
+   grow.onfinish=()=>{
+    const home=view.querySelector('.pk-home');if(home)home.classList.add('ph-snap');
+    finish();
+    const fade=morph.animate([{opacity:1},{opacity:0}],{duration:170,fill:'forwards'});
+    fade.onfinish=()=>{morph.remove();if(home)home.classList.remove('ph-snap');plakatHomeBusy=false;};
+   };
+   return;
+  }
+ }catch(_){if(morph)morph.remove();plakatHomeBusy=false;}
+ finish();
+}
+// Tagasinupu tegevused (pkNav, nav-back.js): päeva lehelt ülevaatele, ülesannete lehe sulgemine, ülesannete lehe avamine kirje juurde.
+function plakatHomeBackToHome(){
+ const view=document.getElementById('plakatView');if(!view)return;
+ plakatHomeSel='';plakatHomeOpen=true;view.classList.add('week-open');
+ try{if(plakatHomePaint)plakatHomePaint();}catch(_){}
+}
+function plakatHomeCloseTasks(){
+ plakatHomeOv='';const open=document.querySelector('#plakatView .ph-tv');if(open)open.classList.remove('open');
+ if(typeof pkNav!=='undefined')pkNav.drop('tasks');
+}
+function plakatHomeShowTasks(key){
+ const view=document.getElementById('plakatView');if(!view)return;
+ plakatHomeOv='tasks';plakatHomeOpen=true;view.classList.add('week-open');
+ try{if(plakatHomePaint)plakatHomePaint();}catch(_){}
+ if(typeof pkNav!=='undefined')pkNav.push('tasks',plakatHomeCloseTasks);
+ if(key)setTimeout(()=>{const row=document.querySelector('#plakatView .ph-tk[data-key="'+key+'"]');if(!row)return;row.classList.add('pk-flash');setTimeout(()=>row.classList.remove('pk-flash'),1800);},400);
+}
+function plakatHomeSync(view,pager){
+ const home=view.querySelector('.pk-home');if(!home)return;
+ if(view.classList.contains('week-open')){const root=document.documentElement.style;root.setProperty('--pk-c',home.style.getPropertyValue('--fc'));root.setProperty('--pk-on',home.style.getPropertyValue('--fon'));}
+ else pager.dispatchEvent(new Event('scroll'));
+}
+// Ülesannete täisleht: ringid (märgi tehtuks), tähtajaga ja tähtajata.
+function phTasksPage(items,today,close){
+ const ov=phEl('div','ph-ov ph-tv');
+ const bar=phEl('div','ph-ovt');bar.append(phEl('span','ph-mono','Ülesanded'));ov.append(bar);
+ const open=phOpenTasks(items),count=open.filter(item=>!completing.has(item.key)).length;
+ const head=phEl('div','ph-ovh');head.append(phEl('b','',String(count)),phEl('small','','lahti'));ov.append(head);
+ const dated=open.filter(item=>item.deadline).sort((a,b)=>a.deadline.localeCompare(b.deadline)),undated=open.filter(item=>!item.deadline);
+ const section=(title,list)=>{
+  ov.append(phEl('div','ph-sec',title+' · '+list.filter(item=>!completing.has(item.key)).length));
+  if(!list.length){ov.append(phEl('div','ph-tk empty','Siin pole midagi.'));return;}
+  list.forEach(item=>{
+   const row=phEl('div','ph-tk'+(item.deadline&&item.deadline<today?' late':'')+(completing.has(item.key)?' done':''));row.dataset.key=item.key;
+   const ring=phEl('button','ph-ring');ring.type='button';ring.setAttribute('aria-label','Märgi tehtuks: '+item.title);
+   ring.innerHTML='<svg viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="11"/><path d="M7.5 13.5l4 4 7.5-8.5"/></svg>';
+   ring.onclick=event=>{event.stopPropagation();plakatClick(item.key,'.complete-button');};
+   const text=phEl('div','ph-tt'),title2=phEl('span','ph-ttl',phTitle(item));title2.append(phPill(item));text.append(title2);
+   const tomorrow=addDays(today,1);
+   text.append(phEl('small','',!item.deadline?'Tähtajata':item.deadline<today?'Üle tähtaja · '+plakatShort(item.deadline):item.deadline===today?'Täna':item.deadline===tomorrow?'Homme':'Tähtaeg '+plakatShort(item.deadline)));
+   const rel=plakatRelatedLink(item,'ph-rel');if(rel)text.append(rel);
+   row.append(ring,text);row.onclick=()=>plakatClick(item.key,'.edit-item');ov.append(row);
+  });
+ };
+ section('Tähtajaga',dated);section('Tähtajata',undated);
+ // Tagasilink alla, pöidla ulatusse (menüüpilli kohale); lühikese loendi korral ekraani põhjas, pikal loendil kleepub kerimisel.
+ const back=phEl('button','ph-back','‹ Ülevaade');back.type='button';back.onclick=close;ov.append(back);
+ return ov;
+}
+function plakatHome(view,pager,items,today){
+ const now=tallinnNow(),root=phEl('div','pk-home');root.setAttribute('aria-label','Pere ülevaade');
+ root.addEventListener('click',event=>{if(event.target===root)view.classList.remove('week-open');});
+ // fookuszoon
+ const zone=phEl('div','ph-zone'),a=phEl('section','ph-a'),b=phEl('section','ph-b'),top=phEl('div','pk-top');
+ top.append(phEl('span','','PERE'),plakatThemeButton());
+ const tab=phEl('button','ph-tab');tab.type='button';
+ a.setAttribute('role','button');a.tabIndex=0;b.setAttribute('role','button');b.tabIndex=0;
+ const aWrap=phEl('div','ph-layer'),bWrap=phEl('div','ph-layer');a.append(top,tab,aWrap);b.append(bWrap);zone.append(a,b);
+ // nädal
+ const week=phEl('section','ph-slab ph-sb'),whd=phEl('div','ph-hd');whd.append(phEl('span','ph-mono','See nädal'));
+ const badge=phEl('span','ph-bd');badge.append(phEl('span','',plakatShort(today)+' – '+plakatShort(addDays(today,6))));whd.append(badge);
+ const paper=phEl('div','ph-paper'),chips=phEl('div','ph-chips');paper.append(chips);week.append(whd,paper);
+ // alumine rida: ülesanded + kuu
+ const row2=phEl('div','ph-row2'),tasks=phEl('section','ph-slab ph-sc'),monthSlab=phEl('section','ph-slab ph-sd');
+ tasks.setAttribute('role','button');tasks.tabIndex=0;monthSlab.setAttribute('role','button');monthSlab.tabIndex=0;
+ row2.append(tasks,monthSlab);
+ let tov=phTasksPage(items,today,plakatHomeCloseTasks);
+ // kuu slaab: täpiruudustik
+ {
+  const ym=today.slice(0,7),first=ym+'-01',y=+ym.slice(0,4),m=+ym.slice(5,7);
+  const count=new Date(Date.UTC(y,m,0,12)).getUTCDate(),offset=(new Date(first+'T12:00:00Z').getUTCDay()+6)%7,total=Math.ceil((offset+count)/7)*7;
+  const byDay=new Map();items.filter(item=>item.kind==='event'&&item.date&&item.date.slice(0,7)===ym).forEach(item=>{if(!byDay.has(item.date))byDay.set(item.date,[]);byDay.get(item.date).push(item);});
+  const mhd=phEl('div','ph-hd');mhd.append(phEl('span','ph-mono','Kuu'));const mb=phEl('span','ph-bd');mb.append(phEl('span','',(items.filter(item=>item.kind==='event'&&item.date&&item.date.slice(0,7)===ym).length)+' üritust'));mhd.append(mb);
+  const mName=new Intl.DateTimeFormat('et-EE',{month:'long'}).format(new Date(first+'T12:00:00'));
+  const grid=phEl('div','ph-dg');
+  for(let k=0;k<total;k++){
+   const dayNo=k-offset+1,dot=phEl('span','ph-dt');
+   if(dayNo<1||dayNo>count)dot.classList.add('o');
+   else{const date=ym+'-'+String(dayNo).padStart(2,'0'),list=byDay.get(date)||[];if(list.length){dot.classList.add('ev','pk-'+phSlug(list[0]));}if(date===today)dot.classList.add('td');}
+   dot.style.setProperty('--w',String(Math.round(Math.hypot(k%7-(offset+(+today.slice(8,10))-1)%7,Math.floor(k/7)-Math.floor((offset+(+today.slice(8,10))-1)/7))*2)));
+   grid.append(dot);
+  }
+  const hint=phEl('div','ph-hint');hint.append(phEl('span','','Ava kuu'),phEl('span','','›'));
+  monthSlab.append(mhd,phEl('div','ph-big',mName.charAt(0).toUpperCase()+mName.slice(1)),grid,hint);
+  monthSlab.onclick=()=>plakatHomeGoto(view,pager,7,monthSlab);
+  monthSlab.onkeydown=event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();monthSlab.onclick();}};
+ }
+ root.append(zone,week,row2,tov);
+ const paint=()=>{
+  const n=tallinnNow(),info=phHome(items,today,n);
+  const sel=plakatHomeSel&&plakatHomeSel!==info.day&&plakatHomeSel>=today&&plakatHomeSel<=addDays(today,6)?plakatHomeSel:'';
+  if(!sel)plakatHomeSel='';
+  phFill(aWrap,info.day,info.mode,today,items,n);
+  const ai=phDay(info.day);a.style.setProperty('--c',ai.color);a.style.setProperty('--on',ai.on);a.dataset.ink=ai.dark?'dark':'light';
+  if(sel){phFill(bWrap,sel,'sel',today,items,n);const bi=phDay(sel);b.style.setProperty('--c',bi.color);b.style.setProperty('--on',bi.on);b.dataset.ink=bi.dark?'dark':'light';}
+  zone.classList.toggle('b-open',!!sel);
+  const num=String(+info.day.slice(8,10));
+  tab.replaceChildren(phEl('b','',num),phEl('span','ph-tt2',phTabText(info,today,items,n)),phEl('span','','›'));
+  const focus=sel||info.day,fi=phDay(focus);
+  root.style.setProperty('--dc',fi.color);root.style.setProperty('--fc',fi.color);root.style.setProperty('--fon',fi.on);
+  // nädala chipid
+  chips.replaceChildren();
+  for(let i=0;i<7;i++){
+   const day=addDays(today,i),di=phDay(day),g=plakatItems(day,today,items),all=[...g.events,...g.tasks,...(i===0?g.late:[])];
+   const chip=phEl('button','ph-ch'+(all.length?'':' free0')+(i===0?' td':'')+(day===focus?' sel':''));chip.type='button';chip.style.setProperty('--c',di.color);chip.style.setProperty('--on',di.on);chip.style.setProperty('--r',String(i));
+   chip.setAttribute('aria-label',di.name+' '+(+day.slice(8,10))+(all.length?', '+all.length+' asja':', vaba'));
+   chip.append(phEl('small','',di.letter),phEl('b','',String(+day.slice(8,10))));
+   const dots=phEl('span','ph-dots');[...new Set(all.map(phSlug))].slice(0,3).forEach(slug=>dots.append(phEl('i','pk-'+slug)));
+   if(g.tasks.length||(i===0&&g.late.length))dots.append(phEl('i','t'));
+   chip.append(dots);chip.onclick=()=>{plakatHomeSel=day===info.day?'':day;paint();};chips.append(chip);
+  }
+  // ülesannete slaab (ilma ringideta)
+  const open=phOpenTasks(items).filter(item=>!completing.has(item.key)),dated=open.filter(item=>item.deadline).sort((x,y)=>x.deadline.localeCompare(y.deadline)),und=open.filter(item=>!item.deadline).length;
+  tasks.replaceChildren();
+  const thd=phEl('div','ph-hd');thd.append(phEl('span','ph-mono','Ülesanded'));const tb=phEl('span','ph-bd');tb.append(phEl('span','',open.length?open.length+' lahti':'kõik tehtud ✓'));thd.append(tb);tasks.append(thd);
+  const tl=phEl('div','ph-trs');
+  dated.slice(0,2).forEach(item=>{const r=phEl('div','ph-tr'+(item.deadline<today?' late':''));r.append(phEl('span','ph-ttx',phTitle(item)),phEl('small','',item.deadline<today?'Üle tähtaja · '+plakatShort(item.deadline):item.deadline===today?'Täna':item.deadline===addDays(today,1)?'Homme':'Tähtaeg '+plakatShort(item.deadline)));tl.append(r);});
+  if(!dated.length)tl.append(phEl('div','ph-tr',open.length?'Tähtajaga ülesandeid pole.':'Kõik tehtud.'));
+  tasks.append(tl);const th=phEl('div','ph-hint');th.append(phEl('span','',und?und+' tähtajata':'ava'),phEl('span','','›'));tasks.append(th);
+  // ülesannete leht uuesti (loendurid)
+  const fresh=phTasksPage(items,today,plakatHomeCloseTasks);fresh.classList.toggle('open',plakatHomeOv==='tasks');
+  tov.replaceWith(fresh);tov=fresh;
+  plakatHomeSync(view,pager);
+ };
+ tasks.onclick=()=>{plakatHomeOv='tasks';tov.classList.add('open');if(typeof pkNav!=='undefined')pkNav.push('tasks',plakatHomeCloseTasks);};
+ tasks.onkeydown=event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();tasks.onclick();}};
+ a.onclick=()=>{if(!zone.classList.contains('b-open')){const info=phHome(items,today,tallinnNow());plakatHomeGoto(view,pager,Math.max(0,Math.min(6,phDaysBetween(today,info.day))),a);}};
+ b.onclick=()=>{if(plakatHomeSel)plakatHomeGoto(view,pager,Math.max(0,Math.min(6,phDaysBetween(today,plakatHomeSel))),b);};
+ tab.onclick=event=>{event.stopPropagation();plakatHomeSel='';paint();};
+ [a,b].forEach(layer=>{layer.onkeydown=event=>{if((event.key==='Enter'||event.key===' ')&&event.target===layer){event.preventDefault();layer.onclick();}};});
+ if(plakatHomeOv==='tasks')tov.classList.add('open','instant');
+ if(!plakatHomeAnimated){root.classList.add('ph-go');plakatHomeAnimated=true;}
+ paint();
+ plakatHomePaint=paint;
+ return root;
+}
+if(typeof setInterval==='function')setInterval(()=>{try{const home=document.getElementById('pkHome')||document.querySelector('#plakatView .pk-home');if(home&&document.visibilityState==='visible'&&plakatHomePaint&&document.querySelector('#plakatView.week-open'))plakatHomePaint();}catch(_){}},30000);
+// === /ÜLEVAADE ===
+// === TAGASINUPP === Ajaloo haldur: iga ava kiht (otsing, Sisesta/E-kirjad vahekaart, ülesannete leht, päeva leht ülevaatelt, muutmine)
+// lisab brauseri ajaloo kirje, nii et telefoni tagasinupp/-žest (popstate) sulgeb pealmise kihi, mitte ei sulge äppi. Juurtasemel (ülevaade
+// ilma kihtideta) toimib tagasinupp nagu varem. Kiht, mille kasutaja ise sulgeb, eemaldab oma kirje (drop). Operatsioonid on järjekorras:
+// history.back() on asünkroonne, seega järgmine pushState ootab, kuni tagasiliikumine on lõppenud.
+const pkNav={
+ stack:[],queue:[],ignore:0,busy:false,timer:0,
+ has(name){return this.stack.some(entry=>entry.name===name&&!entry.dead)||this.queue.some(entry=>entry.name===name);},
+ push(name,close){
+  if(this.has(name))return;
+  const entry={name:name,close:close,dead:false};
+  const run=()=>{this.stack.push(entry);try{history.pushState({pkNav:this.stack.length},'');}catch(_){}};
+  if(this.busy)this.queue.push({name:name,run:run});else run();
+ },
+ drop(name){
+  const waiting=this.queue.findIndex(entry=>entry.name===name);if(waiting>=0){this.queue.splice(waiting,1);return;}
+  const index=this.stack.map(entry=>entry.name).lastIndexOf(name);
+  if(index<0||this.stack[index].dead)return;
+  if(index===this.stack.length-1){this.stack.pop();this.back();}else this.stack[index].dead=true;
+ },
+ back(){
+  this.ignore++;this.busy=true;
+  try{history.back();}catch(_){this.ignore=0;this.settle();return;}
+  clearTimeout(this.timer);this.timer=setTimeout(()=>{this.ignore=0;this.settle();},600);
+ },
+ settle(){this.busy=false;clearTimeout(this.timer);this.queue.splice(0).forEach(job=>job.run());}
+};
+if(typeof window!=='undefined'&&window.addEventListener){
+ window.addEventListener('popstate',()=>{
+  if(pkNav.ignore>0){pkNav.ignore--;if(pkNav.ignore===0)pkNav.settle();return;}
+  const top=pkNav.stack.pop();
+  if(!top)return;
+  if(top.dead){try{history.back();}catch(_){}return;}
+  try{top.close();}catch(_){}
+ });
+}
+// Vahekaart (Sisesta/E-kirjad) ja otsing: tagasinupp viib Pere ülevaatele / sulgeb otsingu.
+function pkNavInit(){
+ try{
+  const overview=document.getElementById('overviewView'),search=document.getElementById('searchOverlay');
+  if(overview){
+   const sync=()=>{if(overview.hidden)pkNav.push('tab',()=>{showView('overview');});else pkNav.drop('tab');};
+   new MutationObserver(sync).observe(overview,{attributes:true,attributeFilter:['hidden']});if(overview.hidden)sync();
+  }
+  if(search){
+   const sync=()=>{if(!search.hidden)pkNav.push('search',()=>{if(typeof closeSearch==='function')closeSearch();});else pkNav.drop('search');};
+   new MutationObserver(sync).observe(search,{attributes:true,attributeFilter:['hidden']});
+  }
+ }catch(_){}
+}
+pkNavInit();
+// === /TAGASINUPP ===
 function showViewNow(view){
  if(busy||loadingImages)return;
  $('inputView').hidden=view!=='input';$('overviewView').hidden=view!=='overview';$('mailView').hidden=view!=='mail';
@@ -3774,6 +4346,8 @@ function syncCalDock(){
  else if(calOpen)closeCalendar(true);
 }
 function focusItemKey(key,instant){
+ // Plakatis (plakat.js) viib kirjeni päeva plakat / Kuu / ülesannete leht; klassikalises vaates scrollib kaardini.
+ if(typeof plakatFocusKey==='function'&&plakatFocusKey(key)){try{closeCalendar();}catch(_){}return;}
  const card=overviewEventCards.get(key)||overviewTaskCards.get(key);
  closeCalendar();
  if(!card){overviewStatus('Kirjet ei leitud.',true);return;}
