@@ -1682,6 +1682,94 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 :root[data-plakat="1"][data-plakat="1"][data-plakat="1"][data-plakat="1"]:has(#mailView:not([hidden])){--pv-c:#34d1bf;--pv-on:#05332e;--pv-bg:#34d1bf;--pv-fg:#05332e;--pv-head:#05332e;--pv-field:rgba(255,255,255,.55);--pv-field-fg:#05332e;--pv-err:#a3001a}
 :root[data-plakat="1"][data-plakat="1"][data-plakat="1"][data-plakat="1"][data-theme="dark"]:has(#mailView:not([hidden])){--pv-c:#cdb8ff;--pv-on:#1f1650;--pv-bg:#17173a;--pv-fg:#fff;--pv-head:#cdb8ff;--pv-field:rgba(255,255,255,.09);--pv-field-fg:#fff;--pv-err:#ff8a80}
 @media (prefers-color-scheme:dark){:root[data-plakat="1"][data-plakat="1"][data-plakat="1"][data-plakat="1"]:not([data-theme="light"]):has(#mailView:not([hidden])){--pv-c:#cdb8ff;--pv-on:#1f1650;--pv-bg:#17173a;--pv-fg:#fff;--pv-head:#cdb8ff;--pv-field:rgba(255,255,255,.09);--pv-field-fg:#fff;--pv-err:#ff8a80}}
+
+/* ===== Plakat: KUU leht (asendab "Hiljem"): kreemjas paber, päeva ruudud inimese värvi täppidega, kattuvuse "!" , püha, vaheaeg; kattuvuse hoiatus ka päeva ridades ===== */
+:root[data-theme="dark"] #plakatView .pk-month{background:#101014;color:#f3eee3}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #plakatView .pk-month{background:#101014;color:#f3eee3}}
+#plakatView .pk-month{--mfg:#14130f;--mbg:#f3eee3;--band:rgba(20,19,15,.08);--mline:rgba(20,19,15,.22);--late:#d4351c;--pill:rgba(20,19,15,.1);--warnbg:#14130f;--warnfg:#ffd24a;color:#14130f}
+:root[data-theme="dark"] #plakatView .pk-month{--mfg:#f3eee3;--mbg:#101014;--band:rgba(255,255,255,.08);--mline:rgba(255,255,255,.2);--late:#ff7a66;--pill:rgba(255,255,255,.12);--warnbg:#ffd24a;--warnfg:#17171c}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #plakatView .pk-month{--mfg:#f3eee3;--mbg:#101014;--band:rgba(255,255,255,.08);--mline:rgba(255,255,255,.2);--late:#ff7a66;--pill:rgba(255,255,255,.12);--warnbg:#ffd24a;--warnfg:#17171c}}
+#plakatView .pk-month .pk-theme{background:var(--pill);color:inherit}
+#plakatView .pk-mh{display:flex;align-items:flex-end;justify-content:space-between;margin-top:8px;flex:none}
+#plakatView .pk-mh b{font:800 clamp(72px,24vw,96px)/.8 'Sora',sans-serif;letter-spacing:-.07em;margin-left:-4px}
+#plakatView .pk-mh small{font:700 13px/1 'Space Mono',monospace;letter-spacing:2px;opacity:.85;margin-bottom:2px}
+#plakatView .pk-month .pk-st b{background:var(--mfg);color:var(--mbg)}
+#plakatView .pk-dow{display:grid;grid-template-columns:repeat(7,1fr);font:700 9.5px/1 'Space Mono',monospace;letter-spacing:.5px;opacity:.6;margin-bottom:5px;text-align:center;flex:none}
+#plakatView .pk-grid{display:grid;grid-template-columns:repeat(7,1fr);row-gap:2px;flex:none;touch-action:pan-y;user-select:none}
+#plakatView .pk-c{height:clamp(36px,5.2vh,44px);border:0;background:transparent;color:inherit;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:4px 0 0;gap:3px;border-radius:11px;min-height:0;box-shadow:none;font-family:'Sora',sans-serif}
+#plakatView .pk-c b{font:700 14px/1 'Sora',sans-serif;letter-spacing:-.3px}
+#plakatView .pk-c.out{opacity:.28}
+#plakatView .pk-c.past b{opacity:.55}
+#plakatView .pk-c.brk{background:var(--band);border-radius:0}
+#plakatView .pk-c.brk.bl{border-radius:11px 0 0 11px}#plakatView .pk-c.brk.br{border-radius:0 11px 11px 0}#plakatView .pk-c.brk.bl.br{border-radius:11px}
+#plakatView .pk-c.hol b{color:var(--late)}
+#plakatView .pk-c.hol:after{content:'';position:absolute;left:50%;bottom:4px;width:14px;height:2px;background:var(--late);transform:translateX(-50%);border-radius:1px}
+#plakatView .pk-c.over b{color:var(--late);opacity:1}
+#plakatView .pk-c.today{background:var(--mfg);color:var(--mbg)}
+#plakatView .pk-c.today b{opacity:1;color:var(--mbg)}
+#plakatView .pk-c.sel{box-shadow:inset 0 0 0 2px var(--mfg)}
+#plakatView .pk-c.today.sel{box-shadow:0 0 0 2px var(--mbg),0 0 0 4px var(--mfg)}
+#plakatView .pk-dd{display:flex;gap:3px;height:6px;align-items:center}
+#plakatView .pk-dd i{width:6px;height:6px;border-radius:50%;display:block;background:#bbb}
+#plakatView .pk-dd i.pk-eia,#plakatView .pk-lg.pk-eia{background:#ffd24a}#plakatView .pk-dd i.pk-otto,#plakatView .pk-lg.pk-otto{background:#8cc7ff}#plakatView .pk-dd i.pk-elle,#plakatView .pk-lg.pk-elle{background:#ffb0d6}#plakatView .pk-dd i.pk-pere,#plakatView .pk-lg.pk-pere{background:#cdb8ff}
+#plakatView .pk-dd i.pk-tk,#plakatView .pk-lg.pk-tk{border-radius:2px;background:transparent;box-shadow:inset 0 0 0 1.5px currentColor}
+#plakatView .pk-c .pk-w{position:absolute;right:4px;top:3px;width:12px;height:12px;border-radius:50%;background:var(--warnbg);color:var(--warnfg);font:800 8px/12px 'Sora',sans-serif;text-align:center}
+#plakatView .pk-mnav{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:8px 0 0;flex:none}
+#plakatView .pk-mbtn{min-height:38px;padding:0 14px;border-radius:99px;border:0;background:var(--pill);color:inherit;font:700 12px/1 'Sora',sans-serif;box-shadow:none}
+#plakatView .pk-mbtn:disabled{opacity:.3}
+#plakatView .pk-mtoday{background:var(--mfg);color:var(--mbg)}
+#plakatView .pk-month .pk-msheet{margin:10px -20px 0;padding:10px 20px calc(110px + env(safe-area-inset-bottom));border-top:1.5px solid var(--mline);flex:1;min-height:0}
+#plakatView .pk-month .pk-li{border-top-color:var(--mline)}
+#plakatView .pk-month .pk-li.late time{background:var(--late);color:#fff}
+#plakatView .pk-month .pk-li time,#plakatView .pk-month .pk-li h3{color:inherit}
+#plakatView .pk-month .pk-chk{color:inherit}
+#plakatView .pk-month .pk-li.done .pk-chk{background:var(--mfg);color:var(--mbg)}
+#plakatView .pk-month .pk-loc,#plakatView .pk-month .pk-li .wx{background:var(--pill)!important}
+#plakatView .pk-dh{display:flex;justify-content:space-between;align-items:center;margin-bottom:2px}
+#plakatView .pk-dh span{font:700 11px/1 'Space Mono',monospace;letter-spacing:.7px;text-transform:uppercase}
+#plakatView .pk-open{font:700 11.5px/1 'Sora',sans-serif;color:var(--mbg);background:var(--mfg);border:0;border-radius:99px;padding:9px 13px;min-height:0;box-shadow:none}
+#plakatView .pk-off{display:inline-block;margin:8px 0 2px;font:600 11.5px/1 'Sora',sans-serif;background:var(--band);border-radius:99px;padding:6px 10px}
+#plakatView .pk-month .pk-fn{padding:12px 0}
+#plakatView .pk-undated{margin-top:12px}
+#plakatView .pk-leg{display:flex;gap:10px;flex-wrap:wrap;font:600 10px/1 'Sora',sans-serif;opacity:.8;margin:14px 0 0}
+#plakatView .pk-leg span{display:flex;align-items:center;gap:4px}
+#plakatView .pk-lg{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:-1px}
+#plakatView .pk-lw{width:12px;height:12px;border-radius:50%;background:var(--warnbg);color:var(--warnfg);font:800 8px/12px 'Sora',sans-serif;text-align:center;display:inline-block}
+#plakatView .pk-lh{width:14px;height:2px;background:var(--late);display:inline-block}
+#plakatView .pk-lb{width:14px;height:9px;border-radius:3px;background:var(--band);display:inline-block;box-shadow:inset 0 0 0 1px var(--mline)}
+#plakatView .pk-warn{display:inline-flex;align-items:center;min-height:26px;padding:0 10px;border-radius:99px;background:#14130f;color:#ffd24a;font:700 11px/1.1 'Sora',sans-serif;max-width:100%}
+:root[data-theme="dark"] #plakatView .pk-warn{background:#ffd24a;color:#17171c}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #plakatView .pk-warn{background:#ffd24a;color:#17171c}}
+#plakatView .pk-month .pk-warn{background:var(--warnbg);color:var(--warnfg)}
+#plakatView .pk-week .pk-wword{min-width:0;font-size:30px}
+/* Kuu: tihedam, et valitud päeva read mahuksid. */
+#plakatView .pk-mh{margin-top:2px}
+#plakatView .pk-mh b{font-size:clamp(58px,18vw,70px)}
+#plakatView .pk-st{margin:10px 0 6px}
+#plakatView .pk-c{height:clamp(32px,4.5vh,38px);padding-top:3px;gap:2px}
+#plakatView .pk-c b{font-size:13.5px}
+#plakatView .pk-mnav{margin-top:6px}
+#plakatView .pk-mbtn{min-height:34px;padding:0 12px;font-size:11.5px}
+#plakatView .pk-month .pk-msheet{margin-top:8px;padding-top:8px;overflow-y:auto}
+/* Päeva ilm Plakati päises (plakat.js PÄEVA ILM). Paigutus <html data-pkwx>: a = staatuse real, b = suur numbri kõrval, c = ülaribal (vaikimisi). */
+#plakatView .pk-wx{display:none;align-items:center;gap:5px;white-space:nowrap;color:inherit}
+#plakatView .pk-wx svg{fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+:root:not([data-pkwx]) #plakatView .pk-wx-c:not([hidden]),:root[data-pkwx="c"] #plakatView .pk-wx-c:not([hidden]),:root[data-pkwx="a"] #plakatView .pk-wx-a:not([hidden]){display:inline-flex}
+:root[data-pkwx="b"] #plakatView .pk-wx-b:not([hidden]){display:grid}
+#plakatView .pk-wx-c{margin:0 10px 0 auto;font:700 12px/1 'Sora',sans-serif;letter-spacing:.2px}
+#plakatView .pk-wx-c svg{width:17px;height:17px}
+#plakatView .pk-wx-a{margin-left:auto;font:inherit}
+#plakatView .pk-wx-a svg{width:15px;height:15px}
+/* B: suurus on --s (0.3–1); plakat.js plakatWxFit sobitab selle numbri kõrval vaba ruumiga (ühekohaline päev = täissuurus). */
+#plakatView .pk-wx-b{--s:.7;position:absolute;left:0;top:30px;grid-template-columns:auto auto;align-items:center;column-gap:calc(var(--s) * 12px);row-gap:calc(var(--s) * 6px);letter-spacing:0;line-height:1;text-align:left}
+#plakatView .pk-wx-b svg{grid-row:1 / span 2;grid-column:1;width:calc(var(--s) * 64px);height:calc(var(--s) * 64px);stroke-width:1.4}
+#plakatView .pk-wx-b b{grid-column:2;grid-row:1;align-self:end;font:300 calc(var(--s) * 32px)/1 'Sora',sans-serif;letter-spacing:0}
+#plakatView .pk-wx-b .pk-wxt{grid-column:2;grid-row:2;align-self:start;font:400 max(10px,calc(var(--s) * 11px))/1.25 'Space Mono',ui-monospace,monospace;letter-spacing:.6px;text-transform:uppercase;max-width:calc(var(--s) * 96px);white-space:normal}
+/* Kitsas ruum (kahekohalised päevad): ikoon, kraadid ja tekst üksteise all. */
+#plakatView .pk-wx-b.stack{grid-template-columns:auto;justify-items:center;row-gap:calc(var(--s) * 8px);text-align:center}
+#plakatView .pk-wx-b.stack svg{grid-row:1;grid-column:1}
+#plakatView .pk-wx-b.stack b{grid-row:2;grid-column:1;align-self:center}
+#plakatView .pk-wx-b.stack .pk-wxt{grid-row:3;grid-column:1;align-self:center;max-width:calc(var(--s) * 110px)}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
@@ -2433,6 +2521,7 @@ function plakatRow(item,kind,day,today){
   link.title='Ava '+app;link.setAttribute('aria-label','Ava '+app+': '+item.location);link.innerHTML=pinIcon;link.append(document.createTextNode(item.location));link.onclick=event=>event.stopPropagation();meta.append(link);
  }
  if(bits.length)meta.append(document.createTextNode(bits.join(' · ')));
+ if(kind==='event'&&plakatConf.has(item.key)){const list=plakatConf.get(item.key),warn=document.createElement('span');warn.className='pk-warn';warn.textContent='⚠ Kattub: '+list[0]+(list.length>1?' +'+(list.length-1):'');meta.append(warn);}
  if(kind==='event'&&typeof isOutdoorEvent==='function'&&typeof weatherChip==='function'&&savedOverview&&item.date>=savedOverview.today&&item.date<=addDays(savedOverview.today,6)&&isOutdoorEvent(item)){try{meta.append(weatherChip(item));}catch(_){}}
  body.append(meta);
  // Märkused: sama lahtiklõpsatav "Märkused" nagu klassikalises vaates (lingid ja pildid sees); rea puudutus avab muutmise, märkuste puudutus ainult laiendab.
@@ -2459,6 +2548,156 @@ function plakatWeekLines(entries,today){
  return wrap;
 }
 
+// === PÄEVA ILM === Plakati päises päeva ilm (Tallinn, Open-Meteo; sama vahemälu wxForecast/wxType/wxWet mis ürituse ilmal).
+// Päev = kell 8–20, täna praegusest tunnist. Viga, puuduv võrk või päev prognoosist väljas: ei näidata. Paigutus: <html data-pkwx="a|b|c">
+// (a = staatuse real, b = suur numbri kõrval, c = ülaribal; vaikimisi c).
+function plakatWxDay(hourly,date,fromHour){
+ if(!hourly||!hourly.time)return null;
+ const temps=[],wet=[];let sun=0,snow=false,n=0,wind=0;
+ for(let h=Math.max(8,fromHour||0);h<=20;h++){
+  const at=hourly.time.indexOf(date+'T'+String(h).padStart(2,'0')+':00');if(at<0)continue;
+  n++;temps.push(hourly.temperature_2m[at]);const type=wxType(hourly.weather_code[at]);
+  if(type==='snow')snow=true;if(type==='sun')sun++;if(wxWet(hourly,at))wet.push(h);wind=Math.max(wind,hourly.wind_speed_10m[at]||0);
+ }
+ if(!n)return null;
+ const type=snow?'snow':wet.length>=2?'rain':sun*2>=n?'sun':'cloud';
+ const span=wet.length?wet[0]+'–'+(wet[wet.length-1]+1):'';
+ let text=type==='snow'?'lumi':type==='rain'?(wet.length>=n-1?'vihmane':'vihm '+span):type==='sun'?'päikeseline':'pilves';
+ if(wind>=10)text+=' · tuuline';
+ return {hi:Math.round(Math.max(...temps)),lo:Math.round(Math.min(...temps)),type:type,text:text};
+}
+function plakatWxEls(){
+ const make=v=>{const el=document.createElement('span');el.className='pk-wx pk-wx-'+v;el.hidden=true;return el;};
+ return {a:make('a'),b:make('b'),c:make('c')};
+}
+// B-paigutus: ilm on tsentreeritud numbri numbrite ja vertikaalse nädalapäeva vahele; skaleerib (--s 0.3–1), et ruumi mahtuda.
+function plakatWxFit(el){
+ try{
+  const num=el.parentNode;if(!num||el.hidden||!num.firstChild)return;
+  const base=num.getBoundingClientRect(),range=document.createRange();range.selectNodeContents(num.firstChild);
+  const from=range.getBoundingClientRect().right-base.left,to=num.querySelector('small').getBoundingClientRect().left-base.left,room=to-from-16;
+  const measure=()=>{el.style.setProperty('--s','1');el.style.left='0px';const w=el.getBoundingClientRect().width;return w?Math.max(.3,Math.min(1,room/w)):0;};
+  // Ikoon + temperatuur/tekst kõrvuti (.stack puudub); kui see jääks alla 62% suurusest, läheb tekst ikooni alla (kitsas ruum, nt päevad 10–30).
+  el.classList.remove('stack');let s=measure();if(!s)return;
+  if(s<.62){el.classList.add('stack');s=measure();if(!s)return;}
+  el.style.setProperty('--s',String(s));
+  const fit=el.getBoundingClientRect(),left=from+(to-from-fit.width)/2;
+  el.style.left=Math.max(from+4,left)+'px';
+  // Püstiselt numbri tegeliku kirjapildi (baasjoon − numbri kõrgus) keskele.
+  const probe=document.createElement('span');probe.style.cssText='display:inline-block;width:0;height:0';num.insertBefore(probe,num.querySelector('small'));
+  const baseY=probe.getBoundingClientRect().bottom-base.top;probe.remove();
+  const ctx=document.createElement('canvas').getContext('2d');ctx.font=getComputedStyle(num).font;
+  const ink=ctx.measureText(num.firstChild.textContent).actualBoundingBoxAscent;
+  if(ink>0&&baseY>0)el.style.top=Math.round(baseY-ink/2-fit.height/2)+'px';
+ }catch(_){}
+}
+function plakatWxWatch(el){
+ const num=el.parentNode;if(!num)return;
+ plakatWxFit(el);
+ try{if(typeof ResizeObserver==='function')new ResizeObserver(()=>plakatWxFit(el)).observe(num);}catch(_){}
+}
+async function plakatWxFill(els,date,fromHour){
+ try{
+  if(typeof fetch!=='function')return;
+  const w=plakatWxDay(await wxForecast(WX_HOME),date,fromHour);if(!w)return;
+  const deg=t=>(t>0?'+':'')+t+'°',icon='<svg viewBox="0 0 24 24" aria-hidden="true">'+WX_ICON[w.type]+'</svg>';
+  const label='Ilm: '+deg(w.hi)+(w.lo!==w.hi?', madalaim '+deg(w.lo):'')+', '+w.text;
+  els.a.innerHTML=icon;els.a.append(deg(w.hi));
+  els.b.innerHTML=icon+'<b></b><span class="pk-wxt"></span>';els.b.querySelector('b').textContent=deg(w.hi);els.b.querySelector('.pk-wxt').textContent=w.text;
+  els.c.innerHTML=icon;els.c.append(deg(w.hi)+' · '+w.text);
+  Object.values(els).forEach(el=>{el.className=el.className.replace(/ wx-\w+/g,'')+' wx-'+w.type;el.setAttribute('aria-label',label);el.title=label;el.hidden=false;});
+  plakatWxWatch(els.b);
+ }catch(_){}
+}
+
+// === KUU (asendab "Hiljem" lehe) === klassikalise kalendri loogika (calOff, calSchoolBreaks, eventConflicts, calDay) Plakati keeles.
+let plakatMonth='',plakatSel='',plakatConf=new Map();
+function plakatMonthData(items,today){
+ const minMonth=calMinMonth(),byDay=new Map(),undated=[];
+ items.forEach(item=>{
+  if(item.kind==='event'){if(!item.date||item.date.slice(0,7)<minMonth)return;const d=calDay(item);if(!byDay.has(d))byDay.set(d,{events:[],tasks:[]});byDay.get(d).events.push(item);}
+  else if(['task','invoice'].includes(item.kind)&&(item.status!=='Tehtud'||completing.has(item.key))){
+   if(!item.deadline){undated.push(item);return;}
+   const d=item.deadline;if(!byDay.has(d))byDay.set(d,{events:[],tasks:[]});byDay.get(d).tasks.push(item);
+  }
+ });
+ return {byDay,undated};
+}
+function plakatMonthDraw(page,view,pager,items,today){
+ const {byDay,undated}=plakatMonthData(items,today);
+ page.replaceChildren();
+ const el=(tag,cls,text)=>{const node=document.createElement(tag);if(cls)node.className=cls;if(text!==undefined)node.textContent=text;return node;};
+ const [y,m]=plakatMonth.split('-').map(Number);
+ const top=el('div','pk-top');top.append(el('span','','PERE'),plakatThemeButton());
+ const head=el('div','pk-mh');const abbr=['Jaan','Veebr','Märts','Apr','Mai','Juuni','Juuli','Aug','Sept','Okt','Nov','Dets'][m-1];
+ head.append(el('b','',abbr),el('small','',String(y)));
+ const first=plakatMonth+'-01',last=plakatMonth+'-31',brk=calSchoolBreaks().find(b=>b.from<=last&&b.to>=first);
+ let evCount=0,tkCount=0;byDay.forEach((entry,d)=>{if(d.slice(0,7)===plakatMonth){evCount+=entry.events.length;tkCount+=entry.tasks.length;}});
+ const st=el('div','pk-st');st.append(el('span','',(brk?brk.name:calMonthLabel(plakatMonth)).toUpperCase()),el('b','',evCount||tkCount?evCount+' üritust · '+tkCount+' ül.':'tühi kuu'));
+ const dow=el('div','pk-dow');['E','T','K','N','R','L','P'].forEach(x=>dow.append(el('span','',x)));
+ const grid=el('div','pk-grid');
+ const shift=delta=>{const next=calShift(plakatMonth,delta);if(next<calMinMonth())return;plakatMonth=next;plakatSel=next===today.slice(0,7)?today:next+'-01';plakatMonthDraw(page,view,pager,items,today);};
+ const offset=(new Date(Date.UTC(y,m-1,1,12)).getUTCDay()+6)%7,count=new Date(Date.UTC(y,m,0,12)).getUTCDate(),total=Math.ceil((offset+count)/7)*7;
+ for(let k=0;k<total;k++){
+  const dt=new Date(Date.UTC(y,m-1,k-offset+1,12)),date=dt.toISOString().slice(0,10),inMonth=date.slice(0,7)===plakatMonth;
+  const entry=byDay.get(date)||{events:[],tasks:[]},off=calOff(date),w=dt.getUTCDay();
+  const cell=el('button','pk-c'+(inMonth?'':' out')+(date<today?' past':'')+(date===today?' today':'')+(date===plakatSel?' sel':'')+(off.holiday?' hol':'')+(w===0||w===6?' wk':'')+(date<today&&entry.tasks.length?' over':''));
+  cell.type='button';
+  if(off.school){cell.classList.add('brk');const prev=new Date(dt.getTime()-86400000).toISOString().slice(0,10),next=new Date(dt.getTime()+86400000).toISOString().slice(0,10);if(!calOff(prev).school||k%7===0)cell.classList.add('bl');if(!calOff(next).school||k%7===6)cell.classList.add('br');}
+  cell.setAttribute('aria-label',dt.getUTCDate()+'. '+(entry.events.length+entry.tasks.length?entry.events.length+' üritust, '+entry.tasks.length+' ülesannet':'tühi')+(off.holiday?', '+off.holiday:'')+(off.school?', '+off.school:''));
+  cell.append(el('b','',String(dt.getUTCDate())));
+  const dots=el('span','pk-dd');[...new Set(entry.events.map(e=>personSlug(canonicalPerson(e.person||''))))].slice(0,3).forEach(slug=>dots.append(el('i','pk-'+slug)));
+  if(entry.tasks.length)dots.append(el('i','pk-tk'));cell.append(dots);
+  if(entry.events.some(e=>plakatConf.has(e.key)&&e.date>=today))cell.append(el('span','pk-w','!'));
+  cell.onclick=()=>{plakatSel=date;if(!inMonth)plakatMonth=date.slice(0,7);plakatMonthDraw(page,view,pager,items,today);};
+  grid.append(cell);
+ }
+ // Libistamine ruudustikul vahetab kuud (touch-action: pan-y hoiab päevade pagineri paigal).
+ {let sx=null,sy=0;grid.addEventListener('pointerdown',e=>{sx=e.clientX;sy=e.clientY;});
+  grid.addEventListener('pointerup',e=>{if(sx===null)return;const dx=e.clientX-sx,dy=e.clientY-sy;sx=null;if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.5)shift(dx<0?1:-1);});
+  grid.addEventListener('pointercancel',()=>{sx=null;});}
+ const navRow=el('div','pk-mnav');
+ const prev=el('button','pk-mbtn','‹ '+calMonthLabel(calShift(plakatMonth,-1)).split(' ')[0]);prev.type='button';prev.disabled=calShift(plakatMonth,-1)<calMinMonth();prev.onclick=()=>shift(-1);
+ const nextB=el('button','pk-mbtn',calMonthLabel(calShift(plakatMonth,1)).split(' ')[0]+' ›');nextB.type='button';nextB.onclick=()=>shift(1);
+ const todayB=el('button','pk-mbtn pk-mtoday','Täna');todayB.type='button';todayB.hidden=plakatMonth===today.slice(0,7)&&plakatSel===today;todayB.onclick=()=>{plakatMonth=today.slice(0,7);plakatSel=today;plakatMonthDraw(page,view,pager,items,today);};
+ navRow.append(prev,todayB,nextB);
+ // valitud päev
+ const sheet=el('div','pk-list pk-msheet');
+ const dh=el('div','pk-dh');
+ if(plakatSel==='undated'){
+  dh.append(el('span','','TÄHTAJATA ÜLESANDED'));sheet.append(dh);
+  undated.forEach(item=>{const row=plakatRow(item,'task',today,today);row.querySelector('time').textContent='TÄHTAJATA';sheet.append(row);});
+ }else{
+  const d=new Date(plakatSel+'T12:00:00Z'),dayEntry=byDay.get(plakatSel)||{events:[],tasks:[]};
+  const names=['pühapäev','esmaspäev','teisipäev','kolmapäev','neljapäev','reede','laupäev'];
+  dh.append(el('span','',names[d.getUTCDay()]+' '+d.getUTCDate()+'. '+new Intl.DateTimeFormat('et-EE',{month:'short'}).format(d).replace('.','')+(plakatSel===today?' · täna':'')));
+  const idx=Math.round((new Date(plakatSel+'T12:00:00Z')-new Date(today+'T12:00:00Z'))/86400000);
+  if(idx>=0&&idx<=6&&(dayEntry.events.length||dayEntry.tasks.length)){const open=el('button','pk-open','Ava päev ›');open.type='button';open.onclick=()=>pager.scrollTo({left:idx*pager.clientWidth,behavior:'smooth'});dh.append(open);}
+  sheet.append(dh);
+  const off=calOff(plakatSel),note=[off.holiday,off.school].filter(Boolean).join(' · ');if(note)sheet.append(el('div','pk-off',note));
+  const evs=dayEntry.events.slice().sort((a,b)=>(a.time||'99').localeCompare(b.time||'99'));
+  evs.forEach(item=>sheet.append(plakatRow(item,'event',plakatSel,today)));
+  dayEntry.tasks.forEach(item=>sheet.append(plakatRow(item,item.deadline<today?'late':'task',plakatSel,today)));
+  if(!evs.length&&!dayEntry.tasks.length)sheet.append(el('div','pk-fn',plakatSel<today?'Midagi polnud kirjas.':'Vaba päev. Mitte midagi planeeritud.'));
+ }
+ if(undated.length&&plakatSel!=='undated'){const u=el('button','pk-mbtn pk-undated','Tähtajata · '+undated.length+' ›');u.type='button';u.onclick=()=>{plakatSel='undated';plakatMonthDraw(page,view,pager,items,today);};sheet.append(u);}
+ const leg=el('div','pk-leg');leg.innerHTML='<span><i class="pk-lg pk-elle"></i><i class="pk-lg pk-otto"></i>üritus</span><span><i class="pk-lg pk-tk"></i>ülesanne</span><span><b class="pk-lw">!</b>kattub</span><span><i class="pk-lh"></i>püha</span><span><i class="pk-lb"></i>vaheaeg</span>';sheet.append(leg);
+ page.append(top,head,st,dow,grid,navRow,sheet);
+ page.scrollTop=0;sheet.scrollTop=0;
+}
+function plakatMonthPage(view,pager,week,dots,items,today){
+ if(!plakatMonth)plakatMonth=today.slice(0,7);
+ if(!plakatSel)plakatSel=today;
+ const page=document.createElement('section');page.className='pk-page pk-month';page.style.setProperty('--c','#f3eee3');page.style.setProperty('--on','#14130f');page.dataset.lbl='Kuu';
+ pager.append(page);plakatMonthDraw(page,view,pager,items,today);
+ const dot=document.createElement('button');dot.type='button';dot.textContent='K';dot.setAttribute('aria-label','Kuu');dots.append(dot);
+ const stripe=document.createElement('button');stripe.type='button';stripe.style.setProperty('--c','#f3eee3');stripe.style.setProperty('--on','#14130f');
+ stripe.innerHTML='<i>K</i><b class="pk-wword">Kuu</b>';
+ const wl=document.createElement('div');wl.className='pk-wl';
+ const mine=items.filter(i=>i.kind==='event'&&i.date&&i.date.slice(0,7)===today.slice(0,7)).length;
+ const l1=document.createElement('div');l1.className='pk-wline';const t1=document.createElement('span');t1.textContent=calMonthLabel(today.slice(0,7)).split(' ')[0].toLowerCase()+' · '+mine+' üritust';l1.append(t1);wl.append(l1);
+ stripe.append(wl);stripe.onclick=()=>{view.classList.remove('week-open');pager.scrollTo({left:7*pager.clientWidth,behavior:'smooth'});};week.append(stripe);
+}
 // Teemanupp (automaatne / hele / tume) ülaribal: kasutab päises olevat olemasolevat nuppu, ikoon näitab praegust valikut.
 function plakatThemeButton(){
  const button=document.createElement('button');button.type='button';button.className='pk-theme';
@@ -2471,7 +2710,7 @@ function plakatNav(view){
  const tab=document.getElementById('overviewTab');if(!tab||!tab.dataset||!view)return;
  const pager=view.querySelector('.pk-pager');if(!pager)return;
  const i=Math.round(pager.scrollLeft/Math.max(1,pager.clientWidth)),page=pager.children[i];
- tab.dataset.pkLabel=view.classList.contains('week-open')?'Nädal':i>=7?'Hiljem':(page&&page.dataset.lbl)||'Pere';
+ tab.dataset.pkLabel=view.classList.contains('week-open')?'Nädal':i>=7?'Kuu':(page&&page.dataset.lbl)||'Pere';
  let dots=tab.querySelector('.pk-pdots');
  if(!dots){dots=document.createElement('span');dots.className='pk-pdots';dots.setAttribute('aria-hidden','true');for(let k=0;k<8;k++)dots.append(document.createElement('i'));tab.append(dots);}
  [...dots.children].forEach((d,k)=>d.classList.toggle('on',k===i));
@@ -2489,18 +2728,21 @@ function renderPlakat(){
  if(view)view.remove();
  view=document.createElement('section');view.id='plakatView';view.setAttribute('aria-label','Pere päevaplakat');
  const today=savedOverview.today,items=savedOverview.items;
+ try{plakatConf=eventConflicts(items.filter(item=>item.kind==='event'&&item.date>=today));}catch(_){plakatConf=new Map();}
  const now=tallinnNow().slice(11,16),pager=document.createElement('div');pager.className='pk-pager';
  const dots=document.createElement('div');dots.className='pk-dots';const week=document.createElement('div');week.className='pk-week';
  for(let i=0;i<7;i++){
   const day=addDays(today,i),[name,color,ink]=PLAKAT_DAYS[plakatDow(day)],g=plakatItems(day,today,items),total=g.late.length+g.events.length+g.tasks.length;
   const page=document.createElement('section');page.className='pk-page';page.style.setProperty('--c',color);page.style.setProperty('--on',ink);page.dataset.lbl=name.charAt(0).toUpperCase()+' '+(+day.slice(8,10));
   const top=document.createElement('div');top.className='pk-top';const brand=document.createElement('span');brand.textContent='PERE';
-  top.append(brand,plakatThemeButton());
-  const num=document.createElement('div');num.className='pk-num';num.textContent=String(+day.slice(8,10));const sm=document.createElement('small');sm.textContent=name;num.append(sm);num.onclick=()=>view.classList.add('week-open');
+  const wx=plakatWxEls();
+  top.append(brand,wx.c,plakatThemeButton());
+  const num=document.createElement('div');num.className='pk-num';num.textContent=String(+day.slice(8,10));const sm=document.createElement('small');sm.textContent=name;num.append(sm,wx.b);num.onclick=()=>view.classList.add('week-open');
   const st=document.createElement('div');st.className='pk-st';
   const month=new Intl.DateTimeFormat('et-EE',{month:'long',year:'numeric'}).format(new Date(day+'T12:00:00')).toUpperCase();
   const rel=i===0?'TÄNA · '+now:i===1?'HOMME':i===2?'ÜLEHOMME':i+' PÄEVA PÄRAST';
-  const left=document.createElement('span');left.textContent=month+' · '+rel;const badge=document.createElement('b');badge.textContent=total?total+' asja':'vaba';st.append(left,badge);
+  const off=calOff(day),offName=off.holiday||off.school;const left=document.createElement('span');left.textContent=month+' · '+rel+(offName?' · '+offName.toUpperCase():'');const badge=document.createElement('b');badge.textContent=total?total+' asja':'vaba';st.append(left,wx.a,badge);
+  plakatWxFill(wx,day,i===0?+now.slice(0,2):0);
   const list=document.createElement('div');list.className='pk-list';
   if(!total){
    const free=document.createElement('div');free.className='pk-free';free.textContent='Vaba.';list.append(free);
@@ -2520,26 +2762,7 @@ function renderPlakat(){
   stripe.append(plakatWeekLines([...g.late.map(item=>({item,late:true})),...g.events.map(item=>({item})),...g.tasks.map(item=>({item}))],today));
   stripe.onclick=()=>{view.classList.remove('week-open');pager.scrollTo({left:i*pager.clientWidth,behavior:'smooth'});};week.append(stripe);
  }
- // "Hiljem": tähtajata ülesanded, hilisemad tähtajad ja hilisemad üritused.
- {
-  const weekEnd=addDays(today,6),isTask=item=>['task','invoice'].includes(item.kind),open=item=>isTask(item)&&(item.status!=='Tehtud'||completing.has(item.key));
-  const tasks=items.filter(item=>open(item)&&(!item.deadline||item.deadline>weekEnd)).sort((a,b)=>(a.deadline||'9').localeCompare(b.deadline||'9')).slice(0,8);
-  const events=items.filter(item=>item.kind==='event'&&item.date>weekEnd).sort((a,b)=>(a.date+(a.time||'')).localeCompare(b.date+(b.time||''))).slice(0,6);
-  const page=document.createElement('section');page.className='pk-page pk-later';page.style.setProperty('--c','#2b2f4a');page.style.setProperty('--on','#fff');
-  const top=document.createElement('div');top.className='pk-top';const brand=document.createElement('span');brand.textContent='PERE';
-  top.append(brand,plakatThemeButton());
-  const num=document.createElement('div');num.className='pk-num pk-word';num.textContent='Hiljem';num.onclick=()=>view.classList.add('week-open');
-  const st=document.createElement('div');st.className='pk-st';const left=document.createElement('span');left.textContent='TÄHTAJATA JA TULEVAD';const badge=document.createElement('b');badge.textContent=(tasks.length+events.length)+' asja';st.append(left,badge);
-  const list=document.createElement('div');list.className='pk-list';
-  events.forEach(item=>{const row=plakatRow(item,'event',item.date,today);row.querySelector('time').className='tg';row.querySelector('time').textContent=plakatShort(item.date)+(item.time?' '+item.time:'');list.append(row);});
-  tasks.forEach(item=>{const row=plakatRow(item,'task',item.deadline||'',today);const t=row.querySelector('time');t.className='tg';t.textContent=item.deadline?plakatShort(item.deadline):'TÄHTAJATA';list.append(row);});
-  if(!tasks.length&&!events.length){const fn=document.createElement('div');fn.className='pk-fn';fn.textContent='Hilisemaid asju pole.';list.append(fn);}
-  page.append(top,num,st,list);pager.append(page);
-  const dot=document.createElement('button');dot.type='button';dot.textContent='…';dot.setAttribute('aria-label','Hiljem');dot.onclick=()=>pager.scrollTo({left:7*pager.clientWidth,behavior:'smooth'});dots.append(dot);
-  const stripe=document.createElement('button');stripe.type='button';stripe.style.setProperty('--c','#2b2f4a');stripe.style.setProperty('--on','#fff');
-  stripe.innerHTML='<i>…</i><b class="pk-wword">Hiljem</b>';
-  stripe.append(plakatWeekLines([...events.map(item=>({item:Object.assign({},item,{time:''})})),...tasks.map(item=>({item}))],today));stripe.onclick=()=>{view.classList.remove('week-open');pager.scrollTo({left:7*pager.clientWidth,behavior:'smooth'});};week.append(stripe);
- }
+  plakatMonthPage(view,pager,week,dots,items,today);
  week.addEventListener('click',event=>{if(event.target===week)view.classList.remove('week-open');});
  view.append(pager,week);
  const sync=()=>{const i=Math.round(pager.scrollLeft/Math.max(1,pager.clientWidth));plakatIndex=i;[...dots.children].forEach((d,j)=>{if(j<8)d.classList.toggle('on',j===i);});
