@@ -2070,6 +2070,17 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 #plakatView .pk-month .pk-leg{border-top:0;margin:0 -20px;padding:2px 20px 16px}
 /* Kuu: legend natuke allapoole (päeva sektsioon jääb samale kohale). */
 #plakatView .pk-month .pk-leg{padding:12px 20px 6px}
+/* Sisesta (Plakat): päis kompaktsemaks, joon ja silt samal kõrgusel kui E-kirjade lehel. */
+:root[data-plakat="1"] .pk-hero-input .pk-hn svg{width:72px;height:72px}
+:root[data-plakat="1"] .pk-hero-wrap.pk-hero-input{margin-bottom:19px}
+:root[data-plakat="1"] #inputView label[for="text"]{padding-top:13px}
+:root[data-plakat="1"] .pk-hero-wrap.pk-hero-input{margin-bottom:20px}
+:root[data-plakat="1"] #inputView label[for="text"]{padding-top:12px}
+:root[data-plakat="1"] .pk-hero-input .pk-hn svg{width:92px;height:92px}
+:root[data-plakat="1"] .pk-hero-wrap.pk-hero-input{margin-bottom:0}
+/* Sisesta: pealkiri samale x-kohale kui E-kirjade lehel (plussi veerg 92 vs number 84 px). */
+:root[data-plakat="1"] .pk-hero-input .pk-hero{column-gap:6px}
+:root[data-plakat="1"] .pk-hero-input .pk-hero{column-gap:14px}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
