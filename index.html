@@ -63,7 +63,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700&family=Righteous&family=Sora:wght@300;400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-<script>try{if(localStorage.getItem("pere-plakat")!=="0"&&!document.documentElement.dataset.plakat)document.documentElement.dataset.plakat="1";}catch(e){}</script>
+<script>try{if(localStorage.getItem("pere-plakat2")==="1"&&!document.documentElement.dataset.plakat)document.documentElement.dataset.plakat="1";}catch(e){}</script>
 <style>
 /* Klaasiteema: kiht olemasoleva CSS-i peal. Värvid ainult muutujatest, tume teema süsteemi järgi. */
 :root{
@@ -3069,14 +3069,14 @@ if(typeof document!=='undefined'){
   event.stopImmediatePropagation();event.preventDefault();view.classList.toggle('week-open');
  },true);}catch(_){}
 }
-// Jaluse lüliti "Vaade: Plakat / klassikaline" (localStorage pere-plakat=0 = klassikaline); vaikimisi Plakat. Atribuudi paneb <head> varane skript.
+// Jaluse lüliti "Vaade: Plakat / klassikaline" (localStorage pere-plakat2=1 = Plakat); vaikimisi klassikaline. Atribuudi paneb <head> varane skript.
 function initPlakatToggle(){
  try{
   const root=document.documentElement,button=document.getElementById('plakatToggle');if(!button)return;
-  const on=()=>{try{return localStorage.getItem('pere-plakat')!=='0';}catch(_){return true;}};
+  const on=()=>{try{return localStorage.getItem('pere-plakat2')==='1';}catch(_){return false;}};
   const paint=()=>{button.textContent='Vaade: '+(on()?'Plakat':'klassikaline');};
   button.onclick=()=>{
-   try{localStorage.setItem('pere-plakat',on()?'0':'1');}catch(_){}
+   try{localStorage.setItem('pere-plakat2',on()?'0':'1');}catch(_){}
    if(on())root.dataset.plakat='1';else delete root.dataset.plakat;
    paint();
    try{if(typeof renderOverview==='function'&&savedOverview)renderOverview();else renderPlakat();}catch(_){}
