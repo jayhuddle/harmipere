@@ -3211,7 +3211,8 @@ function renderNextUp(){
   if(!week||!week.parentNode||typeof week.parentNode.insertBefore!=='function'||typeof document.createElement!=='function')return;
   let box=document.getElementById('nextUp');
   const now=tallinnNow(),pick=savedOverview&&nextUpItems.length?nextUpPick(nextUpItems,now):null;
-  const eve=(!pick||pick.phase==='tomorrow')&&savedOverview?eveningPlan(nextUpItems,now):null;
+  // Öösel (00:00–03:00) eelistab "Homseks valmis" ka siis, kui tänane (= õhtul veel "homne") üritus pole alanud; käiv üritus jääb "Käib praegu".
+  const eve=(!pick||pick.phase==='tomorrow'||(eveningNight(now)&&pick.phase==='next'))&&savedOverview?eveningPlan(nextUpItems,now):null;
   if(!pick&&!eve){if(box)box.hidden=true;return;}
   if(!box){box=document.createElement('section');box.id='nextUp';box.className='next-up';box.setAttribute('role','button');box.tabIndex=0;week.parentNode.insertBefore(box,week);
    const go=()=>{if(box.dataset.key)focusItemKey(box.dataset.key,true);};box.addEventListener('click',go);box.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();go();}});}
@@ -3237,11 +3238,14 @@ function renderNextUp(){
 if(typeof setInterval==='function')setInterval(()=>{if(typeof document!=='undefined'&&document.visibilityState==='visible'&&savedOverview&&typeof $==='function'&&$('overviewView')&&!$('overviewView').hidden)renderNextUp();},30000);
 // === HOMSEKS ===
 // "Homseks valmis": õhtul (alates 19:00), kui täna enam midagi ei käi ega tule, on "Kohe järgmine" asemel homse kokkuvõte (nagu õhtune teade):
-// homsed üritused ja tähtajad (puudutus viib kaardini) ning homne ilm. Keskööl kaob; hommikul on jälle "Kohe järgmine" / "Käib praegu".
-const EVE_HOUR=19;
+// homsed üritused ja tähtajad (puudutus viib kaardini) ning homne ilm. Kaart püsib ka pärast keskööd kuni kella 3-ni öösel (siis on "homme" juba "täna",
+// ja käiva ürituse korral jääb "Käib praegu"); kell 3 on jälle "Kohe järgmine" / "Käib praegu".
+const EVE_HOUR=19,EVE_END_HOUR=3;
+function eveningNight(now){return Number(now.slice(11,13))<EVE_END_HOUR;}
 function eveningPlan(items,now){
- if(!items||Number(now.slice(11,13))<EVE_HOUR)return null;
- const tomorrow=addDays(now.slice(0,10),1);
+ const night=eveningNight(now);
+ if(!items||(Number(now.slice(11,13))<EVE_HOUR&&!night))return null;
+ const tomorrow=night?now.slice(0,10):addDays(now.slice(0,10),1);
  const events=items.filter(item=>item.kind==='event'&&item.date&&item.date<=tomorrow&&(item.endDate||item.date)>=tomorrow)
   .sort((a,b)=>(a.date<tomorrow||!a.time?'':a.time).localeCompare(b.date<tomorrow||!b.time?'':b.time));
  const tasks=items.filter(item=>['task','invoice'].includes(item.kind)&&item.status!=='Tehtud'&&item.deadline===tomorrow);
