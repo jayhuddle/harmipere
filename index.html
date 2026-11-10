@@ -4516,7 +4516,13 @@ function focusItemKey(key,instant){
 }
 function renderCalendar(){
  const sheet=$('calSheet'),today=savedOverview.today,items=calItems(),byDay=new Map();
- items.forEach(item=>{const day=calDay(item);if(!byDay.has(day))byDay.set(day,{events:[],tasks:[]});byDay.get(day)[item.kind==='event'?'events':'tasks'].push(item);});
+ items.forEach(item=>{
+  // Mitmepäevane üritus (nt ööbimisega väljasõit) on kalendris igal päeval algusest lõpuni (kuni 60 päeva).
+  const first=calDay(item),last=item.kind==='event'&&item.endDate&&item.endDate>first?item.endDate:first;
+  for(let day=first,n=0;day<=last&&n<60;day=new Date(Date.parse(day+'T12:00:00Z')+86400000).toISOString().slice(0,10),n++){
+   if(!byDay.has(day))byDay.set(day,{events:[],tasks:[]});byDay.get(day)[item.kind==='event'?'events':'tasks'].push(item);
+  }
+ });
  const conflicts=eventConflicts(items.filter(item=>item.kind==='event'&&item.date>=today));
  sheet.replaceChildren();
  const grab=document.createElement('div');grab.className='cal-grab';grab.setAttribute('aria-hidden','true');
