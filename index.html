@@ -4115,7 +4115,7 @@ function renderWeekStrip(weekTasks,weekEvents,today){
 // Ilm välitegevustele "See nädal" üritustel (variant B kiip): tuvastus pealkirjast, märkustest ja kohast; prognoos Open-Meteo'st (tasuta, võtmeta)
 // ürituse algustunniks. Koht: ürituse aadressi esimene osa (Open-Meteo otsing), muidu Tallinn. Ainult tänane päev kuni 6 päeva edasi (pikem prognoos
 // pole usaldusväärne). Viga või puuduv võrk: kiipi ei näidata. Prognoos on 60 min vahemälus (mälus ja localStorage'is).
-const WX_OUT_WORDS=/ratsut|mänguväljak|mangvaljak|jalgpall|matk|retk|laager|jooks|rattasõit|rattamatk|suusa|uisutamine õues|piknik|loomaaed|lõke|õues|õuealal|välitrenn|kelgutamine|kalastus|orienteerumine|jalutuskäik|surfamine|purjetamine|golf/i;
+const WX_OUT_WORDS=/ratsut|mänguväljak|mangvaljak|jalgpall|matk|retk|laager|jooks|rattasõit|rattamatk|suusa|uisutamine õues|piknik|loomaaed|lõke|õues|õuealal|välitrenn|kelgutamine|kalastus|orienteerumine|jalutuskäik|surfamine|purjetamine|golf|väljasõit|ekskursioon|reis|rännak/i;
 const WX_OUT_PLACE=/staadion|raba|rand|metsa|pargis|mänguväljak|ratsabaas|ratsakeskus|talu|järv|laht/i;
 const WX_INDOOR=/sisemäng|sisetenni|ujula|bassein|batuut|smile park|kino|kontsert|teater/i;
 function isOutdoorEvent(item){
