@@ -2985,7 +2985,14 @@ let plakatMonth='',plakatSel='',plakatConf=new Map();
 function plakatMonthData(items,today){
  const minMonth=calMinMonth(),byDay=new Map(),undated=[];
  items.forEach(item=>{
-  if(item.kind==='event'){if(!item.date||item.date.slice(0,7)<minMonth)return;const d=calDay(item);if(!byDay.has(d))byDay.set(d,{events:[],tasks:[]});byDay.get(d).events.push(item);}
+  if(item.kind==='event'){
+   if(!item.date||item.date.slice(0,7)<minMonth)return;
+   // Mitmepäevane üritus (nt ööbimisega väljasõit) on kalendris igal päeval alates algusest kuni lõpuni (kuni 60 päeva).
+   const last=item.endDate&&item.endDate>item.date?item.endDate:item.date;
+   for(let d=item.date,n=0;d<=last&&n<60;d=new Date(Date.parse(d+'T12:00:00Z')+86400000).toISOString().slice(0,10),n++){
+    if(!byDay.has(d))byDay.set(d,{events:[],tasks:[]});byDay.get(d).events.push(item);
+   }
+  }
   else if(['task','invoice'].includes(item.kind)&&(item.status!=='Tehtud'||completing.has(item.key))){
    if(!item.deadline){undated.push(item);return;}
    const d=item.deadline;if(!byDay.has(d))byDay.set(d,{events:[],tasks:[]});byDay.get(d).tasks.push(item);
@@ -3105,6 +3112,10 @@ function renderPlakat(){
  items.forEach(item=>{
   const d=item.kind==='event'?item.date:(['task','invoice'].includes(item.kind)&&(item.status!=='Tehtud'||completing.has(item.key))?item.deadline:'');
   if(d&&d>lastNear&&d<=limit)laterSet.add(d);
+  // Mitmepäevase ürituse järgmised päevad saavad samuti oma lehe.
+  if(item.kind==='event'&&item.date&&item.endDate&&item.endDate>item.date){
+   for(let x=addDays(item.date,1),n=0;x<=item.endDate&&n<60;x=addDays(x,1),n++)if(x>lastNear&&x<=limit)laterSet.add(x);
+  }
  });
  const later=[...laterSet].sort();
  for(let i=0;i<7+later.length;i++){
