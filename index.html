@@ -2083,6 +2083,21 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 :root[data-plakat="1"] .pk-hero-input .pk-hero{column-gap:14px}
 /* Kuu: möödunud päevade ürituste täpid hallid (nagu klassikalises vaates). */
 #plakatView .pk-month .pk-c.past .pk-dd i:not(.pk-tk){background:color-mix(in srgb,var(--mfg) 28%,transparent)!important}
+
+/* === Klassikaline: kaardi lihtsustus + tekstid (11.11, EELVAADE) === Ainult klassikalises vaates; <html data-card="old"> näitab eelvaates vana kaarti võrdluseks. */
+/* 1) Üks pind: taust jääb, serv ja vari ära. */
+:root:not([data-plakat="1"]):not([data-card="old"]) #overviewView .saved-card:not(.compact-past),:root:not([data-plakat="1"]):not([data-card="old"]) #calSheet .saved-card{border-color:transparent!important;box-shadow:none!important}
+/* 2) Inimene üks kord: kuupäevaplaat on juba inimese värvi, seega ürituse kaardil on nimi tavaline hall tekst. Ülesandel jääb värviline märk. */
+:root:not([data-plakat="1"]):not([data-card="old"]) .saved-event-card:has(.date-tile) .saved-person{background:none!important;color:var(--muted)!important;box-shadow:none!important;padding:3px 0!important;min-width:0!important;font-weight:600}
+/* 3) Pliiats vaiksemaks (sama koht ja puudutusala). */
+:root:not([data-plakat="1"]):not([data-card="old"]) #overviewView .edit-item{color:var(--soft)}
+:root:not([data-plakat="1"]):not([data-card="old"]) #overviewView .edit-item svg{width:16px;height:16px}
+/* Tekstid: kuupäev on ülareal, seega pealkirja kõrval seda ei korrata. */
+:root:not([data-plakat="1"]) #overviewDate{display:none}
+.input-sub{color:var(--muted);margin:0 0 14px;font-size:15px}
+:root[data-plakat="1"] #inputView .input-sub{display:none}
+.refine-note{margin-top:10px}
+.refine-note .hint{margin:4px 0;font-size:12.5px}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
@@ -2187,7 +2202,7 @@ body:after{content:'';position:absolute;top:0;left:0;right:0;height:180px;z-inde
 <main>
 <div class="nav-fade" aria-hidden="true"></div><nav class="view-nav" aria-label="Pereäpi vaated"><button id="inputTab" type="button" aria-pressed="true" aria-label="Lisa infot" title="Lisa infot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.375 2.625a1 1 0 0 1 3 3l-9.013 9.014a2 2 0 0 1-.853.505l-2.873.84a.5.5 0 0 1-.62-.62l.84-2.873a2 2 0 0 1 .506-.852z"/></svg></button><button id="overviewTab" type="button" aria-pressed="false" aria-label="Pere ülevaade" title="Pere ülevaade"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/></svg><span id="urgentCount" class="nav-count" hidden></span></button><button id="mailTab" type="button" aria-pressed="false" aria-label="E-kirjad" title="E-kirjad"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg><span id="mailCount" class="nav-count" hidden></span></button></nav>
 <div id="inputView">
-<div class="eyebrow">Vähem meelespidamist</div><h1>Kõik oluline ühest teatest.</h1>
+<h1>Lisa info</h1><p class="input-sub">Kleebi tekst, pilt või PDF.</p>
 
 <div class="layout">
 <section class="panel" aria-label="Lisa pereinfo">
@@ -2196,10 +2211,10 @@ body:after{content:'';position:absolute;top:0;left:0;right:0;height:180px;z-inde
 
 <div id="drop" class="drop"><div class="image-actions"><button id="pick" type="button">+ Lisa pildid / PDF</button><button id="camera" type="button" title="Pildista kutset"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/><circle cx="12" cy="13" r="3"/></svg>Pildista</button></div><input id="files" type="file" accept="image/png,image/jpeg,image/webp,application/pdf" multiple hidden><input id="cameraFile" type="file" accept="image/*" capture="environment" hidden><p class="hint">Või lohista siia / kleebi Ctrl+V.<br>Kuni 3 faili · PNG, JPG, WebP, PDF · kuni 4 MB fail, kokku 8 MB</p><div id="images" class="images"></div></div>
 <details id="refine" class="refine"><summary><span class="refine-title">Täpsusta</span> <span id="refineSummary" class="refine-summary"></span></summary><div class="row"><div><label for="person">Kelle kohta?</label><div id="personPicker" class="person-chips" role="group" aria-label="Kelle kohta"></div><select id="person" hidden><option value="">Tuvasta sisust</option><option value="Eia-Liisa">Eia</option><option value="Otto Johan">Otto</option><option value="Elle-Riin">Elle</option><option value="Kogu pere">Pere</option><option value="__other__">Muu – sisesta</option></select><input id="personOther" type="text" maxlength="80" placeholder="Sisesta nimi" aria-label="Muu nimi" hidden></div>
-<div><label for="sourceDate">Algse sõnumi kuupäev</label><input type="date" id="sourceDate"><p class="hint">Vaikimisi täna. Vanema teate puhul vali sõnumi kuupäev.</p></div></div></details>
+<div><label for="sourceDate">Algse sõnumi kuupäev</label><input type="date" id="sourceDate"><p class="hint">Vaikimisi täna. Vanema teate puhul vali sõnumi kuupäev.</p></div></div><div class="refine-note"><p class="hint">Töötlemisel saadetakse lisatud tekst ja pildid Gemini API-le.</p>
+<p class="hint">Vaata tulemus üle ja salvesta iga kirje eraldi. Algne fail jääb salvestamisel Drive’i alles.</p></div></details>
 <div class="actions"><button id="analyze" class="primary" type="button">Sisesta info<svg class="enter-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><path d="m10 17 5-5-5-5"/><path d="M15 12H3"/></svg></button></div>
-<p class="hint">Töötlemisel saadetakse lisatud tekst ja pildid Gemini API-le.</p>
-<p class="hint">Vaata tulemus üle ja salvesta iga kirje eraldi. Algne fail jääb salvestamisel Drive’i alles.</p>
+
 <p id="status" class="status" role="status" aria-live="polite"></p>
 </section>
 <aside class="panel side"><h2>Üks sisend, selge ülevaade.</h2><div class="step"><span class="number">1</span><span>Lisa kiri, foto kutsest või enda kirjutatud plaan.</span></div><div class="step"><span class="number">2</span><span>Kontrolli tuvastatud aega, last ja tegevusi. Puuduv info tuuakse eraldi välja.</span></div><div class="step"><span class="number">3</span><span>Salvesta vajalikud kirjed ükshaaval.</span></div><p>Kingitus ja transport lisanduvad ainult sinu palve korral.</p><p>Sündmused lähevad „Pere” kalendrisse. Ülesanded, arved ja teated jäävad Google’i tabelisse.</p></aside>
@@ -2210,14 +2225,14 @@ body:after{content:'';position:absolute;top:0;left:0;right:0;height:180px;z-inde
 </div>
 <section id="overviewView" hidden aria-label="Salvestatud pereinfo">
 <button id="calendarButton" class="cal-fab" type="button" aria-label="Kalender" title="Kalender" aria-haspopup="dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/></svg></button>
-<div class="overview-top"><div><div class="eyebrow">Kõik vajalik käepärast</div><div class="overview-title"><h1>Pere ülevaade</h1><span id="overviewDate" class="overview-date"></span></div></div><button id="refreshOverview" class="icon-button" type="button" aria-label="Värskenda" title="Värskenda" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg></button><button id="searchButton" class="theme-toggle search-toggle" type="button" aria-label="Otsi" title="Otsi" aria-haspopup="dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></button></div>
+<div class="overview-top"><div><div class="eyebrow" id="overviewEyebrow"></div><div class="overview-title"><h1>Pere ülevaade</h1><span id="overviewDate" class="overview-date"></span></div></div><button id="refreshOverview" class="icon-button" type="button" aria-label="Värskenda" title="Värskenda" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg></button><button id="searchButton" class="theme-toggle search-toggle" type="button" aria-label="Otsi" title="Otsi" aria-haspopup="dialog"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></button></div>
 
 <div class="overview-filters"><div id="personChips" class="person-chips" role="group" aria-label="Pereliige"></div><select id="overviewPerson" hidden aria-label="Filtreeri pereliikme järgi"><option value="">Kõik pereliikmed</option></select></div>
 <p id="overviewStatus" class="status overview-message" role="status" aria-live="polite"></p>
 <section id="weekSection" class="week-section" aria-label="See nädal"><h2>See nädal <span id="weekCount" class="count"></span></h2><div id="savedWeek"></div></section>
 <div class="overview-grid"><section id="tasksSection" class="tasks-section collapsed" aria-label="Ülesannete loend"><h2><button id="tasksToggle" class="section-toggle" type="button" aria-expanded="false" aria-controls="savedTasks"><span>Ülesanded <span id="taskCount" class="count"></span></span><span id="taskUrgent" class="section-urgent" hidden></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button></h2><div id="savedTasks"></div><label class="show-done"><input id="showDone" type="checkbox">Näita ka tehtud ülesandeid</label><div id="doneTasks"></div></section><section aria-label="Ürituste loend"><h2>Üritused <span id="eventCount" class="count"></span></h2><div id="savedEvents"></div></section></div>
 </section>
-<section id="mailView" hidden aria-label="Perepostkasti kirjad"><div class="overview-top"><h1>E-kirjad</h1><button id="refreshMail" class="icon-button" type="button" aria-label="Värskenda" title="Värskenda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg></button></div><p class="saved-meta mail-intro">Automaatika lisab selged sündmused ise. Siin on ebaselged, mis vajavad sind.</p><div class="overview-filters"><label><input id="showProcessedMail" type="checkbox">Näita ka automaatselt töödeldud kirju</label></div><p id="mailStatus" class="status" role="status" aria-live="polite"></p><div id="mailCards"></div></section>
+<section id="mailView" hidden aria-label="Perepostkasti kirjad"><div class="overview-top"><h1>E-kirjad</h1><button id="refreshMail" class="icon-button" type="button" aria-label="Värskenda" title="Värskenda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg></button></div><p class="saved-meta mail-intro" id="mailIntro"></p><div class="overview-filters"><label><input id="showProcessedMail" type="checkbox">Näita ka automaatselt töödeldud kirju</label></div><p id="mailStatus" class="status" role="status" aria-live="polite"></p><div id="mailCards"></div></section>
 <footer>Kuni 40 töötluskatset päevas · AI tulemus vajab ülevaatamist · <button type="button" class="logout-link" onclick="pereLogout()">Logi välja</button><span id="pushWrap" hidden> · <button type="button" class="logout-link" id="pushToggle"></button></span><span id="tileWrap"> · <button type="button" class="logout-link" id="tileToggle"></button></span><span id="swipeWrap"> · <button type="button" class="logout-link" id="swipeToggle"></button></span><span id="plakatWrap"> · <button type="button" class="logout-link" id="plakatToggle"></button></span><span id="diagWrap" hidden> · <button type="button" class="logout-link" onclick="pereDiag()">Veateave</button></span></footer><script>(function(){const KEY='pere-last-bad-response';function read(){try{return localStorage.getItem(KEY);}catch(_){return null;}}
  function sync(){const wrap=document.getElementById('diagWrap');if(wrap)wrap.hidden=!read();}
  window.pereDiag=async()=>{const raw=read();if(!raw)return;let text=raw;try{const d=JSON.parse(raw);text='Aeg: '+d.at+'\nToiming: '+d.action+'\nHTTP: '+d.status+(d.attempt?'\nKatse: '+d.attempt+'/3':'')+'\nKordus aitas: '+(d.recovered?'jah (tõrget ei olnud näha)':'ei / teadmata')+'\nVastus: '+d.text;}catch(_){}
@@ -3184,7 +3199,8 @@ function plakatHeroes(){
   if(input&&!input.querySelector('.pk-hero-wrap')){
    const h1=input.querySelector('h1');
    const plus='<svg viewBox="0 0 100 100" width="92" height="92" fill="none" stroke="currentColor" stroke-width="17" stroke-linecap="round"><path d="M50 12v76M12 50h76"/></svg>';
-   input.insertBefore(build('pk-hero-input',plus,'Lisa info',h1?h1.textContent.replace(/\.$/,''):'','tekst · foto · pdf · hääl','AI'),input.firstChild);
+   // Plakati alapealkiri on fikseeritud (klassikalise h1 on nüüd "Lisa info").
+   input.insertBefore(build('pk-hero-input',plus,'Lisa info','Kõik oluline ühest teatest','tekst · foto · pdf · hääl','AI'),input.firstChild);
   }
   if(mail&&!mail.querySelector('.pk-hero-wrap')){
    mail.insertBefore(build('pk-hero-mail','0','kirja ootab ülevaatamist','Automaatika lisab selged sündmused ise.','e-kirjad','Gmail'),mail.firstChild);
@@ -3195,6 +3211,10 @@ function plakatHeroes(){
    hero.querySelector('.pk-hn').textContent=String(n);
    hero.querySelector('.pk-ht b').textContent=n===0?'Postkast on puhas':n===1?'kiri ootab ülevaatamist':'kirja ootab ülevaatamist';
   }
+  // Klassikalise E-kirjade lehe rida: mitu kirja vajab otsust (varem süsteemi selgitus).
+  const intro=document.getElementById('mailIntro');
+  if(intro){const badge=document.getElementById('mailCount'),n=badge&&!badge.hidden?(parseInt(badge.textContent,10)||0):0;
+   intro.textContent=n===0?'Postkast on puhas.':n===1?'1 kiri vajab sinu otsust.':n+' kirja vajavad sinu otsust.';}
  }catch(_){}
 }
 if(typeof document!=='undefined'){
@@ -4049,6 +4069,8 @@ function setOverviewDate(iso){
  if(iso)overviewDateIso=iso;if(!overviewDateIso)return;
  const wide=typeof window!=='undefined'&&typeof window.matchMedia==='function'&&window.matchMedia('(min-width:480px)').matches;
  $('overviewDate').textContent=wide?WEEKDAYS_LONG[new Date(overviewDateIso+'T12:00:00Z').getUTCDay()]+' '+displayDate(overviewDateIso):displayEventDate(overviewDateIso);
+ // Päise ülarida = tänane kuupäev sõnadega ("Laupäev 7. november"); varem loosung "Kõik vajalik käepärast".
+ try{const eb=document.getElementById('overviewEyebrow');if(eb){const d=new Date(overviewDateIso+'T12:00:00Z');eb.textContent=WEEKDAYS_LONG[d.getUTCDay()]+' '+d.getUTCDate()+'. '+new Intl.DateTimeFormat('et-EE',{month:'long',timeZone:'UTC'}).format(d);}}catch(_){}
 }
 if(typeof window!=='undefined'&&typeof window.matchMedia==='function'){try{window.matchMedia('(min-width:480px)').addEventListener('change',()=>setOverviewDate());}catch(_){}}
 // Nädalariba "See nädal" pealkirja all: 7 päeva ühes reas, iga päeva all inimeste värvilised täpid (üritused + tähtajad).
@@ -5362,7 +5384,9 @@ if(window.pereSharing)(async()=>{
  else if(Notification.permission==='granted'&&read()){
   render('on');
   setTimeout(async()=>{try{const m=await sdk(),registration=await navigator.serviceWorker.ready,token=await m.getToken({vapidKey:cfg.vapidKey,serviceWorkerRegistration:registration});
-   if(token&&token!==read()){await server('pereNotifyRegister',{token:token,device:deviceName()});write(token);}}catch(_){}},4000);
+   // Kinnita tunnus serverile, kui see muutus VÕI kord päevas (server võib tunnuse eemaldada, kui Firebase ütles "aegunud"; siis taastub see ise).
+   const day=new Date().toISOString().slice(0,10);let synced='';try{synced=localStorage.getItem('pere-push-sync')||'';}catch(_){}
+   if(token&&(token!==read()||synced!==day)){await server('pereNotifyRegister',{token:token,device:deviceName()});write(token);try{localStorage.setItem('pere-push-sync',day);}catch(_){}}}catch(_){}},4000);
  }else render('off');
 })();
 
