@@ -2139,6 +2139,13 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 :root[data-theme="light"] #plakatView .pk-page.pk-month{--mfg:#2b2118;--mbg:#f1e6d0;--band:rgba(43,33,24,.09);--mline:rgba(43,33,24,.22);--pill:rgba(43,33,24,.10);--mac:#2b2118;--mac-on:#f1e6d0;background:#f1e6d0;color:#2b2118}
 @media (prefers-color-scheme:light){:root:not([data-theme="dark"]) #plakatView .pk-page.pk-month{--mfg:#2b2118;--mbg:#f1e6d0;--band:rgba(43,33,24,.09);--mline:rgba(43,33,24,.22);--pill:rgba(43,33,24,.10);--mac:#2b2118;--mac-on:#f1e6d0;background:#f1e6d0;color:#2b2118}}
 :root:not([data-theme="dark"]) #plakatView .pk-month .pk-dd i:not(.pk-tk){box-shadow:0 0 0 1px rgba(43,33,24,.18)}
+
+/* Plakat, Kuu leht, parandused 22.11: (1) kui kuus pole vaheaja rida (.pk-st), jooksid nädalapäevad suure kuunime sisse: sama vahe (29 px) kui vaheaja reaga, nii et kalender ei hüppa kuude vahel;
+   (2) naaberkuude pealkirjad on puhkeolekus peidus, et järgmise kuu suure tähe vasak serv "Täna" nupu kõrval välja ei paistaks (libistamise ajal .pk-mv = nähtavad).
+   Pealkirja aken ei lõika enam (overflow-x:clip ära), vana margin-left:-4px asemel left:-4px. Algallikas work/plakat-month-fix.css. */
+#plakatView .pk-mh+.pk-dow{margin-top:29px}
+#plakatView .pk-mtrack>b{overflow:visible;padding-right:0}
+#plakatView .pk-mtrack:not(.pk-mv)>b:not(:nth-child(2)){visibility:hidden}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
@@ -3075,7 +3082,8 @@ function plakatMonthDraw(page,view,pager,items,today,dir){
  const minM=calMinMonth(),prevM=calShift(plakatMonth,-1),nextM=calShift(plakatMonth,1);
  const viewport=el('div','pk-gvp'),track=el('div','pk-gtrack'),titleBox=el('div','pk-mtbox'),titleTrack=el('div','pk-mtrack');
  let busy=false;
- const setPos=(gridX,titleX,anim)=>{track.style.transition=anim||'none';titleTrack.style.transition=anim||'none';track.style.transform='translateX('+gridX+')';titleTrack.style.transform='translateX('+titleX+')';};
+ // Naaberkuude pealkirjad on puhkeolekus peidus (.pk-mv puudub), nii et nende vasak serv "Täna" nupu kõrval välja ei paista; libistamise ajal on nähtavad.
+ const setPos=(gridX,titleX,anim)=>{titleTrack.classList.add('pk-mv');track.style.transition=anim||'none';titleTrack.style.transition=anim||'none';track.style.transform='translateX('+gridX+')';titleTrack.style.transform='translateX('+titleX+')';};
  const commit=delta=>{const next=calShift(plakatMonth,delta);if(next<calMinMonth()){busy=false;return;}plakatMonth=next;plakatSel=next===today.slice(0,7)?today:next+'-01';plakatMonthDraw(page,view,pager,items,today);};
  const EASE='transform .24s cubic-bezier(.2,.8,.2,1)';
  const shift=delta=>{if(busy||calShift(plakatMonth,delta)<minM)return;busy=true;const to=delta>0?'-200%':'0%';setPos(to,to,EASE);setTimeout(()=>commit(delta),240);};
@@ -3114,7 +3122,7 @@ function plakatMonthDraw(page,view,pager,items,today,dir){
  if(typeof requestAnimationFrame==='function')requestAnimationFrame(()=>{if(grid.offsetHeight)viewport.style.height=grid.offsetHeight+'px';});
  // Libistamine ruudustikul ja pealkirjal: sõrm liigutab rööpa kaasa (touch-action: pan-y hoiab päevade pagineri paigal); vasakule = järgmine kuu.
  [viewport,titleBox].forEach(zone=>{let sx=null,sy=0,t0=0,dx=0,mode=null,id=null;
-  const home=()=>{setPos('-100%','-100%','transform .22s cubic-bezier(.2,.8,.2,1)');setTimeout(()=>{if(!busy){track.style.transition='';titleTrack.style.transition='';}},230);};
+  const home=()=>{setPos('-100%','-100%','transform .22s cubic-bezier(.2,.8,.2,1)');setTimeout(()=>{if(!busy){track.style.transition='';titleTrack.style.transition='';titleTrack.classList.remove('pk-mv');}},230);};
   zone.addEventListener('pointerdown',e=>{if(busy||e.button>0)return;sx=e.clientX;sy=e.clientY;t0=Date.now();dx=0;mode=null;id=e.pointerId;});
   zone.addEventListener('pointermove',e=>{if(sx===null||e.pointerId!==id)return;const mx=e.clientX-sx,my=e.clientY-sy;
    if(mode===null&&(Math.abs(mx)>14||Math.abs(my)>14))mode=Math.abs(mx)>Math.abs(my)*1.8?'x':'y';
