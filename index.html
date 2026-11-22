@@ -2141,6 +2141,8 @@ header{padding-top:calc(16px + env(safe-area-inset-top))}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--status:#13122a}}
 :root[data-theme="dark"]{--status:#13122a}
 body:after{content:'';position:absolute;top:0;left:0;right:0;height:180px;z-index:-1;pointer-events:none;background:linear-gradient(var(--status) 0,var(--status) 24px,color-mix(in srgb,var(--status) 55%,transparent) 90px,transparent 180px)}
+/* Plakatis seda üleminekut pole: lehed on ühevärvilised (laim Sisesta, E-kirjad, päevavärvid) ja olekuriba on tume. Jüri 22.11. */
+:root[data-plakat="1"] body:after{display:none}
 </style>
 <style>
 #splash{--sp-bg:#eceefa;--sp-ink:#1b2140;--sp-glass:rgba(255,255,255,.28);--sp-c1:#4b3ff0;--sp-c2:#a24bff;--sp-blob:.55;
