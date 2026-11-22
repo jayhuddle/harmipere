@@ -11,9 +11,10 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Härmipere">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icons/icon-192.png">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link id="pereManifest" rel="manifest" href="manifest.webmanifest">
+<link id="pereIcon" rel="icon" href="icons/icon-192.png">
+<link id="pereAppleIcon" rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<script>window.pereSyncPlakatIdentity=function(){var p=false;try{p=localStorage.getItem('pere-plakat2')==='1';}catch(e){}var m=document.getElementById('pereManifest'),i=document.getElementById('pereIcon'),a=document.getElementById('pereAppleIcon');if(m)m.setAttribute('href',p?'manifest-plakat.webmanifest':'manifest.webmanifest');if(i)i.setAttribute('href',p?'icons/plakat-192.png':'icons/icon-192.png');if(a)a.setAttribute('href',p?'icons/plakat-apple-touch.png':'icons/apple-touch-icon.png');try{if(window.caches)caches.open('pere-prefs').then(function(c){return c.put('pref-plakat',new Response(p?'1':'0'));}).catch(function(){});}catch(e){}};pereSyncPlakatIdentity();</script>
 <title>Härmipere</title>
 <script>try{const t=localStorage.getItem('pere-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(_){}</script>
 <style>
@@ -3255,6 +3256,8 @@ function initPlakatToggle(){
    try{localStorage.setItem('pere-plakat2',on()?'0':'1');}catch(_){}
    if(on())root.dataset.plakat='1';else delete root.dataset.plakat;
    paint();
+   // PWA: avalehe ikoon ja teatemärk vaate järgi (build-pwa.cjs <head> skript).
+   try{if(typeof window.pereSyncPlakatIdentity==='function')window.pereSyncPlakatIdentity();}catch(_){}
    try{if(typeof renderOverview==='function'&&savedOverview)renderOverview();else renderPlakat();}catch(_){}
   };
   paint();

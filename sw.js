@@ -1,12 +1,14 @@
 // Ainult äpi enda failid: võrk eelkõige, vahemälu varuks. API, fondid ja Google'i login lähevad otse võrku.
 const CACHE='pere-shell-v2',FILES=['./','index.html','config.js','manifest.webmanifest','icons/icon-192.png','icons/icon-512.png','icons/apple-touch-icon.png'];
 self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(FILES)).then(()=>self.skipWaiting()));});
-self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE&&key!=='pere-share').map(key=>caches.delete(key)))).then(()=>self.clients.claim()));});
+self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE&&key!=='pere-share'&&key!=='pere-prefs').map(key=>caches.delete(key)))).then(()=>self.clients.claim()));});
 // Äpi push (FCM data-only sõnum {title, body, url, tag}): kuva teade; koputus avab äpi.
 self.addEventListener('push',event=>{
  let payload={};try{payload=event.data?event.data.json():{};}catch(_){try{payload={data:{body:event.data.text()}};}catch(__){}}
  const data=payload.data||{},note=payload.notification||{};
- event.waitUntil(self.registration.showNotification(data.title||note.title||'Härmipere',{body:data.body||note.body||'',badge:'icons/badge-96.png',tag:data.tag||'pere',data:{url:data.url||'./'}}));
+ // Teatemärk vaate järgi: leht salvestab valiku vahemällu pere-prefs/pref-plakat ("1" = Plakat).
+ event.waitUntil(caches.open('pere-prefs').then(cache=>cache.match('pref-plakat')).then(hit=>hit?hit.text():'0').catch(()=>'0').then(plakat=>
+  self.registration.showNotification(data.title||note.title||'Härmipere',{body:data.body||note.body||'',badge:plakat==='1'?'icons/plakat-badge-96.png':'icons/badge-96.png',tag:data.tag||'pere',data:{url:data.url||'./'}})));
 });
 self.addEventListener('notificationclick',event=>{
  event.notification.close();
