@@ -5489,9 +5489,45 @@ if(window.pereSharing)(async()=>{
 
 </script>
 <script>if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
-(function(){const root=document.documentElement,metas=[...document.querySelectorAll('meta[name="theme-color"]')],colors={light:'#e4e1fb',dark:'#13122a'};
- function sync(){const mode=root.dataset.theme,plakat=root.dataset.plakat==='1';metas.forEach((meta,index)=>meta.setAttribute('content',plakat?colors.dark:(colors[mode]||(index?colors.dark:colors.light))));}
- sync();new MutationObserver(sync).observe(root,{attributes:true,attributeFilter:['data-theme','data-plakat']});})();
+// Androidi olekuriba värv (meta theme-color). build-pwa.cjs liidab selle body lõpu skripti (ainult PWA).
+// Klassikaline: käsitsi valitud teema korral teema värv, automaatse puhul kehtivad media-päringud (#e4e1fb / #13122a).
+// Plakat (data-plakat="1"): riba võtab ekraani ülaserva all oleva lehe taustavärvi (Sisesta laim, E-kirjad, päeva värv, Kuu leht…),
+// nii et riba sulandub lehega; Chrome valib ikoonide tumeduse ise. Jüri soov 22.11.
+(function(){
+ const root=document.documentElement,metas=[...document.querySelectorAll('meta[name="theme-color"]')],colors={light:'#e4e1fb',dark:'#13122a'};
+ const two=v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0');
+ // Arvutatud värv → #rrggbb; poolläbipaistev või läbipaistev → null (otsime vanemast edasi).
+ function toHex(value){
+  const s=String(value||'');let m=s.match(/^rgba?\(([^)]+)\)/);
+  if(m){const p=m[1].split(/[\s,/]+/).filter(Boolean).map(Number);if(p.length>3&&p[3]<.9)return null;return '#'+two(p[0])+two(p[1])+two(p[2]);}
+  m=s.match(/^color\(srgb\s+([^)]+)\)/);
+  if(m){const p=m[1].split(/[\s/]+/).filter(Boolean).map(Number);if(p.length>3&&p[3]<.9)return null;return '#'+two(p[0]*255)+two(p[1]*255)+two(p[2]*255);}
+  return null;
+ }
+ function topColor(){
+  let el=document.elementFromPoint(Math.round(innerWidth/2),2);
+  while(el&&el.nodeType===1){const hex=toHex(getComputedStyle(el).backgroundColor);if(hex)return hex;el=el.parentElement;}
+  return toHex(getComputedStyle(root).backgroundColor);
+ }
+ let last='';
+ function sync(){
+  if(root.dataset.plakat==='1'){
+   let color=null;try{color=topColor();}catch(_){}
+   color=color||colors.dark;if(color===last)return;last=color;metas.forEach(meta=>meta.setAttribute('content',color));return;
+  }
+  last='';const mode=root.dataset.theme;metas.forEach((meta,index)=>meta.setAttribute('content',colors[mode]||(index?colors.dark:colors.light)));
+ }
+ window.pereStatusSync=sync;
+ // Leht vahetub vaate, libistamise, kerimise ja avanevate lehtede kaudu: kontrolli kohe ja pärast animatsioone.
+ let timers=[];
+ function soon(){timers.forEach(clearTimeout);timers=[setTimeout(sync,80),setTimeout(sync,520)];}
+ try{
+  sync();
+  new MutationObserver(soon).observe(root,{attributes:true,attributeFilter:['data-theme','data-plakat']});
+  if(typeof addEventListener==='function')['scroll','click','touchend','popstate','resize'].forEach(type=>addEventListener(type,soon,{capture:true,passive:true}));
+  if(typeof setInterval==='function')setInterval(()=>{if(root.dataset.plakat==='1'&&document.visibilityState==='visible')sync();},1500);
+ }catch(_){}
+})();
 window.pereApplyStart=()=>{if(window.pereSharing)return;if(!$('inputView').hidden&&!busy&&!loadingImages&&!$('text').value.trim()&&!images.length&&!result)(typeof showViewNow==='function'?showViewNow:showView)('overview');};
 if(typeof initTileToggle==='function')initTileToggle();
 if(typeof initSwipeToggle==='function')initSwipeToggle();
