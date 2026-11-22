@@ -2146,6 +2146,31 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 #plakatView .pk-mh+.pk-dow{margin-top:29px}
 #plakatView .pk-mtrack>b{overflow:visible;padding-right:0}
 #plakatView .pk-mtrack:not(.pk-mv)>b:not(:nth-child(2)){visibility:hidden}
+
+/* Plakat, Sisesta ja E-kirjad: nuppude kuju sama mis alumise menüü fookustatud nupul (ümar ristkülik, 16 px nurgad) pillide (99 px) asemel.
+   Suured nupud (Pildista, Lisa pildid / PDF, Sisesta info, Vaata üle / Töötle / Peida) 16 px, inimese kiibid 12 px (madalam, 38 px). Ümmargused ikoonnupud (mikrofon, värskenda, teema)
+   jäävad ümaraks. Jüri soov 23.11. Algallikas work/plakat-buttons-shape.css. */
+:root[data-plakat="1"] #inputView .image-actions button,
+:root[data-plakat="1"] #inputView .actions #analyze,:root[data-plakat="1"] #inputView .actions #analyze.ready,
+:root[data-plakat="1"] #mailView .actions button{border-radius:16px}
+:root[data-plakat="1"] #inputView .chip,:root[data-plakat="1"] #mailView .chip{border-radius:12px}
+
+/* Plakat, Sisesta: "Sisesta info" nupp jääb aktiivseks minnes samale kohale (vana reegel `.actions:has(#analyze.ready)` lisas 8 px polstri ja nupp hüppas 8 px alla)
+   ja tõuseb ruumiliselt esile: kerkib 4 px, saab alla "serva" ja pehme varju; vajutades vajub tagasi. Ainult Plakat. Jüri soov 23.11. Algallikas work/plakat-analyze-ready.css. */
+:root[data-plakat="1"] #inputView .actions:has(#analyze.ready){padding:0;bottom:calc(92px + env(safe-area-inset-bottom))}
+:root[data-plakat="1"] #inputView .actions #analyze{transition:opacity .25s ease,filter .25s ease,transform .3s cubic-bezier(.2,.9,.3,1.25),box-shadow .3s ease}
+:root[data-plakat="1"] #inputView .actions #analyze.ready{transform:translateY(-4px);box-shadow:0 6px 0 0 color-mix(in srgb,var(--pv-fg) 38%,transparent),0 14px 22px rgba(0,0,0,.26);cursor:pointer}
+:root[data-plakat="1"] #inputView .actions #analyze.ready:active{transform:translateY(1px);box-shadow:0 1px 0 0 color-mix(in srgb,var(--pv-fg) 38%,transparent),0 3px 6px rgba(0,0,0,.2);transition-duration:.08s}
+@media (prefers-reduced-motion:reduce){:root[data-plakat="1"] #inputView .actions #analyze{transition:none}}
+
+/* Plakat, Sisesta: aktiivne "Sisesta info" nupp = variant F (Jüri valik 23.11): kerkib 3 px ja ümber on õrn pulseeriv ring, nagu ootaks vajutamist. Asendab kõva serva
+   (plakat-analyze-ready.css, sama valija, see on hiljem). Vajutades ring seiskub ja nupp vajub; liikumise vähendamisel ring seisab; töötlemisel kehtib vana busy-glow.
+   Algallikas work/plakat-analyze-glow.css. */
+:root[data-plakat="1"] #inputView .actions #analyze.ready{transform:translateY(-3px);box-shadow:0 0 0 6px color-mix(in srgb,var(--pv-fg) 16%,transparent),0 10px 26px rgba(0,0,0,.3);animation:pkReadyPulse 2s ease-in-out infinite}
+@keyframes pkReadyPulse{0%,100%{box-shadow:0 0 0 4px color-mix(in srgb,var(--pv-fg) 18%,transparent),0 10px 26px rgba(0,0,0,.3)}50%{box-shadow:0 0 0 10px color-mix(in srgb,var(--pv-fg) 6%,transparent),0 12px 28px rgba(0,0,0,.3)}}
+:root[data-plakat="1"] #inputView .actions #analyze.ready:active{animation:none;transform:translateY(1px);box-shadow:0 0 0 3px color-mix(in srgb,var(--pv-fg) 16%,transparent),0 2px 6px rgba(0,0,0,.2)}
+:root[data-plakat="1"] #inputView .actions #analyze.ready:has(.busy-sparks){animation:busy-glow 1.8s ease-in-out infinite;transform:none}
+@media (prefers-reduced-motion:reduce){:root[data-plakat="1"] #inputView .actions #analyze.ready{animation:none}}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
