@@ -2115,6 +2115,30 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 
 /* Plakat, Sisesta: "Sisesta info" nupu vasak serv joondub "Pildista" nupuga (punktiirkasti ääris 2px + sisetühik 18px). Jüri soov 22.11. Algallikas work/plakat-sisesta-align.css. */
 :root[data-plakat="1"] #inputView .actions #analyze{margin-left:20px}
+
+/* Plakat, Kuu leht: kuu vahetus karusselliga nagu klassikalises kalendris (eelmine | praegune | järgmine kuu kõrvuti, sõrm liigutab rööpa ja kuu pealkirja kaasa).
+   Jüri soov 22.11. Algallikas work/plakat-month-slide.css. JS: plakat.js plakatMonthDraw. */
+/* Ruudustiku aken on 6 px lehest laiem (et tänase päeva rõngas ära ei lõikuks); iga kuu ruudustikul on 6 px sisepolster, nii et naaberkuu servale ei paista. */
+#plakatView .pk-gvp{overflow:hidden;margin:0 -6px;touch-action:pan-y;flex:none;user-select:none}
+#plakatView .pk-gtrack{display:flex;align-items:flex-start;transform:translateX(-100%);will-change:transform}
+#plakatView .pk-gtrack>.pk-grid{flex:0 0 100%;min-width:0;box-sizing:border-box;padding:0 6px}
+#plakatView .pk-mtbox{flex:1 1 auto;min-width:0;overflow:hidden;touch-action:pan-y;user-select:none;padding:10px 0 10px 6px;margin:-10px 0 -10px -6px}
+#plakatView .pk-mtrack{display:flex;transform:translateX(-100%);will-change:transform}
+/* Pealkirjad: iga kuu enda aken (overflow-x:clip), et naaberkuu kiri servale ei paistaks; left:-4px asendab vana margin-left:-4px, ilma et rööbas nihkuks. */
+#plakatView .pk-mtrack>b{flex:0 0 100%;min-width:0;box-sizing:border-box;padding-right:.1em;white-space:nowrap;margin:0;position:relative;left:-4px;overflow-x:clip}
+@media (prefers-reduced-motion:reduce){#plakatView .pk-gtrack,#plakatView .pk-mtrack{transition-duration:.01s!important}}
+
+/* Plakat, Kuu leht, hele teema: helesinine taust (#e3ecff, Jüri valik 22.11) lilla asemel; rõhk neljapäeva sinine #1f6bff. Tume teema jääb samaks (indigo).
+   Hele: kas käsitsi valitud hele või süsteemi hele ilma käsitsi valikuta. Algallikas work/plakat-month-blue.css. */
+:root[data-theme="light"] #plakatView .pk-page.pk-month{--mfg:#14224a;--mbg:#e3ecff;--band:rgba(31,107,255,.10);--mline:rgba(31,107,255,.22);--pill:rgba(31,107,255,.12);--mac:#1f6bff;--mac-on:#fff;background:#e3ecff;color:#14224a}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) #plakatView .pk-page.pk-month{--mfg:#14224a;--mbg:#e3ecff;--band:rgba(31,107,255,.10);--mline:rgba(31,107,255,.22);--pill:rgba(31,107,255,.12);--mac:#1f6bff;--mac-on:#fff;background:#e3ecff;color:#14224a}}
+:root:not([data-theme="dark"]) #plakatView .pk-month .pk-dd i:not(.pk-tk){box-shadow:0 0 0 1px rgba(20,34,74,.16)}
+
+/* Plakat, Kuu leht, hele teema: liiv + must (taust #f1e6d0, tekst ja rõhk #2b2118, tänane päev musta ringina; Jüri valik 22.11). Asendab helesinise (plakat-month-blue.css,
+   sama valija, see on hiljem). Tume teema jääb samaks (indigo). Algallikas work/plakat-month-sand.css. */
+:root[data-theme="light"] #plakatView .pk-page.pk-month{--mfg:#2b2118;--mbg:#f1e6d0;--band:rgba(43,33,24,.09);--mline:rgba(43,33,24,.22);--pill:rgba(43,33,24,.10);--mac:#2b2118;--mac-on:#f1e6d0;background:#f1e6d0;color:#2b2118}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) #plakatView .pk-page.pk-month{--mfg:#2b2118;--mbg:#f1e6d0;--band:rgba(43,33,24,.09);--mline:rgba(43,33,24,.22);--pill:rgba(43,33,24,.10);--mac:#2b2118;--mac-on:#f1e6d0;background:#f1e6d0;color:#2b2118}}
+:root:not([data-theme="dark"]) #plakatView .pk-month .pk-dd i:not(.pk-tk){box-shadow:0 0 0 1px rgba(43,33,24,.18)}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
@@ -3046,8 +3070,15 @@ function plakatMonthDraw(page,view,pager,items,today,dir){
  // Ainult vaheaja nimi (kui kuus on vaheaeg); kuu pealkiri on juba suur number-sõna.
  const st=brk?el('div','pk-st'):null;if(st)st.append(el('span','',brk.name.toUpperCase()));
  const dow=el('div','pk-dow');['E','T','K','N','R','L','P'].forEach(x=>dow.append(el('span','',x)));
- const grid=el('div','pk-grid');
- const shift=delta=>{const next=calShift(plakatMonth,delta);if(next<calMinMonth())return;plakatMonth=next;plakatSel=next===today.slice(0,7)?today:next+'-01';plakatMonthDraw(page,view,pager,items,today,delta);};
+ // Karussell nagu klassikalises kalendris: eelmine | praegune | järgmine kuu kõrvuti, sõrm liigutab rööpa (ja kuu pealkirja) kaasa,
+ // lahtilaskmisel kleepub lähima kuu külge; nooled libistavad sama moodi.
+ const minM=calMinMonth(),prevM=calShift(plakatMonth,-1),nextM=calShift(plakatMonth,1);
+ const viewport=el('div','pk-gvp'),track=el('div','pk-gtrack'),titleBox=el('div','pk-mtbox'),titleTrack=el('div','pk-mtrack');
+ let busy=false;
+ const setPos=(gridX,titleX,anim)=>{track.style.transition=anim||'none';titleTrack.style.transition=anim||'none';track.style.transform='translateX('+gridX+')';titleTrack.style.transform='translateX('+titleX+')';};
+ const commit=delta=>{const next=calShift(plakatMonth,delta);if(next<calMinMonth()){busy=false;return;}plakatMonth=next;plakatSel=next===today.slice(0,7)?today:next+'-01';plakatMonthDraw(page,view,pager,items,today);};
+ const EASE='transform .24s cubic-bezier(.2,.8,.2,1)';
+ const shift=delta=>{if(busy||calShift(plakatMonth,delta)<minM)return;busy=true;const to=delta>0?'-200%':'0%';setPos(to,to,EASE);setTimeout(()=>commit(delta),240);};
  // Kuu pealkiri vasakul; paremal aasta ja nooled (eelmine/järgmine kuu), "Täna" ainult siis, kui oled mujal kui tänases kuus.
  {const mr=el('div','pk-mr'),arrs=el('div','pk-arrs');
   const chev=d=>'<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="'+(d<0?'M15 5l-7 7 7 7':'M9 5l7 7-7 7')+'"/></svg>';
@@ -3055,10 +3086,16 @@ function plakatMonthDraw(page,view,pager,items,today,dir){
   const nextB=el('button','pk-arr');nextB.type='button';nextB.setAttribute('aria-label','Järgmine kuu');nextB.innerHTML=chev(1);nextB.onclick=()=>shift(1);
   const todayB=el('button','pk-mtd','Täna');todayB.type='button';todayB.hidden=plakatMonth===today.slice(0,7)&&plakatSel===today;
   todayB.onclick=()=>{const was=plakatMonth;plakatMonth=today.slice(0,7);plakatSel=today;plakatMonthDraw(page,view,pager,items,today,was<plakatMonth?-1:1);};
-  arrs.append(todayB,prevB,nextB);mr.append(el('small','',String(y)),arrs);head.append(el('b','',abbr),mr);}
- const offset=(new Date(Date.UTC(y,m-1,1,12)).getUTCDay()+6)%7,count=new Date(Date.UTC(y,m,0,12)).getUTCDate(),total=Math.ceil((offset+count)/7)*7;
+  const ABBR=['Jaan','Veebr','Märts','Apr','Mai','Juuni','Juuli','Aug','Sept','Okt','Nov','Dets'];
+  titleTrack.append(...[prevM,plakatMonth,nextM].map(mon=>el('b','',ABBR[+mon.slice(5,7)-1])));titleBox.append(titleTrack);
+  arrs.append(todayB,prevB,nextB);mr.append(el('small','',String(y)),arrs);head.append(titleBox,mr);}
+ // Ühe kuu ruudustik (mon = 'YYYY-MM'); naaberkuud on ainult libistamiseks (inert).
+ const buildGrid=mon=>{
+ const grid=el('div','pk-grid');
+ const [gy,gm]=mon.split('-').map(Number);
+ const offset=(new Date(Date.UTC(gy,gm-1,1,12)).getUTCDay()+6)%7,count=new Date(Date.UTC(gy,gm,0,12)).getUTCDate(),total=Math.ceil((offset+count)/7)*7;
  for(let k=0;k<total;k++){
-  const dt=new Date(Date.UTC(y,m-1,k-offset+1,12)),date=dt.toISOString().slice(0,10),inMonth=date.slice(0,7)===plakatMonth;
+  const dt=new Date(Date.UTC(gy,gm-1,k-offset+1,12)),date=dt.toISOString().slice(0,10),inMonth=date.slice(0,7)===mon;
   const entry=byDay.get(date)||{events:[],tasks:[]},off=calOff(date),w=dt.getUTCDay();
   const cell=el('button','pk-c'+(inMonth?'':' out')+(date<today?' past':'')+(date===today?' today':'')+(date===plakatSel?' sel':'')+(off.holiday?' hol':'')+(w===0||w===6?' wk':'')+(date<today&&entry.tasks.length?' over':''));
   cell.type='button';
@@ -3070,10 +3107,30 @@ function plakatMonthDraw(page,view,pager,items,today,dir){
   cell.onclick=()=>{plakatSel=date;if(!inMonth)plakatMonth=date.slice(0,7);plakatMonthDraw(page,view,pager,items,today);};
   grid.append(cell);
  }
- // Libistamine ruudustikul ja pealkirjal vahetab kuud (touch-action: pan-y hoiab päevade pagineri paigal); vasakule = järgmine kuu.
- [grid,head].forEach(zone=>{let sx=null,sy=0;zone.addEventListener('pointerdown',e=>{sx=e.clientX;sy=e.clientY;});
-  zone.addEventListener('pointerup',e=>{if(sx===null)return;const dx=e.clientX-sx,dy=e.clientY-sy;sx=null;if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.5)shift(dx<0?1:-1);});
-  zone.addEventListener('pointercancel',()=>{sx=null;});});
+ return grid;};
+ const grids=[prevM,plakatMonth,nextM].map((mon,i)=>{const g=buildGrid(mon);if(i!==1){g.setAttribute('aria-hidden','true');g.setAttribute('inert','');}if(i===0&&mon<minM)g.style.visibility='hidden';return g;});
+ const grid=grids[1];
+ track.append(...grids);viewport.append(track);
+ if(typeof requestAnimationFrame==='function')requestAnimationFrame(()=>{if(grid.offsetHeight)viewport.style.height=grid.offsetHeight+'px';});
+ // Libistamine ruudustikul ja pealkirjal: sõrm liigutab rööpa kaasa (touch-action: pan-y hoiab päevade pagineri paigal); vasakule = järgmine kuu.
+ [viewport,titleBox].forEach(zone=>{let sx=null,sy=0,t0=0,dx=0,mode=null,id=null;
+  const home=()=>{setPos('-100%','-100%','transform .22s cubic-bezier(.2,.8,.2,1)');setTimeout(()=>{if(!busy){track.style.transition='';titleTrack.style.transition='';}},230);};
+  zone.addEventListener('pointerdown',e=>{if(busy||e.button>0)return;sx=e.clientX;sy=e.clientY;t0=Date.now();dx=0;mode=null;id=e.pointerId;});
+  zone.addEventListener('pointermove',e=>{if(sx===null||e.pointerId!==id)return;const mx=e.clientX-sx,my=e.clientY-sy;
+   if(mode===null&&(Math.abs(mx)>14||Math.abs(my)>14))mode=Math.abs(mx)>Math.abs(my)*1.8?'x':'y';
+   if(mode!=='x')return;
+   try{if(!zone.hasPointerCapture(id))zone.setPointerCapture(id);}catch(_){}
+   dx=mx>0&&prevM<minM?mx*0.25:mx;const ratio=(titleBox.offsetWidth||220)/(viewport.offsetWidth||342);
+   setPos('calc(-100% + '+dx+'px)','calc(-100% + '+(dx*ratio)+'px)');});
+  const finish=(e,cancelled)=>{if(sx===null||e.pointerId!==id)return;const total=e.clientX-sx,was=mode,width=viewport.offsetWidth||360;sx=null;mode=null;dx=0;
+   if(was!=='x')return;
+   if(cancelled){home();return;}
+   const fast=Math.abs(total)/Math.max(1,Date.now()-t0)>0.8&&Math.abs(total)>60;
+   const go=(Math.abs(total)>width*0.35||fast)?(total<0?1:-1):0;
+   if(!go||(go<0&&prevM<minM)){home();return;}
+   busy=true;const to=go>0?'-200%':'0%';setPos(to,to,EASE);setTimeout(()=>commit(go),240);};
+  zone.addEventListener('pointerup',e=>finish(e,false));
+  zone.addEventListener('pointercancel',e=>finish(e,true));});
  // valitud päev
  const sheet=el('div','pk-list pk-msheet');
  const dh=el('div','pk-dh');
@@ -3092,17 +3149,17 @@ function plakatMonthDraw(page,view,pager,items,today,dir){
   if(!evs.length&&!dayEntry.tasks.length)sheet.append(el('div','pk-fn',plakatSel<today?'Midagi polnud kirjas.':'Vaba päev. Mitte midagi planeeritud.'));
  }
  const leg=el('div','pk-leg');leg.innerHTML='<span><i class="pk-lg pk-elle"></i><i class="pk-lg pk-otto"></i>üritus</span><span><i class="pk-lg pk-tk"></i>ülesanne</span><span><i class="pk-lh">7</i>püha</span><span><i class="pk-lb"></i>vaheaeg</span>';
- page.append(top,head);if(st)page.append(st);page.append(dow,grid,leg,sheet);
+ page.append(top,head);if(st)page.append(st);page.append(dow,viewport,leg,sheet);
  if(dir)grid.classList.add(dir>0?'pk-snext':'pk-sprev');
  page.scrollTop=0;sheet.scrollTop=0;
 }
 function plakatMonthPage(view,pager,week,dots,items,today){
  if(!plakatMonth)plakatMonth=today.slice(0,7);
  if(!plakatSel)plakatSel=today;
- const page=document.createElement('section');page.className='pk-page pk-month';page.style.setProperty('--c','#efebff');page.style.setProperty('--on','#221b4a');page.dataset.lbl='Kuu';
+ const page=document.createElement('section');page.className='pk-page pk-month';page.style.setProperty('--c','#f1e6d0');page.style.setProperty('--on','#2b2118');page.dataset.lbl='Kuu';
  pager.append(page);plakatMonthDraw(page,view,pager,items,today);
  const dot=document.createElement('button');dot.type='button';dot.textContent='K';dot.setAttribute('aria-label','Kuu');dots.append(dot);
- const stripe=document.createElement('button');stripe.type='button';stripe.style.setProperty('--c','#efebff');stripe.style.setProperty('--on','#221b4a');
+ const stripe=document.createElement('button');stripe.type='button';stripe.style.setProperty('--c','#f1e6d0');stripe.style.setProperty('--on','#2b2118');
  stripe.innerHTML='<i>K</i><b class="pk-wword">Kuu</b>';
  const wl=document.createElement('div');wl.className='pk-wl';
  const mine=items.filter(i=>i.kind==='event'&&i.date&&i.date.slice(0,7)===today.slice(0,7)).length;
