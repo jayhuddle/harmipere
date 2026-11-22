@@ -2098,6 +2098,15 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 :root[data-plakat="1"] #inputView .input-sub{display:none}
 .refine-note{margin-top:10px}
 .refine-note .hint{margin:4px 0;font-size:12.5px}
+
+/* Kinkekaardid (work/gift-cards.js): kingipaki ikoon tähtajareal (klassikaline) ja pealkirja ees (Plakat). Algallikas work/gift-cards.css. */
+.gift-icon{display:inline-flex;align-items:center;justify-content:center;flex:none}
+.gift-icon svg{width:100%;height:100%;display:block}
+.saved-deadline>.gift-icon.inline{width:15px;height:15px;margin:0 6px -2px 0;vertical-align:baseline;color:color-mix(in srgb,var(--accent) 70%,var(--muted))}
+.saved-deadline.overdue>.gift-icon.inline,.saved-deadline.today>.gift-icon.inline,.saved-deadline.tomorrow>.gift-icon.inline{color:currentColor}
+.saved-card.done .saved-deadline>.gift-icon.inline{color:var(--soft)}
+.week-col-label.gift-label{color:var(--accent)}
+.gift-icon.pk-gift{width:.95em;height:.95em;margin:0 .35em 0 0;vertical-align:-.1em;opacity:.85}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
@@ -2879,9 +2888,10 @@ function plakatRow(item,kind,day,today,mini){
  const time=document.createElement('time');
  if(kind==='event'&&item.time){time.textContent=item.time;if(item.endTime){const small=document.createElement('small');small.textContent='–'+item.endTime;time.append(small);}}
  else if(kind==='event'){time.className='tg';time.textContent=item.date<day?'JÄTKUB':'KOGU PÄEV';}
- else{time.className='tg';time.textContent=kind==='late'?'ÜLE TÄHTAJA':item.deadline===today?'TÄNA':'TÄHTAEG';}
+ else{const gift=typeof giftCard==='function'&&giftCard(item);time.className='tg';time.textContent=kind==='late'?(gift?'AEGUNUD':'ÜLE TÄHTAJA'):gift?'AEGUB':item.deadline===today?'TÄNA':'TÄHTAEG';}
  const body=document.createElement('div');body.className='pk-body';
  const title=document.createElement('h3');title.textContent=item.title+(item.kind==='invoice'&&item.amount?' · '+item.amount+' '+(item.currency||''):'');
+ if(kind!=='event'&&typeof giftCard==='function'&&giftCard(item))title.prepend(giftIconNode('pk-gift'));
  body.append(title);
  const meta=document.createElement('p');
  const slug=personSlug(canonicalPerson(item.person||'')),tag=document.createElement('span');tag.className='pk-pp pk-'+slug;tag.textContent=shortPerson(item.person||'')||'—';meta.append(tag);
@@ -3258,6 +3268,12 @@ function phDaysBetween(a,b){return Math.round((Date.parse(b+'T12:00:00Z')-Date.p
 function phSlug(item){return personSlug(canonicalPerson(item.person||''));}
 function phPill(item){const tag=phEl('span','pk-pp pk-'+phSlug(item),shortPerson(item.person||'')||'—');tag.classList.add('ph-pp');return tag;}
 function phTitle(item){return item.title+(item.kind==='invoice'&&item.amount?' · '+item.amount+' '+(item.currency||''):'');}
+function phGift(item){return typeof giftCard==='function'&&!!giftCard(item);}
+// Ülesande tähtajarida; kinkekaardil „Aegub 12.03 · 8 nädala pärast · broneeri aegsasti” (gift-cards.js giftDueText).
+function phDueText(item,today){
+ if(item.deadline&&phGift(item))return giftDueText(item,today,plakatShort(item.deadline));
+ return !item.deadline?'Tähtajata':item.deadline<today?'Üle tähtaja · '+plakatShort(item.deadline):item.deadline===today?'Täna':item.deadline===addDays(today,1)?'Homme':'Tähtaeg '+plakatShort(item.deadline);
+}
 function phOpenTasks(items){return items.filter(item=>['task','invoice'].includes(item.kind)&&(item.status!=='Tehtud'||completing.has(item.key)));}
 // Kodupäev: kas täna või (õhtul/öösel) homne päev.
 function phHome(items,today,now){
@@ -3431,7 +3447,8 @@ function phTasksPage(items,today,close){
    ring.onclick=event=>{event.stopPropagation();plakatClick(item.key,'.complete-button');};
    const text=phEl('div','ph-tt'),title2=phEl('span','ph-ttl',phTitle(item));title2.append(phPill(item));text.append(title2);
    const tomorrow=addDays(today,1);
-   text.append(phEl('small','',!item.deadline?'Tähtajata':item.deadline<today?'Üle tähtaja · '+plakatShort(item.deadline):item.deadline===today?'Täna':item.deadline===tomorrow?'Homme':'Tähtaeg '+plakatShort(item.deadline)));
+   if(phGift(item))title2.prepend(giftIconNode('pk-gift'));
+   text.append(phEl('small','',phDueText(item,today)));
    const rel=plakatRelatedLink(item,'ph-rel');if(rel)text.append(rel);
    row.append(ring,text);row.onclick=()=>plakatClick(item.key,'.edit-item');ov.append(row);
   });
@@ -3515,7 +3532,10 @@ function plakatHome(view,pager,items,today){
   tasks.replaceChildren();
   const thd=phEl('div','ph-hd');thd.append(phEl('span','ph-mono','Ülesanded'));const tb=phEl('span','ph-bd');tb.append(phEl('span','',open.length?open.length+' lahti':'kõik tehtud ✓'));thd.append(tb);tasks.append(thd);
   const tl=phEl('div','ph-trs');
-  dated.slice(0,2).forEach(item=>{const r=phEl('div','ph-tr'+(item.deadline<today?' late':''));r.append(phEl('span','ph-ttx',phTitle(item)),phEl('small','',item.deadline<today?'Üle tähtaja · '+plakatShort(item.deadline):item.deadline===today?'Täna':item.deadline===addDays(today,1)?'Homme':'Tähtaeg '+plakatShort(item.deadline)));tl.append(r);});
+  // Hoiatusajas kinkekaart (gift-cards.js) asendab teise rea, kui see muidu kahe lähima hulka ei mahuks.
+  const slabList=dated.slice(0,2),giftNext=typeof giftWarn==='function'&&dated.find(item=>giftWarn(item,today)&&!slabList.includes(item));
+  if(giftNext)slabList[Math.min(1,slabList.length)]=giftNext;
+  slabList.forEach(item=>{const r=phEl('div','ph-tr'+(item.deadline<today?' late':'')),tx=phEl('span','ph-ttx',phTitle(item));if(phGift(item))tx.prepend(giftIconNode('pk-gift'));r.append(tx,phEl('small','',phDueText(item,today)));tl.append(r);});
   if(!dated.length)tl.append(phEl('div','ph-tr',open.length?'Tähtajaga ülesandeid pole.':'Kõik tehtud.'));
   tasks.append(tl);const th=phEl('div','ph-hint');th.append(phEl('span','',und?und+' tähtajata':'ava'),phEl('span','','›'));tasks.append(th);
   // ülesannete leht uuesti (loendurid)
@@ -3767,6 +3787,43 @@ function eventIconNode(item){
  span.className='event-icon event-icon-'+icon.name;span.setAttribute('role','img');span.setAttribute('aria-label',icon.label);span.title=icon.label;
  span.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+icon.body+'</svg>';
  return span;
+}
+// Kinkekaardid: avatud ülesanne, mille pealkiri/märkused räägivad kinkekaardist (AI salvestab „Kasuta: [koht] kinkekaart”, tähtaeg = aegumine).
+// Tüüp määrab, kui vara hoiatada (päevi enne aegumist): broneerimist vajav (spa, majutus, elamus) 8 ja 2 nädalat,
+// koht/pilet (restoran, teater, kino) 4 ja 1 nädal, pood 2 nädalat ja 3 päeva. Sama loogika on Apps Scriptis (PereMorning.gs, pereGiftCard_);
+// work/test-pere-gift.cjs kontrollib, et mustrid ja ajad on mõlemas samad.
+const GIFT_RE=/kinke\s?(kaar[td]|kupong|pilet|sertifikaat|tšekk|seanss)|elamuskingitus|gift\s?card|voucher|vautšer/i;
+const GIFT_BOOK_RE=/\bspaa?|saun|massaa?ž|hotell|majutus|puhkemaja|külalistemaja|puhkeküla|gl[aä]mping|mõis|elamus|seiklus|\blennu|kuurort|hoolitsus|iluravi|ilusalong|retriit|tervisekeskus/i;
+const GIFT_VENUE_RE=/restoran|kohvik|bistroo|söök|brunch|teat(er|ri)|kontsert|kino|etendus|muuseum|bowling|keegel|escape|põgenemis|batuut|veekeskus|pilet/i;
+const GIFT_LEADS={book:[56,14],venue:[28,7],shop:[14,3]};
+const GIFT_HINT={book:'broneeri aegsasti',venue:'broneeri aeg või piletid',shop:''};
+const GIFT_ICON='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/></svg>';
+function giftCard(item){
+ if(!item||item.kind!=='task')return null;
+ const text=(item.title||'')+'\n'+(item.notes||'');
+ if(!GIFT_RE.test(text))return null;
+ const type=GIFT_BOOK_RE.test(text)?'book':GIFT_VENUE_RE.test(text)?'venue':'shop';
+ return {type,lead:GIFT_LEADS[type],hint:GIFT_HINT[type]};
+}
+function giftDaysLeft(item,today){return Math.round((Date.parse(item.deadline+'T12:00:00Z')-Date.parse(today+'T12:00:00Z'))/86400000);}
+// Hoiatusaken: avatud kinkekaart, mille aegumiseni on jäänud ≤ esimene hoiatusaeg (ja pole veel aegunud).
+function giftWarn(item,today){
+ const gift=giftCard(item);if(!gift||item.status==='Tehtud'||!item.deadline)return false;
+ const left=giftDaysLeft(item,today);return left>=0&&left<=gift.lead[0];
+}
+function giftLeftText(left){return left===0?'täna':left===1?'homme':left>=14?Math.round(left/7)+' nädala pärast':left+' päeva pärast';}
+// Kaardi tähtajarida: „Aegub 12. märts · 8 nädala pärast · broneeri aegsasti” (hoiatusaknas), muidu „Aegub 12. märts”.
+function giftDueText(item,today,dayText){
+ const gift=giftCard(item);if(!gift||!item.deadline)return '';
+ if(item.status==='Tehtud')return 'Aegus '+dayText;
+ const left=giftDaysLeft(item,today);
+ if(left<0)return 'Aegus '+dayText+' · aegunud';
+ if(left>gift.lead[0])return 'Aegub '+dayText;
+ return 'Aegub '+dayText+' · '+giftLeftText(left)+(gift.hint&&left>1?' · '+gift.hint:'');
+}
+function giftIconNode(extra){
+ const span=document.createElement('span');span.className='gift-icon'+(extra?' '+extra:'');span.setAttribute('role','img');span.setAttribute('aria-label','Kinkekaart');span.title='Kinkekaart';
+ span.innerHTML=GIFT_ICON;return span;
 }
 // Pere ülevaade (asendab Index-enne-klaasi.html renderOverview funktsiooni; build-glass-index.cjs paneb selle sisse).
 // "See nädal" (täna + 6 päeva, üle tähtaja ülesanded ülal), allpool kuude kaupa ülejäänu ilma kordusteta.
@@ -4238,7 +4295,9 @@ function renderOverview(){
  renderPersonChips();
  const person=$('overviewPerson').value,items=savedOverview.items.filter(item=>!person||item.person===person);
  nextUpItems=items;renderNextUp();
- const inWeek=item=>isTask(item)?(item.status!=='Tehtud'||completing.has(item.key))&&!!item.deadline&&item.deadline<=weekEnd:item.kind==='event'&&item.date>=today&&item.date<=weekEnd;
+ // Kinkekaart tuleb "See nädal" alla juba hoiatusaja algusest (gift-cards.js giftWarn), mitte alles aegumise nädalal.
+ const giftSoon=item=>typeof giftWarn==='function'&&giftWarn(item,today);
+ const inWeek=item=>isTask(item)?(item.status!=='Tehtud'||completing.has(item.key))&&!!item.deadline&&(item.deadline<=weekEnd||giftSoon(item)):item.kind==='event'&&item.date>=today&&item.date<=weekEnd;
  const conflicts=eventConflicts(savedOverview.items.filter(item=>item.kind==='event'&&item.date>=today));
  overviewEventCards=new Map();overviewTaskCards=new Map();
  if(overviewEditing&&!savedOverview.items.some(item=>item.key===overviewEditing.key))overviewEditing=null;
@@ -4253,7 +4312,12 @@ function renderOverview(){
   const titleText=item.title+(item.kind==='invoice'&&item.amount?' · '+item.amount+' '+item.currency:''),h3=document.createElement('h3');
   if(completing.has(item.key)){const strike=document.createElement('span');strike.className='strike';strike.textContent=titleText;strike.style.animationDelay=(-(Date.now()-completing.get(item.key))/1000)+'s';h3.append(strike);}else h3.textContent=titleText;
   heading.append(h3);savedPersonTag(heading,item.person);body.append(heading);
-  if(item.deadline){const late=item.status!=='Tehtud'&&item.deadline<today,isToday=item.deadline===today,soon=item.status!=='Tehtud'&&item.deadline===tomorrow;
+  const gift=typeof giftCard==='function'?giftCard(item):null;
+  if(gift&&card.classList){card.classList.add('gift-card');if(giftSoon(item))card.classList.add('gift-warn');}
+  if(gift&&item.deadline){const late=item.status!=='Tehtud'&&item.deadline<today,isToday=item.deadline===today,soon=item.status!=='Tehtud'&&item.deadline>today&&giftDaysLeft(item,today)<=gift.lead[1];
+   const line=savedText(body,'p',giftDueText(item,today,weekDrawing?longDay(item.deadline,true):shortDay(item.deadline)),'saved-deadline'+(late?' overdue':isToday?' today':soon?' tomorrow':''));
+   if(line&&line.prepend)line.prepend(giftIconNode('inline'));
+  }else if(item.deadline){const late=item.status!=='Tehtud'&&item.deadline<today,isToday=item.deadline===today,soon=item.status!=='Tehtud'&&item.deadline===tomorrow;
    savedText(body,'p','Tähtaeg: '+(weekDrawing?longDay(item.deadline,true):shortDay(item.deadline))+(late?' · üle tähtaja':isToday?' · täna':soon?' · homme':''),'saved-deadline'+(late?' overdue':isToday?' today':soon?' tomorrow':''));
   }else savedText(body,'p','Tähtaega pole määratud','saved-meta');
   if(item.relatedEvent){const rel=item.relatedEvent,link=document.createElement('button');link.type='button';link.className='saved-related related-link';
@@ -4328,13 +4392,16 @@ function renderOverview(){
   if(!weekTasks.some(item=>item.deadline===today)&&!weekEvents.some(item=>item.date===today)){
    const free=document.createElement('div');free.className='agenda-day today free-today';
    const phrases=['Täna on sündmustevaba!','Täna pole midagi plaanis!','Vaba päev, kasuta ära!','Täna saab hinge tõmmata!','Päev on sinu päralt!','Täna on rahulik päev!'];
-   const next=[...weekTasks.map(item=>item.deadline),...weekEvents.map(item=>item.date)].filter(d=>d>today).sort()[0];
+   const next=[...weekTasks.map(item=>item.deadline),...weekEvents.map(item=>item.date)].filter(d=>d>today&&d<=weekEnd).sort()[0];
    const when=d=>{if(d===tomorrow)return 'homme';if(d===addDays(today,2))return 'üle-homme';const n=longDay(d,true).split(' ')[0];return n+(n.endsWith('e')?'l':'al');};
    savedText(free,'span',phrases[Math.floor(Date.parse(today+'T12:00:00Z')/86400000)%phrases.length]);
    if(next)savedText(free,'small','Järgmine asi on '+when(next));
    week.append(free);
   }
   if(overdue.length){savedText(week,'div','Üle tähtaja','week-col-label overdue-label');overdue.forEach(item=>taskCard(item,week));}
+  // Kinkekaardid, mis aeguvad pärast seda nädalat, aga on hoiatusajas: oma rühm päevade ees.
+  const gifts=weekTasks.filter(item=>item.deadline>weekEnd);
+  if(gifts.length){savedText(week,'div',gifts.length>1?'Kinkekaardid aeguvad':'Kinkekaart aegub','week-col-label gift-label');gifts.forEach(item=>taskCard(item,week));}
   for(let i=0;i<7;i++){
    const date=addDays(today,i),dayEvents=weekEvents.filter(item=>item.date===date),dayTasks=weekTasks.filter(item=>item.deadline===date);
    if(!dayEvents.length&&!dayTasks.length)continue;
