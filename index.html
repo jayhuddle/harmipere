@@ -2235,6 +2235,48 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"])[data-plakat="1"] #inputView .actions #analyze.ready{box-shadow:0 0 0 6px color-mix(in srgb,var(--pv-fg) 20%,transparent);animation-name:pkReadyPulseD}}
 :root[data-theme="dark"][data-plakat="1"] #inputView .actions #analyze.ready:active{animation:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--pv-fg) 20%,transparent)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"])[data-plakat="1"] #inputView .actions #analyze.ready:active{animation:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--pv-fg) 20%,transparent)}}
+
+/* Plakat, Ülevaatelt päevalehele (ph-leave) ja tagasi (ph-return): "See nädal", Ülesanded ja Kuu kaardid liiguvad alla ja tulevad tagasi üles.
+   Variandid <html data-phdrop>: a = lükka alla, b = kardin (aeglasem + tuhmub), c = kaardipakk (kordamööda). Ilma atribuudita endine käitumine.
+   Jüri 24.11 (eelvaates võrdlemiseks). Algallikas work/plakat-home-drop.css. */
+@keyframes phDropA{to{translate:0 105vh}}
+@keyframes phRiseA{from{translate:0 105vh}to{translate:0 0}}
+@keyframes phDropB{to{translate:0 30vh;opacity:0}}
+@keyframes phRiseB{from{translate:0 30vh;opacity:0}to{translate:0 0;opacity:1}}
+@keyframes phDropC{to{translate:0 90vh;scale:.94}}
+@keyframes phRiseC{from{translate:0 90vh;scale:.94}to{translate:0 0;scale:1}}
+@keyframes phZoneIn{from{opacity:0}to{opacity:1}}
+:root[data-phdrop="a"] #plakatView .pk-home.ph-leave :is(.ph-sb,.ph-row2){animation:phDropA .24s cubic-bezier(.55,0,.8,.4) both}
+:root[data-phdrop="a"] #plakatView .pk-home.ph-return :is(.ph-sb,.ph-row2){animation:phRiseA .36s cubic-bezier(.2,.9,.2,1) both}
+:root[data-phdrop="b"] #plakatView .pk-home.ph-leave :is(.ph-sb,.ph-row2){animation:phDropB .3s cubic-bezier(.2,.8,.2,1) both}
+:root[data-phdrop="b"] #plakatView .pk-home.ph-return :is(.ph-sb,.ph-row2){animation:phRiseB .4s cubic-bezier(.2,.9,.2,1) both}
+:root[data-phdrop="c"] #plakatView .pk-home.ph-leave :is(.ph-sb,.ph-sc,.ph-sd){animation:phDropC .26s cubic-bezier(.5,0,.8,.3) both}
+:root[data-phdrop="c"] #plakatView .pk-home.ph-leave .ph-sc{animation-delay:45ms}
+:root[data-phdrop="c"] #plakatView .pk-home.ph-leave .ph-sd{animation-delay:90ms}
+:root[data-phdrop="c"] #plakatView .pk-home.ph-return :is(.ph-sb,.ph-sc,.ph-sd){animation:phRiseC .38s cubic-bezier(.2,1.2,.3,1) both}
+:root[data-phdrop="c"] #plakatView .pk-home.ph-return .ph-sc{animation-delay:50ms}
+:root[data-phdrop="c"] #plakatView .pk-home.ph-return .ph-sd{animation-delay:100ms}
+:root[data-phdrop] #plakatView .pk-home.ph-return .ph-zone{animation:phZoneIn .22s ease-out both}
+
+/* Parandus (Jüri 24.11: "ei kuku alla, viskab kohe ette"): laienev värvikiht (.ph-morph, z 40) kattis 90 ms pärast kogu ekraani ja peitis kaartide liikumise.
+   Kukkumise ajal ei ole Ülevaade oma kihistus (z-index auto) ja kaardid on värvikihi kohal, nii et päeva värv paistab nende tagant, kui nad alla liiguvad.
+   Algallikas work/plakat-home-drop2.css. */
+:root[data-phdrop] #plakatView .pk-home.ph-leave{z-index:auto}
+:root[data-phdrop] #plakatView .pk-home.ph-leave .ph-sb{z-index:42}
+:root[data-phdrop] #plakatView .pk-home.ph-leave .ph-row2{z-index:41;background:transparent}
+
+/* Parandus (Jüri 24.11): Ülevaatesse tagasi tulles paistis kaartide tagant hetkeks vaadatud päeva kiht (.ph-b, pargitud fookusploki alla) ja
+   täna-plokk tuhmus sisse (taga olev päevaleht paistis läbi) = "pool ekraani täna, pool vaadatud päev".
+   Nüüd: liikumise ajal on suletud .ph-b peidus, täna-plokk ilmub kohe, C-variandi viited lühemad. Algallikas work/plakat-home-drop3.css. */
+:root[data-phdrop] #plakatView .pk-home:is(.ph-return,.ph-leave) .ph-zone:not(.b-open) .ph-b{visibility:hidden}
+:root[data-phdrop] #plakatView .pk-home.ph-return .ph-zone{animation:none}
+:root[data-phdrop="c"] #plakatView .pk-home.ph-return :is(.ph-sb,.ph-sc,.ph-sd){animation-duration:.32s}
+:root[data-phdrop="c"] #plakatView .pk-home.ph-return .ph-sc{animation-delay:35ms}
+:root[data-phdrop="c"] #plakatView .pk-home.ph-return .ph-sd{animation-delay:70ms}
+
+/* Tagasitulek (Jüri 24.11): vaadatud päeva kiht (.ph-b) ilmub üles kohe, ilma üles libisemiseta, ja püsib kaartide tõusu ajal; pärast (klass ph-return ära)
+   libiseb see tavapärase üleminekuga alla ja nähtavale tuleb tänane. Algallikas work/plakat-home-drop4.css. */
+:root[data-phdrop] #plakatView .pk-home.ph-return .ph-b{transition:none}
 /* Inimesed (genereeritud work/people.json põhjal) */
 .saved-person.person-eia{background:linear-gradient(135deg,#fde047,#f59e0b);color:#422c00;box-shadow:0 3px 10px rgba(245,158,11,0.35)}
 .chip-eia{--chip:#f59e0b;--chip-bg:linear-gradient(135deg,#fde047,#f59e0b)}
@@ -3025,7 +3067,11 @@ function pkRgbOf(c){const s=String(c||'').trim();let m=s.match(/^#([0-9a-f]{6})$
 // aga --c jääb heleda teema liivaks (Jüri märkas 24.11: nupp oli tumedas teemas liivane).
 function plakatPageColors(pg){
  let c=pg.style.getPropertyValue('--c'),on=pg.style.getPropertyValue('--on');
- if(pg.classList&&pg.classList.contains('pk-month')){try{const cs=getComputedStyle(pg),bg=pkRgbOf(cs.backgroundColor),fg=pkRgbOf(cs.color);if(bg)c=pkMix(bg,bg,0);if(fg)on=pkMix(fg,fg,0);}catch(_){}}
+ if(pg.classList&&pg.classList.contains('pk-month')){try{const cs=getComputedStyle(pg),fg=pkRgbOf(cs.color);let bg=pkRgbOf(cs.backgroundColor);
+  // Tumedas teemas (tume taust) kraadi heledam: lehe taust + vaheaja riba toon (--band), nagu vaheaja päevad kalendris (Jüri 24.11).
+  if(bg&&(0.299*bg[0]+0.587*bg[1]+0.114*bg[2])/255<0.35){const m=String(cs.getPropertyValue('--band')).match(/rgba?\(([^)]+)\)/);
+   if(m){const p=m[1].split(/[\s,/]+/).filter(Boolean).map(Number),a=p.length>3?p[3]:1;bg=bg.map((v,i)=>v+(p[i]-v)*a);}}
+  if(bg)c=pkMix(bg,bg,0);if(fg)on=pkMix(fg,fg,0);}catch(_){}}
  return [c,on];
 }
 function pkMix(a,b,t){return '#'+a.map((v,i)=>Math.max(0,Math.min(255,Math.round(v+(b[i]-v)*t))).toString(16).padStart(2,'0')).join('');}
@@ -3389,6 +3435,8 @@ function renderPlakat(){
  if(!window.pkThemeObs){const again=()=>{const p=document.querySelector('#plakatView .pk-pager');if(p)setTimeout(()=>p.dispatchEvent(new Event('scroll')),30);};
   window.pkThemeObs=new MutationObserver(again);window.pkThemeObs.observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
   try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',again);}catch(_){}}
+ // Tagasi Ülevaatesse: endine üleminek (kogu Ülevaade libiseb ühes tükis alt üles). Eraldi kaartide tõus (ph-return) proovitud 24.11 ja tagasi rullitud:
+ // vahepeal paistsid pool tänast ja pool vaadatud päeva / liiga palju tõmblemist. CSS ph-return reeglid jäid glass-theme.css-i, aga klassi enam ei panda.
  new MutationObserver(()=>{plakatHomeOpen=view.classList.contains('week-open');if(plakatHomeOpen&&typeof pkNav!=='undefined')pkNav.drop('day');plakatNav(view);plakatHomeSync(view,pager);}).observe(view,{attributes:true,attributeFilter:['class']});
  // Muutmine: olemasolev muutmiskaart (peidetud ülevaates) tuuakse lehena plakati peale.
  if(overviewEditing){
@@ -3596,6 +3644,8 @@ function phPageIn(page){
 }
 // Ülevaatelt päeva (või kuu) lehele: puudutatud plokk laieneb värvikihina üle ekraani, sulab sihtlehe taustaks ja leht tuleb sisse.
 // Ilma liikumiseta (prefers-reduced-motion või puuduv Web Animations) vahetub leht kohe.
+// Päevalehele minnes kukuvad "See nädal", Ülesanded ja Kuu kaardid alla: variant A (Jüri valik 24.11) vaikimisi, <html data-phdrop="a">.
+try{if(!document.documentElement.hasAttribute('data-phdrop'))document.documentElement.dataset.phdrop='a';}catch(_){}
 let plakatHomeBusy=false;
 function plakatHomeGoto(view,pager,idx,source){
  if(plakatHomeBusy)return;
@@ -3618,12 +3668,15 @@ function plakatHomeGoto(view,pager,idx,source){
    const to={left:'0px',top:'0px',width:vr.width+'px',height:vr.height+'px',borderRadius:'0px',backgroundColor:page?getComputedStyle(page).backgroundColor:cs.backgroundColor};
    morph=document.createElement('div');morph.className='ph-morph';Object.assign(morph.style,from);view.append(morph);
    plakatHomeBusy=true;
+   // Päevalehele minnes (mitte Kuu): "See nädal", Ülesanded ja Kuu kaardid liiguvad alla (variant <html data-phdrop="a|b|c">, CSS ph-leave).
+   const homeEl=view.querySelector('.pk-home');
+   if(homeEl&&document.documentElement.dataset.phdrop&&page&&!page.classList.contains('pk-month'))homeEl.classList.add('ph-leave');
    const grow=morph.animate([from,to],{duration:270,easing:'cubic-bezier(.2,.9,.2,1)',fill:'forwards'});
    grow.onfinish=()=>{
     const home=view.querySelector('.pk-home');if(home)home.classList.add('ph-snap');
     finish();
     const fade=morph.animate([{opacity:1},{opacity:0}],{duration:170,fill:'forwards'});
-    fade.onfinish=()=>{morph.remove();if(home)home.classList.remove('ph-snap');plakatHomeBusy=false;};
+    fade.onfinish=()=>{morph.remove();if(home)home.classList.remove('ph-snap','ph-leave');plakatHomeBusy=false;};
    };
    return;
   }
