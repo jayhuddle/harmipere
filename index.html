@@ -3286,7 +3286,11 @@ function renderPlakat(){
  if(plakatHomeOpen)view.classList.add('week-open');
  const sync=()=>{const i=Math.round(pager.scrollLeft/Math.max(1,pager.clientWidth));plakatIndex=i;[...dots.children].forEach((d,j)=>{if(j<8)d.classList.toggle('on',j===i);});
   // Alumine peamenüü kasutab selle päeva värvi (CSS --pk-c / --pk-on).
-  const pg=pager.children[i];if(pg){const root=document.documentElement.style;root.setProperty('--pk-c',pg.style.getPropertyValue('--c'));root.setProperty('--pk-on',pg.style.getPropertyValue('--on'));}plakatNav(view);};
+  // Kui Ülevaade on avatud, annab nupu värvi ülevaate fookusplokk (--fc), mitte selle taga olev pagerileht (muidu läks nupp hiljem, nt taustauuenduse järel,
+  // viimati vaadatud lehe, nt Kuu liiva värvi). Jüri märkas 23.11.
+  const pg=pager.children[i],home=view.classList.contains('week-open')?view.querySelector('.pk-home'):null;
+  if(home&&home.style.getPropertyValue('--fc')){const root=document.documentElement.style;root.setProperty('--pk-c',home.style.getPropertyValue('--fc'));root.setProperty('--pk-on',home.style.getPropertyValue('--fon'));}
+  else if(pg){const root=document.documentElement.style;root.setProperty('--pk-c',pg.style.getPropertyValue('--c'));root.setProperty('--pk-on',pg.style.getPropertyValue('--on'));}plakatNav(view);};
  pager.addEventListener('scroll',sync);
  new MutationObserver(()=>{plakatHomeOpen=view.classList.contains('week-open');if(plakatHomeOpen&&typeof pkNav!=='undefined')pkNav.drop('day');plakatNav(view);plakatHomeSync(view,pager);}).observe(view,{attributes:true,attributeFilter:['class']});
  // Muutmine: olemasolev muutmiskaart (peidetud ülevaates) tuuakse lehena plakati peale.
