@@ -2561,6 +2561,54 @@ function canonicalPerson(value){const p=PEOPLE.find(x=>x.short===value||x.id===v
 const personSlug=id=>{const p=personBy(id);return p?p.slug:'other';};
 const personColor=id=>{const p=personBy(id);return p?p.color:'#64748b';};
 const isFamilyPerson=id=>{const p=personBy(id);return !!(p&&p.family);};
+// Pere seaded serverist (PereFamily.gs → pereListSaved.family): inimesed, lühinimed ja värvid (plaan B samm 1).
+// Ehitus paneb PEOPLE algväärtuse work/people.json-ist. Kui server saadab sama pere (Härmipere), ei muutu midagi.
+// Kui server saadab teise pere, asendatakse PEOPLE sisu, lisatakse nende värvide CSS ja uuendatakse inimese valikud.
+// Viimane pere jäetakse seadmesse meelde (localStorage pere-family), et ka käivitus enne andmete saabumist oleks õige.
+function pereFamilySlug(short,used){
+ let s=String(short||'').toLowerCase().replace(/[äå]/g,'a').replace(/[öõ]/g,'o').replace(/ü/g,'u').replace(/š/g,'s').replace(/ž/g,'z').replace(/[^a-z0-9]/g,'');
+ if(!s||s==='other'||s==='all'||used.has(s))s='p'+used.size;
+ used.add(s);return s;
+}
+function pereFamilyHex(c){const m=String(c||'').match(/^#([0-9a-f]{6})$/i);return m?[0,2,4].map(i=>parseInt(m[1].substr(i,2),16)):[100,116,139];}
+function pereFamilyMix(rgb,to,t){return '#'+rgb.map((v,i)=>Math.round(v+(to[i]-v)*t).toString(16).padStart(2,'0')).join('');}
+// Puuduvad väljad tuletatakse põhivärvist: üleminek, tekstivärv (hele/tume), kuma ja Plakati pastelne toon.
+function pereFamilyPerson(p,used){
+ const color=/^#[0-9a-f]{6}$/i.test(String(p.color||''))?p.color:'#64748b',rgb=pereFamilyHex(color),lum=(0.299*rgb[0]+0.587*rgb[1]+0.114*rgb[2])/255;
+ return {id:String(p.id),short:String(p.short),slug:pereFamilySlug(p.short,used),color,family:!!p.family,
+  grad:Array.isArray(p.grad)&&p.grad.length===2?p.grad:[pereFamilyMix(rgb,[255,255,255],0.25),color],
+  ink:p.ink||(lum>0.62?'#1a1a1a':'#fff'),glow:p.glow||rgb.join(','),glowAlpha:typeof p.glowAlpha==='number'?p.glowAlpha:0.35,
+  pastel:p.pastel||pereFamilyMix(rgb,[255,255,255],0.45)};
+}
+function pereFamilyCss(people){
+ return people.map(p=>{const s=p.slug,pk='#plakatView';
+  return '.saved-person.person-'+s+'{background:linear-gradient(135deg,'+p.grad[0]+','+p.grad[1]+');color:'+p.ink+';box-shadow:0 3px 10px rgba('+p.glow+','+p.glowAlpha+')}\n'+
+   '.chip-'+s+'{--chip:'+p.color+';--chip-bg:linear-gradient(135deg,'+p.grad[0]+','+p.grad[1]+');--pk-chip:'+p.pastel+'}\n'+
+   pk+' .pk-pp.pk-'+s+','+pk+' .pk-av.pk-'+s+','+pk+' .pk-wd.pk-'+s+','+pk+' .pk-dd i.pk-'+s+','+pk+' .pk-lg.pk-'+s+','+pk+' .ph-dt.pk-'+s+','+pk+' .pk-month .pk-dd i.pk-'+s+'{background:'+p.pastel+'}\n'+
+   pk+' .ph-dots i.pk-'+s+'{background:'+p.pastel+';opacity:1}';}).join('\n');
+}
+function pereApplyFamily(fam){
+ try{
+  if(!fam||!Array.isArray(fam.people)||!fam.people.length||fam.people.some(p=>!p||!p.id||!p.short))return false;
+  try{localStorage.setItem('pere-family',JSON.stringify(fam));}catch(_){}
+  const same=fam.people.length===PEOPLE.length&&fam.people.every((p,i)=>p.id===PEOPLE[i].id&&p.short===PEOPLE[i].short&&p.color===PEOPLE[i].color);
+  if(same)return false;
+  const used=new Set(),next=fam.people.map(p=>pereFamilyPerson(p,used));
+  PEOPLE.splice(0,PEOPLE.length,...next);personKnown.splice(0,personKnown.length,...next.map(p=>p.id));
+  if(typeof document!=='undefined'&&document.createElement){
+   let tag=document.getElementById('pereFamilyCss');if(!tag){tag=document.createElement('style');tag.id='pereFamilyCss';document.head.append(tag);}
+   tag.textContent=pereFamilyCss(next);
+   // Sisesta "Kelle kohta" valik ja kiibid uuesti
+   const sel=document.getElementById('person');
+   if(sel){const keep=sel.value;sel.replaceChildren();[['','Tuvasta sisust'],...next.map(p=>[p.id,p.short]),['__other__','Muu – sisesta']].forEach(([v,t])=>{const o=document.createElement('option');o.value=v;o.textContent=t;sel.append(o);});
+    sel.value=[...sel.options].some(o=>o.value===keep)?keep:'';
+    const wrap=sel.parentElement,box=wrap&&wrap.querySelector('.person-pick');if(box&&typeof personChipRow==='function'){box.remove();personChipRow(wrap);}}
+  }
+  return true;
+ }catch(_){return false;}
+}
+// Käivitus: viimati teatud pere seadmest (enne kui serverist esimesed andmed tulevad).
+try{const cached=JSON.parse(localStorage.getItem('pere-family')||'null');if(cached)pereApplyFamily(cached);}catch(_){}
 let images = [], result = null, sourceSnapshot = null, busy = false, loadingImages = false, inheritedPeople = new WeakSet();
 const labels = {event:'Sündmus',task:'Ülesanne',invoice:'Arve',info:'Teade'};
 let savedOverview=null,overviewLoading=false;
@@ -4566,6 +4614,8 @@ function renderOverview(){
  overviewPhases=new Map();
  if(activeCancelMenu)activeCancelMenu.close();
  if(!savedOverview)return;
+ // Pere serverist (PereFamily.gs): Härmipere puhul ei muuda midagi, teise pere korral inimesed ja värvid (work/family.js).
+ if(savedOverview.family&&typeof pereApplyFamily==='function')pereApplyFamily(savedOverview.family);
  const today=savedOverview.today,tomorrow=addDays(today,1),weekEnd=addDays(today,6);
  setOverviewDate(today);
  const isTask=item=>['task','invoice'].includes(item.kind);
