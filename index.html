@@ -16,7 +16,8 @@
 <link id="pereAppleIcon" rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <script>window.pereSyncPlakatIdentity=function(){var p=false;try{p=localStorage.getItem('pere-plakat2')==='1';}catch(e){}var m=document.getElementById('pereManifest'),i=document.getElementById('pereIcon'),a=document.getElementById('pereAppleIcon');if(m)m.setAttribute('href',p?'manifest-plakat.webmanifest':'manifest.webmanifest');if(i)i.setAttribute('href',p?'icons/plakat-192.png':'icons/icon-192.png');if(a)a.setAttribute('href',p?'icons/plakat-apple-touch.png':'icons/apple-touch-icon.png');try{if(window.caches)caches.open('pere-prefs').then(function(c){return c.put('pref-plakat',new Response(p?'1':'0'));}).catch(function(){});}catch(e){}};pereSyncPlakatIdentity();</script>
 <title>Härmipere</title>
-<script>try{const t=localStorage.getItem('pere-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(_){}</script>
+<script>try{const t=localStorage.getItem('pere-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t;}catch(_){}
+(function(){try{const r=document.documentElement,m=matchMedia('(prefers-color-scheme: dark)'),s=()=>{const t=r.dataset.theme,v=t==='dark'||t==='light'?t:(m.matches?'dark':'light');if(r.dataset.scheme!==v)r.dataset.scheme=v;};s();new MutationObserver(s).observe(r,{attributes:true,attributeFilter:['data-theme']});m.addEventListener('change',s);}catch(_){}})();</script>
 <style>
 :root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#20382f;background:#f4f5ef;font-size:16px}*{box-sizing:border-box}body{margin:0}header{max-width:1080px;margin:auto;padding:27px 24px;display:flex;align-items:center;justify-content:space-between}.brand{font-weight:800;font-size:25px;letter-spacing:-1px}.brand span{color:#648377}.badge{font-size:12px;border:1px solid #d6ddd3;border-radius:30px;padding:7px 12px}main{max-width:1080px;margin:auto;padding:28px 24px 70px}.eyebrow{font-size:12px;letter-spacing:2px;text-transform:uppercase;color:#62786b}h1{font-size:clamp(32px,5vw,48px);font-weight:650;letter-spacing:-1.8px;line-height:1.1;margin:13px 0}p{line-height:1.65}.intro{max-width:640px;color:#627369;margin-bottom:30px}.layout{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(220px,.7fr);gap:22px;align-items:start}.panel{background:#fff;border:1px solid #dde3d8;border-radius:20px;padding:26px;box-shadow:0 7px 24px #20382f04}.side{background:#eaf0e5}.side h2{font-size:18px;margin-top:0}.side p{font-size:14px}.step{display:flex;gap:12px;margin:19px 0;font-size:14px;line-height:1.5}.number{background:#fff;border-radius:50%;min-width:26px;height:26px;text-align:center;line-height:26px;color:#527058}label{display:block;font-size:13px;font-weight:650;margin-bottom:8px}textarea,input,select{font:inherit;width:100%;background:#fcfdf9;border:1px solid #cbd6c9;border-radius:10px;padding:11px;color:#233c31}textarea{resize:vertical;line-height:1.6;min-height:175px}input:focus,textarea:focus,select:focus,button:focus-visible{outline:3px solid #a3c8ad;outline-offset:2px}.row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:18px 0}.hint{font-size:12px;color:#6b786f;margin:7px 0 0}.drop{border:1px dashed #a2b49e;border-radius:12px;padding:18px;margin-top:18px;text-align:center;background:#f8faf5}.drop.over{background:#e1edda;border-color:#476c4e}button{font:inherit;cursor:pointer;border:1px solid #cbd6c9;border-radius:10px;padding:10px 17px;background:#fff;color:#274331}button:disabled{opacity:.5;cursor:wait}.primary{background:#264d3a;border-color:#264d3a;color:#fff;font-weight:650}.actions{display:flex;gap:12px;align-items:center;margin-top:20px;flex-wrap:wrap}.images{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}.thumb{width:110px}.thumb img{display:block;width:110px;height:80px;object-fit:cover;border-radius:8px}.thumb button{padding:4px 8px;font-size:12px;margin-top:5px}.thumb small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px}.status{font-size:14px;line-height:1.5;margin:16px 0 0;white-space:pre-wrap}.error{color:#a63228}.notice{background:#fff4d9;border:1px solid #efd591;border-radius:12px;padding:17px;margin:16px 0;color:#69511b}.results{margin-top:32px}.results h2{font-size:25px;letter-spacing:-.5px}.item{margin:16px 0;padding:22px;border:1px solid #dce3d8;border-radius:16px;background:white}.kind{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#5d8068}.item h3{margin:10px 0}.item .row{margin:12px 0}.item textarea{min-height:70px}details{margin-top:15px;font-size:13px;color:#657269}summary{cursor:pointer}blockquote{margin:10px 0;padding-left:12px;border-left:3px solid #d4dece;white-space:pre-wrap}.empty{padding:20px;color:#69776b}footer{font-size:12px;color:#768074;margin-top:30px}[hidden]{display:none!important}@media(max-width:740px){.layout{grid-template-columns:1fr}.side{display:none}main{padding:16px 16px 40px}header{padding:20px 16px}.panel{padding:20px}.row{grid-template-columns:1fr}h1{letter-spacing:-1px}}
  .save-state{font-size:13px;margin:8px 0}.all-day{display:flex;gap:9px;align-items:center;margin:8px 0}.all-day input{width:auto}.all-day label{margin:0}.confirmation{background:#f5f8f2;border:1px solid #dce6d8;border-radius:12px;padding:18px;margin:22px 0}.confirmation h3{margin:0 0 6px}.confirmation p{margin:0;color:#627369;font-size:13px}
@@ -215,8 +216,7 @@ section>.month-divider:first-of-type,h2+div>.month-divider:first-child{margin-to
 .saved-confirm h3{margin:6px 0}
 .saved-confirm-line{margin:4px 0 0}
 .saved-confirm-line strong{color:#15803d}
-:root[data-theme="dark"] .saved-confirm-line strong{color:#4ade80}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .saved-confirm-line strong{color:#4ade80}}
+:root[data-scheme="dark"] .saved-confirm-line strong{color:#4ade80}
 .link-button{background:none;border:0;box-shadow:none;padding:0;color:var(--accent);font-weight:650;text-decoration:underline;cursor:pointer}
 /* ---- Pere ülevaade ---- */
 .person-chips{display:flex;gap:8px;flex-wrap:wrap}
@@ -272,12 +272,7 @@ section>.month-divider:first-of-type,h2+div>.month-divider:first-child{margin-to
   #analyze:disabled{opacity:.6}
 }
 #analyze .enter-icon{width:22px;height:22px;flex:0 0 auto}
-@media(max-width:740px){
- :root[data-theme="dark"] #inputView .actions #analyze{background:color-mix(in srgb,var(--accent) 30%,var(--glass-strong));color:#d9d5ff;border-color:color-mix(in srgb,var(--accent) 75%,transparent);box-shadow:0 6px 20px rgba(0,0,0,.45)}
-}
-@media(max-width:740px) and (prefers-color-scheme:dark){
- :root:not([data-theme="light"]) #inputView .actions #analyze{background:color-mix(in srgb,var(--accent) 30%,var(--glass-strong));color:#d9d5ff;border-color:color-mix(in srgb,var(--accent) 75%,transparent);box-shadow:0 6px 20px rgba(0,0,0,.45)}
-}
+@media(max-width:740px){:root[data-scheme="dark"] #inputView .actions #analyze{background:color-mix(in srgb,var(--accent) 30%,var(--glass-strong));color:#d9d5ff;border-color:color-mix(in srgb,var(--accent) 75%,transparent);box-shadow:0 6px 20px rgba(0,0,0,.45)}}
 /* Mobiil: ülevaate filtri chip'id ühel real (vajadusel külgsuunas keritav) */
 @media(max-width:740px){
  #personChips{flex-wrap:nowrap;gap:6px;overflow-x:auto;scrollbar-width:none;width:100%;padding:2px 0 6px}
@@ -299,8 +294,7 @@ section>.month-divider:first-of-type,h2+div>.month-divider:first-child{margin-to
 /* "tegemised" retro-fondiga (Righteous); kui font ei lae, jääb Outfit */
 .brand .brand-name>span{font-family:'Righteous','Outfit',system-ui,sans-serif;font-weight:400;letter-spacing:0}
 /* Heledas teemas "Täpsusta" sama läbipaistev kui "Lohista siia" kast */
-:root[data-theme="light"] .refine{background:transparent}
-@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .refine{background:transparent}}
+:root[data-scheme="light"] .refine{background:transparent}
 /* "Sisesta info" ei murdu kahele reale */
 /* "Sisesta info" ikoon; tumedas teemas mobiilinupp nähtavam */
 #analyze{display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap}
@@ -325,8 +319,7 @@ body:has(.cal-overlay:not([hidden])){overflow:hidden}
 .cal-sheet{position:relative;width:100%;max-width:520px;max-height:90vh;overflow:auto;border-radius:26px 26px 0 0;padding:8px 16px calc(18px + env(safe-area-inset-bottom));
  background:rgba(255,255,255,.56);backdrop-filter:blur(30px) saturate(180%);
  border:1px solid rgba(255,255,255,.7);border-bottom:0;box-shadow:0 -14px 44px rgba(20,22,52,.26),inset 0 1px 0 rgba(255,255,255,.75);animation:cal-up .25s cubic-bezier(.2,.8,.2,1)}
-:root[data-theme="dark"] .cal-sheet{background:rgba(26,28,56,.58);border-color:rgba(255,255,255,.14);box-shadow:0 -14px 44px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.12)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cal-sheet{background:rgba(26,28,56,.58);border-color:rgba(255,255,255,.14);box-shadow:0 -14px 44px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.12)}}
+:root[data-scheme="dark"] .cal-sheet{background:rgba(26,28,56,.58);border-color:rgba(255,255,255,.14);box-shadow:0 -14px 44px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.12)}
 @keyframes cal-up{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
 @keyframes cal-fade{from{opacity:0}to{opacity:1}}
 @media(min-width:741px){.cal-overlay{align-items:center}.cal-sheet{border-radius:26px;border-bottom:1px solid var(--stroke);max-height:88vh}}
@@ -403,16 +396,15 @@ html,body{overscroll-behavior-y:contain}
 #overviewView .search-toggle{margin-top:17px}
 /* Kalender: riigipühad (paks indigo number) ja koolivaheajad (lilla joon päeva all) */
 .cal-day{--hol:#5b54e8;--brk:#a78bfa}
-:root[data-theme="dark"] .cal-day{--hol:#a79fff;--brk:#7c74ff}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cal-day{--hol:#a79fff;--brk:#7c74ff}}
+:root[data-scheme="dark"] .cal-day{--hol:#a79fff;--brk:#7c74ff}
 .cal-day.break:not(.sel){border-radius:0;box-shadow:inset 0 -3px 0 var(--brk)}
 .cal-day.holiday:not(.sel){color:var(--hol);font-weight:800}
 .cal-day.today.break:not(.sel){border-radius:13px}
 .cal-hol,.cal-brk{display:inline-block;vertical-align:middle}
 .cal-hol{width:auto;height:auto;font-style:normal;font-weight:800;color:#5b54e8;line-height:1}.cal-hol:before{content:'12'}
 .cal-brk{width:14px;height:3px;border-radius:2px;background:#a78bfa}
-:root[data-theme="dark"] .cal-hol{color:#a79fff}:root[data-theme="dark"] .cal-brk{background:#7c74ff}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cal-hol{color:#a79fff}:root:not([data-theme="light"]) .cal-brk{background:#7c74ff}}
+:root[data-scheme="dark"] .cal-hol{color:#a79fff}
+:root[data-scheme="dark"] .cal-brk{background:#7c74ff}
 .cal-offnote{margin:-2px 4px 6px;font-size:12px;color:var(--muted)}
 .cal-warn{margin:6px 6px 0;font-size:12px;color:var(--danger)}
 /* Kalender: lohistatav käepide, naabrikuu päevad hallilt, ühe reaga legend */
@@ -428,8 +420,7 @@ html,body{overscroll-behavior-y:contain}
 .search-row.past .search-title{opacity:.7}
 /* Valitud möödunud päev on hall, tänane ja tulevased indigo */
 .cal-day.sel.pastday{background:linear-gradient(135deg,#8d92aa,#a6aabf);box-shadow:0 6px 16px rgba(100,106,140,.3)}
-:root[data-theme="dark"] .cal-day.sel.pastday{background:linear-gradient(135deg,#5a5f7a,#70758f);box-shadow:0 6px 16px rgba(0,0,0,.4)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cal-day.sel.pastday{background:linear-gradient(135deg,#5a5f7a,#70758f);box-shadow:0 6px 16px rgba(0,0,0,.4)}}
+:root[data-scheme="dark"] .cal-day.sel.pastday{background:linear-gradient(135deg,#5a5f7a,#70758f);box-shadow:0 6px 16px rgba(0,0,0,.4)}
 @media(max-width:740px){#overviewView .search-toggle{margin-right:2px}}
 /* Kalender: pühkimine, libisemine, puudutatavad naabrikuu päevad, suuremad nooled */
 .cal-grid{touch-action:pan-y}
@@ -818,8 +809,7 @@ details:not(.refine)[open]>summary:before{transform:rotate(90deg)}
 @media(min-width:741px) and (prefers-color-scheme:dark){:root:not([data-theme="light"]) .later-undated .later-count{border:0;background:color-mix(in srgb,var(--accent) 58%,var(--glass-strong));color:#fff}}
 /* Kuupäevavalija (work/datepicker.js): teemas eestikeelne kalender */
 .dp-pop{position:fixed;z-index:200;width:min(300px,calc(100vw - 24px));padding:12px;border-radius:20px;background:var(--glass-strong);border:1px solid var(--stroke);box-shadow:var(--shadow);backdrop-filter:blur(26px) saturate(185%);color:var(--ink);font-family:'Outfit',system-ui,-apple-system,'Segoe UI',sans-serif}
-:root[data-theme="dark"] .dp-pop{background:rgba(36,38,68,.9);border-color:rgba(255,255,255,.14);box-shadow:0 10px 30px rgba(0,0,0,.5)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .dp-pop{background:rgba(36,38,68,.9);border-color:rgba(255,255,255,.14);box-shadow:0 10px 30px rgba(0,0,0,.5)}}
+:root[data-scheme="dark"] .dp-pop{background:rgba(36,38,68,.9);border-color:rgba(255,255,255,.14);box-shadow:0 10px 30px rgba(0,0,0,.5)}
 .dp-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
 .dp-title{font-size:16px;font-weight:700}
 .dp-nav,:root[data-theme="dark"] .dp-nav{width:32px;height:32px;min-height:0;padding:0;border-radius:50%;display:flex;align-items:center;justify-content:center;background:transparent;border:0;box-shadow:none;color:var(--muted)}
@@ -879,18 +869,14 @@ body.nav-top>header .view-nav,:root[data-theme="dark"] body.nav-top>header .view
 /* PROOV telefon v2: kolm vahekaarti oma klaasist paneelil, luup eraldi ringina paremal (nagu Apple'i näites); riba madalam */
 @media(max-width:740px){
  .view-nav,:root[data-theme="dark"] .view-nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) 56px;gap:0;padding:5px 0 5px 6px;align-items:center}
-  :root[data-theme="dark"] .view-nav:before{background:rgba(36,38,68,.64);border-color:rgba(255,255,255,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 10px 30px rgba(0,0,0,.45)}
- .view-nav button{display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:0;min-height:46px;padding:4px 0;gap:2px;border-radius:20px}
+   .view-nav button{display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:0;min-height:46px;padding:4px 0;gap:2px;border-radius:20px}
  .view-nav button svg{width:22px;height:22px}
  .view-nav button:after{font-weight:600;line-height:1;letter-spacing:.1px;font-family:'Outfit',system-ui,sans-serif;font-size:11px}
  .view-nav .nav-count{top:1px;right:calc(50% - 24px)}
   
  .view-nav>.search-toggle svg{width:22px;height:22px}
 }
-@media(max-width:740px) and (prefers-color-scheme:dark){
- :root:not([data-theme="light"]) .view-nav:before{background:rgba(36,38,68,.64);border-color:rgba(255,255,255,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 10px 30px rgba(0,0,0,.45)}
- 
-}
+@media(max-width:740px){:root[data-scheme="dark"] .view-nav:before{background:rgba(36,38,68,.64);border-color:rgba(255,255,255,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 10px 30px rgba(0,0,0,.45)}}
 /* PROOV telefon v3: luup tagasi samasse klaasribasse (ühe ribana), kõrgus 56px, riba 8px kõrgemal */
 @media(max-width:740px){
   :root[data-theme="dark"] .view-nav{background:rgba(36,38,68,.64);border:1px solid rgba(255,255,255,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 10px 30px rgba(0,0,0,.45);backdrop-filter:blur(26px) saturate(185%)}
@@ -978,15 +964,9 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 .push-attention{border-radius:8px;outline:2px solid var(--accent);outline-offset:3px;animation:push-attention 1.1s ease-in-out 3}
 @keyframes push-attention{50%{outline-color:transparent}}
 /* Tume teema ülevaatus: kaardid tõusevad taustast esile (hägu on kaartidelt ära), lilla tekst heledam (kontrast ~6.5:1), hallid päevasildid heledamad. Heledat teemat ei puuduta. */
-:root[data-theme="dark"] .agenda-day.today,:root[data-theme="dark"] .week-section>h2,:root[data-theme="dark"] .free-today>span{color:#a9a3ff}
-:root[data-theme="dark"] .week-section>h2:after,:root[data-theme="dark"] .week-section:after{border-color:rgba(169,163,255,.55)}
-:root[data-theme="dark"] .agenda-day{color:#b4b9da}
-@media (prefers-color-scheme:dark){
- 
- :root:not([data-theme="light"]) .agenda-day.today,:root:not([data-theme="light"]) .week-section>h2,:root:not([data-theme="light"]) .free-today>span{color:#a9a3ff}
- :root:not([data-theme="light"]) .week-section>h2:after,:root:not([data-theme="light"]) .week-section:after{border-color:rgba(169,163,255,.55)}
- :root:not([data-theme="light"]) .agenda-day{color:#b4b9da}
-}
+:root[data-scheme="dark"] .agenda-day.today,:root[data-scheme="dark"] .week-section>h2,:root[data-scheme="dark"] .free-today>span{color:#a9a3ff}
+:root[data-scheme="dark"] .week-section>h2:after,:root[data-scheme="dark"] .week-section:after{border-color:rgba(169,163,255,.55)}
+:root[data-scheme="dark"] .agenda-day{color:#b4b9da}
 /* Tume teema "Kalender" (Jüri valik 26.10): kalendripaneeli moodi lillakas klaas ilma häguta. Taustal tugevam lilla kuma, kaardid indigo gradiendiga, hele serv + ülaserva helk. */
 :root[data-theme="dark"]{--ink:#eceefe;--accent:#7c74ff;--accent-2:#a78bfa;--line:rgba(255,255,255,.08);--shadow:0 10px 40px rgba(0,0,0,.35);--danger:#ff7a70;--danger-bg:rgba(239,68,68,.16);--warn:#f5c04a;--warn-bg:rgba(245,158,11,.16);--soon-bg:rgba(245,158,11,.08);--tag-otto-bg:rgba(56,152,236,.22);--tag-otto:#9cd4ff;--tag-eia-bg:rgba(245,190,20,.20);--tag-eia:#ffe08a;--tag-elle-bg:rgba(236,72,153,.22);--tag-elle:#ffa6cf;--tag-pere-bg:rgba(139,92,246,.26);--tag-pere:#cdbbff;--tag-other-bg:rgba(160,170,200,.16);--tag-other:#c4c9e0;color-scheme:dark;--bg:#110f24;--blob1:rgba(124,108,255,.55);--blob2:rgba(20,184,166,.18);--blob3:rgba(219,39,119,.20);--blob4:rgba(96,120,250,.30);--glass:rgba(34,34,72,.62);--glass-strong:rgba(40,40,82,.9);--glass-field:rgba(22,22,50,.6);--muted:#b2b6dc;--soft:#9298c4;--stroke:rgba(255,255,255,.14)}
 :root[data-theme="dark"] .saved-card{background:linear-gradient(180deg,rgba(66,62,138,.62),rgba(34,34,76,.66));border-color:rgba(255,255,255,.14);box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 10px 30px rgba(0,0,0,.35)}
@@ -996,14 +976,8 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 }
 /* Tume teema arvutis (≥741 px): suurel ekraanil jäi keskele tühi tume ala. Keskele pehme lilla kuma, nurgalaigud veidi tugevamad,
    "See nädal" plokk saab ülalt helendava tooni + õrna ülaserva. Telefoni ja heledat teemat ei puuduta. */
-@media(min-width:741px){
- :root[data-theme="dark"] body:before{background:radial-gradient(46% 38% at 50% 34%,rgba(124,108,255,.34),transparent 70%),radial-gradient(38% 34% at 12% 8%,rgba(124,108,255,.62),transparent 70%),radial-gradient(34% 32% at 92% 18%,rgba(20,184,166,.26),transparent 70%),radial-gradient(40% 36% at 78% 92%,rgba(219,39,119,.28),transparent 70%),radial-gradient(36% 30% at 8% 78%,var(--blob4),transparent 70%)}
- :root[data-theme="dark"] .week-section:before{background:linear-gradient(180deg,rgba(124,116,255,.18),rgba(124,116,255,.04) 70%,transparent);border-top:1px solid rgba(169,163,255,.20)}
-}
-@media(min-width:741px) and (prefers-color-scheme:dark){
- :root:not([data-theme="light"]) body:before{background:radial-gradient(46% 38% at 50% 34%,rgba(124,108,255,.34),transparent 70%),radial-gradient(38% 34% at 12% 8%,rgba(124,108,255,.62),transparent 70%),radial-gradient(34% 32% at 92% 18%,rgba(20,184,166,.26),transparent 70%),radial-gradient(40% 36% at 78% 92%,rgba(219,39,119,.28),transparent 70%),radial-gradient(36% 30% at 8% 78%,var(--blob4),transparent 70%)}
- :root:not([data-theme="light"]) .week-section:before{background:linear-gradient(180deg,rgba(124,116,255,.18),rgba(124,116,255,.04) 70%,transparent);border-top:1px solid rgba(169,163,255,.20)}
-}
+@media(min-width:741px){:root[data-scheme="dark"] body:before{background:radial-gradient(46% 38% at 50% 34%,rgba(124,108,255,.34),transparent 70%),radial-gradient(38% 34% at 12% 8%,rgba(124,108,255,.62),transparent 70%),radial-gradient(34% 32% at 92% 18%,rgba(20,184,166,.26),transparent 70%),radial-gradient(40% 36% at 78% 92%,rgba(219,39,119,.28),transparent 70%),radial-gradient(36% 30% at 8% 78%,var(--blob4),transparent 70%)}
+:root[data-scheme="dark"] .week-section:before{background:linear-gradient(180deg,rgba(124,116,255,.18),rgba(124,116,255,.04) 70%,transparent);border-top:1px solid rgba(169,163,255,.20)}}
 /* Mobiil: kui tekst või pilt on olemas (nupp "ready"), jääb "Sisesta info" nupp alumise menüü kohal nähtavale, ka siis kui pildid lükkavad vormi pikaks. Kleebib ainult oma paneeli piires. */
 @media(max-width:740px){
  #inputView .actions:has(#analyze.ready){position:sticky;bottom:calc(84px + env(safe-area-inset-bottom));z-index:30;padding:8px 0}
@@ -1122,8 +1096,7 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 /* Kuupäevaplaat ürituse kaardil (vaikimisi sees; JS ehitab .date-tile, kui tileMode(): jaluse lüliti "Kuupäevaplaat" lülitab välja): sama keel mis nädalaribal (päeva täht + suur number),
    täna lilla. Kategooria ikoon liigub kellaaja rea ette. Kaardil on siis ainult kellaaeg (kuupäev on plaadil). */
 .date-tile{flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;width:44px;min-height:52px;margin-top:0;border-radius:14px;border:1px solid var(--tile-line);background:var(--tile-bg);color:var(--ink);box-shadow:0 5px 12px -5px var(--tile-glow);--tile-bg:linear-gradient(160deg,color-mix(in srgb,var(--chip,var(--accent)) 32%,#fff),color-mix(in srgb,var(--chip,var(--accent)) 14%,#fff));--tile-line:color-mix(in srgb,var(--chip,var(--accent)) 40%,transparent);--tile-line-strong:color-mix(in srgb,var(--chip,var(--accent)) 70%,transparent);--tile-dow:color-mix(in srgb,var(--chip,var(--accent)) 78%,#000);--tile-glow:color-mix(in srgb,var(--chip,var(--accent)) 35%,transparent)}
-:root[data-theme="dark"] .date-tile{--tile-bg:linear-gradient(160deg,color-mix(in srgb,var(--chip,var(--accent)) 36%,transparent),color-mix(in srgb,var(--chip,var(--accent)) 16%,transparent));--tile-line:color-mix(in srgb,var(--chip,var(--accent)) 50%,transparent);--tile-line-strong:color-mix(in srgb,var(--chip,var(--accent)) 80%,transparent);--tile-dow:color-mix(in srgb,var(--chip,var(--accent)) 55%,#fff);--tile-glow:rgba(0,0,0,.35)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .date-tile{--tile-bg:linear-gradient(160deg,color-mix(in srgb,var(--chip,var(--accent)) 36%,transparent),color-mix(in srgb,var(--chip,var(--accent)) 16%,transparent));--tile-line:color-mix(in srgb,var(--chip,var(--accent)) 50%,transparent);--tile-line-strong:color-mix(in srgb,var(--chip,var(--accent)) 80%,transparent);--tile-dow:color-mix(in srgb,var(--chip,var(--accent)) 55%,#fff);--tile-glow:rgba(0,0,0,.35)}}
+:root[data-scheme="dark"] .date-tile{--tile-bg:linear-gradient(160deg,color-mix(in srgb,var(--chip,var(--accent)) 36%,transparent),color-mix(in srgb,var(--chip,var(--accent)) 16%,transparent));--tile-line:color-mix(in srgb,var(--chip,var(--accent)) 50%,transparent);--tile-line-strong:color-mix(in srgb,var(--chip,var(--accent)) 80%,transparent);--tile-dow:color-mix(in srgb,var(--chip,var(--accent)) 55%,#fff);--tile-glow:rgba(0,0,0,.35)}
 .date-tile.today{background:linear-gradient(160deg,#5b54e8,#8b5cf6);border-color:transparent;color:#fff;box-shadow:0 6px 16px rgba(91,84,232,.3)}
 .date-tile.today .dt-dow{color:rgba(255,255,255,.85)}
 .date-tile.past{opacity:.55;box-shadow:none}
@@ -1174,8 +1147,7 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 #plakatView .pk-pager{position:absolute;inset:0;display:flex;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}
 #plakatView .pk-pager::-webkit-scrollbar{display:none}
 #plakatView .pk-page{flex:0 0 100%;scroll-snap-align:start;scroll-snap-stop:always;position:relative;background:var(--c);color:var(--on);padding:calc(18px + env(safe-area-inset-top)) max(20px,calc((100vw - 560px)/2)) 0;overflow:hidden;display:flex;flex-direction:column}
-:root[data-theme="dark"] #plakatView .pk-page{background:color-mix(in srgb,var(--c) 15%,#090910);color:#fff}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #plakatView .pk-page{background:color-mix(in srgb,var(--c) 15%,#090910);color:#fff}}
+:root[data-scheme="dark"] #plakatView .pk-page{background:color-mix(in srgb,var(--c) 15%,#090910);color:#fff}
 #plakatView .pk-top{display:flex;justify-content:space-between;align-items:center;margin-top:10px;font:700 12px/1 'Sora',sans-serif;letter-spacing:.6px}
 #plakatView .pk-right{display:flex;gap:6px;align-items:center}
 #plakatView .pk-avs{display:flex;gap:6px}
@@ -1184,19 +1156,16 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 #plakatView .pk-av:after,#plakatView .pk-av:before{display:none}
 #plakatView .pk-wkb{font:600 11.5px/1 'Sora',sans-serif;background:rgba(0,0,0,.14);color:inherit;border:0;border-radius:99px;padding:8px 11px;min-height:0;box-shadow:none}
 #plakatView .pk-num{font:800 clamp(150px,52vw,230px)/.78 'Sora',sans-serif;letter-spacing:-.07em;margin:20px 0 0 -.04em;position:relative;flex:none}
-:root[data-theme="dark"] #plakatView .pk-num{color:var(--c)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #plakatView .pk-num{color:var(--c)}}
+:root[data-scheme="dark"] #plakatView .pk-num{color:var(--c)}
 #plakatView .pk-num small{position:absolute;right:0;top:6px;writing-mode:vertical-rl;font:700 15px/1 'Sora',sans-serif;letter-spacing:5px;text-transform:uppercase;opacity:.9;color:inherit}
 #plakatView .pk-num.pk-word{font-size:clamp(64px,22vw,96px);letter-spacing:-.04em;line-height:1;margin-top:34px}
 #plakatView .pk-st{display:flex;justify-content:space-between;align-items:center;font:700 11px/1 'Space Mono',ui-monospace,monospace;letter-spacing:.8px;flex:none;gap:8px}
 #plakatView .pk-st b{background:var(--on);color:var(--c);padding:5px 8px;border-radius:99px;font:700 10.5px/1 'Sora',sans-serif;letter-spacing:.4px;white-space:nowrap}
-:root[data-theme="dark"] #plakatView .pk-st b{background:var(--c);color:#111}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #plakatView .pk-st b{background:var(--c);color:#111}}
+:root[data-scheme="dark"] #plakatView .pk-st b{background:var(--c);color:#111}
 #plakatView .pk-list{flex:1;overflow-y:auto;scrollbar-width:none;min-height:0}
 #plakatView .pk-list::-webkit-scrollbar{display:none}
 #plakatView .pk-li{display:grid;grid-template-columns:66px 1fr 26px;gap:10px;padding:12px 0;border-top:1.5px solid color-mix(in srgb,var(--on) 38%,transparent);align-items:start}
-:root[data-theme="dark"] #plakatView .pk-li{border-top-color:#ffffff22}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #plakatView .pk-li{border-top-color:#ffffff22}}
+:root[data-scheme="dark"] #plakatView .pk-li{border-top-color:#ffffff22}
 #plakatView .pk-li time{font:700 17px/1 'Sora',sans-serif;letter-spacing:-.5px;cursor:pointer}
 #plakatView .pk-li time.tg{font:700 11px/1.15 'Sora',sans-serif;letter-spacing:.2px}
 #plakatView .pk-li time small{display:block;font:400 11px/1 'Sora',sans-serif;opacity:.75;margin-top:5px;letter-spacing:0}
@@ -1214,22 +1183,19 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 #plakatView .pk-li.done .pk-chk{background:var(--on);color:var(--c)}
 #plakatView .pk-li.done .pk-chk svg{opacity:1}
 #plakatView .pk-li.late time{background:var(--on);color:var(--c);border-radius:8px;padding:5px;text-align:center;height:fit-content}
-:root[data-theme="dark"] #plakatView .pk-li.late time{background:var(--c);color:#111}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #plakatView .pk-li.late time{background:var(--c);color:#111}}
+:root[data-scheme="dark"] #plakatView .pk-li.late time{background:var(--c);color:#111}
 #plakatView .pk-free{font:800 clamp(52px,17vw,76px)/.9 'Sora',sans-serif;letter-spacing:-.05em;margin:28px 0 12px}
 #plakatView .pk-fn{font:400 14px/1.45 'Sora',sans-serif;opacity:.9}
 #plakatView .pk-dots{position:absolute;left:0;right:0;bottom:calc(96px + env(safe-area-inset-bottom));display:flex;justify-content:center;pointer-events:none}
 #plakatView .pk-week{position:absolute;inset:0;z-index:6;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .35s cubic-bezier(.2,.9,.2,1);visibility:hidden}
 #plakatView.week-open .pk-week{transform:none;visibility:visible}
-:root[data-theme="dark"] #plakatView .pk-week button{background:color-mix(in srgb,var(--c) 22%,#090910);color:#fff}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #plakatView .pk-week button{background:color-mix(in srgb,var(--c) 22%,#090910);color:#fff}}
+:root[data-scheme="dark"] #plakatView .pk-week button{background:color-mix(in srgb,var(--c) 22%,#090910);color:#fff}
 #plakatView .pk-week button b{font:800 40px/1 'Sora',sans-serif;letter-spacing:-2px}
 #plakatView .pk-week button span{font:600 12px/1.3 'Sora',sans-serif;text-align:right;opacity:.9}
 #plakatView .pk-sheet{position:absolute;z-index:8;overflow-y:auto;}
 #plakatView .pk-sheet .saved-card{margin:0 auto;max-width:560px}
 #plakatView .pk-week{background:#2b2f4a}
-:root[data-theme="dark"] #plakatView .pk-num.pk-word{color:#fff}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #plakatView .pk-num.pk-word{color:#fff}}
+:root[data-scheme="dark"] #plakatView .pk-num.pk-word{color:#fff}
 /* Plakat: Nädal-nupp alla pöidla ulatusse, suur kuupäev avab ka nädala; alumine peamenüü Plakati keeles (päevavärv aktiivsel nupul, Sora, ilma klaasita). */
 #plakatView .pk-num{cursor:pointer}
 #plakatView .pk-dots{z-index:7;gap:5px}
@@ -1263,8 +1229,7 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 :root[data-plakat="1"]:has(#inputView:not([hidden])){--pv-c:#d4f23a;--pv-on:#1d2300}
 :root[data-plakat="1"]:has(#mailView:not([hidden])){--pv-c:#c9b6ff;--pv-on:#1f1650}
 :root[data-plakat="1"]:has(#inputView:not([hidden])),:root[data-plakat="1"]:has(#mailView:not([hidden])){--pv-bg:var(--pv-c);--pv-fg:var(--pv-on);--pv-head:var(--pv-on);--pv-field:rgba(255,255,255,.88);--pv-field-fg:#14141c;--pv-err:#b3001b;background:var(--pv-bg)!important;color:var(--pv-fg)}
-:root[data-plakat="1"][data-theme="dark"]:has(#inputView:not([hidden])),:root[data-plakat="1"][data-theme="dark"]:has(#mailView:not([hidden])){--pv-bg:color-mix(in srgb,var(--pv-c) 15%,#090910);--pv-fg:#fff;--pv-head:var(--pv-c);--pv-field:rgba(255,255,255,.09);--pv-field-fg:#fff;--pv-err:#ff8a80}
-@media (prefers-color-scheme:dark){:root[data-plakat="1"]:not([data-theme="light"]):has(#inputView:not([hidden])),:root[data-plakat="1"]:not([data-theme="light"]):has(#mailView:not([hidden])){--pv-bg:color-mix(in srgb,var(--pv-c) 15%,#090910);--pv-fg:#fff;--pv-head:var(--pv-c);--pv-field:rgba(255,255,255,.09);--pv-field-fg:#fff;--pv-err:#ff8a80}}
+:root[data-plakat="1"][data-scheme="dark"]:has(#inputView:not([hidden])),:root[data-plakat="1"][data-scheme="dark"]:has(#mailView:not([hidden])){--pv-bg:color-mix(in srgb,var(--pv-c) 15%,#090910);--pv-fg:#fff;--pv-head:var(--pv-c);--pv-field:rgba(255,255,255,.09);--pv-field-fg:#fff;--pv-err:#ff8a80}
 :root[data-plakat="1"]:has(#inputView:not([hidden])) body:before,:root[data-plakat="1"]:has(#mailView:not([hidden])) body:before{display:none}
 :root[data-plakat="1"]:has(#inputView:not([hidden])) .view-nav button[aria-pressed="true"],:root[data-plakat="1"]:has(#mailView:not([hidden])) .view-nav button[aria-pressed="true"]{background:var(--pv-c)!important;color:var(--pv-on)!important}
 /* päis ja jalus */
@@ -1336,14 +1301,12 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 /* Plakat: Sisesta info nupp = Lisa pildid / PDF mõõtu; ürituse ikoon ja asukoha (Waze / Google Maps) nupp ridadel; alumine menüü ilma siltideta, aktiivne nupp laieneb sildiga. */
 :root[data-plakat="1"] #inputView .actions #analyze,:root[data-plakat="1"] #inputView .actions #analyze.ready{background:var(--pv-fg);color:var(--pv-bg);border:0;box-shadow:none;flex:0 0 auto;min-width:150px;min-height:52px;padding:10px 18px;font:700 14px/1 'Sora',sans-serif}
 #plakatView .pk-li h3 .pk-ei{display:inline-grid;place-items:center;width:22px;height:22px;margin-right:7px;vertical-align:-4px;border-radius:50%;background:rgba(0,0,0,.16);color:inherit}
-:root[data-theme="dark"] #plakatView .pk-li h3 .pk-ei{background:rgba(255,255,255,.14)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #plakatView .pk-li h3 .pk-ei{background:rgba(255,255,255,.14)}}
+:root[data-scheme="dark"] #plakatView .pk-li h3 .pk-ei{background:rgba(255,255,255,.14)}
 #plakatView .pk-li h3 .pk-ei svg{width:14px;height:14px;color:inherit}
 #plakatView .pk-li p{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 #plakatView .pk-pp{margin-right:0}
 #plakatView .pk-loc{display:inline-flex;align-items:center;gap:5px;min-height:28px;padding:0 10px 0 8px;border-radius:99px;background:rgba(0,0,0,.18);color:inherit;font:600 12px/1 'Sora',sans-serif;text-decoration:none;max-width:100%}
-:root[data-theme="dark"] #plakatView .pk-loc{background:rgba(255,255,255,.14)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #plakatView .pk-loc{background:rgba(255,255,255,.14)}}
+:root[data-scheme="dark"] #plakatView .pk-loc{background:rgba(255,255,255,.14)}
 #plakatView .pk-loc svg{width:14px;height:14px;flex:none}
 @media(max-width:740px){
  :root[data-plakat="1"] .view-nav{display:flex!important;gap:4px!important;padding:6px!important;align-items:center}
@@ -1359,8 +1322,7 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 :root[data-plakat="1"][data-plakat="1"][data-plakat="1"]:has(#mailView:not([hidden])){--pv-bg:#17173a;--pv-fg:#fff;--pv-head:#cdb8ff;--pv-field:rgba(255,255,255,.09);--pv-field-fg:#fff;--pv-err:#ff8a80}
 :root[data-plakat="1"] #inputView .chip-eia,:root[data-plakat="1"] #inputView .chip-otto,:root[data-plakat="1"] #inputView .chip-elle,:root[data-plakat="1"] #inputView .chip-pere,:root[data-plakat="1"] #mailView .chip-eia,:root[data-plakat="1"] #mailView .chip-otto,:root[data-plakat="1"] #mailView .chip-elle,:root[data-plakat="1"] #mailView .chip-pere{border-color:transparent}
 #plakatView .pk-sheet{--pv-bg:var(--c);--pv-fg:var(--on);--pv-head:var(--on);--pv-field:rgba(255,255,255,.9);--pv-field-fg:#14141c;--pv-err:#b3001b;inset:0;top:0;border-radius:0;box-shadow:none;background:var(--c);color:var(--on);padding:calc(26px + env(safe-area-inset-top)) max(20px,calc((100vw - 560px)/2)) calc(120px + env(safe-area-inset-bottom))}
-:root[data-theme="dark"] #plakatView .pk-sheet{--pv-bg:color-mix(in srgb,var(--c) 15%,#090910);--pv-fg:#fff;--pv-head:var(--c);--pv-field:rgba(255,255,255,.09);--pv-field-fg:#fff;--pv-err:#ff8a80;background:var(--pv-bg);color:#fff}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #plakatView .pk-sheet{--pv-bg:color-mix(in srgb,var(--c) 15%,#090910);--pv-fg:#fff;--pv-head:var(--c);--pv-field:rgba(255,255,255,.09);--pv-field-fg:#fff;--pv-err:#ff8a80;background:var(--pv-bg);color:#fff}}
+:root[data-scheme="dark"] #plakatView .pk-sheet{--pv-bg:color-mix(in srgb,var(--c) 15%,#090910);--pv-fg:#fff;--pv-head:var(--c);--pv-field:rgba(255,255,255,.09);--pv-field-fg:#fff;--pv-err:#ff8a80;background:var(--pv-bg);color:#fff}
 #plakatView .pk-sheet .saved-card.editing{background:none;border:0;box-shadow:none;padding:0;margin:0 auto;max-width:560px;color:inherit;backdrop-filter:none;position:relative}
 #plakatView .pk-sheet .kind{font:800 clamp(30px,10vw,40px)/1 'Sora',sans-serif;letter-spacing:-.045em;color:var(--pv-head);margin:6px 0 18px;text-transform:none}
 #plakatView .pk-sheet label{font:700 11px/1.2 'Space Mono',monospace;letter-spacing:.7px;text-transform:uppercase;color:var(--pv-fg)}
@@ -1427,12 +1389,10 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 }
 /* E-kirjad: heledas teemas värske türkiis (kõik neli inimese värvi paistavad ilma ääreta), tumedas jääb sügav indigo. */
 :root[data-plakat="1"][data-plakat="1"][data-plakat="1"][data-plakat="1"]:has(#mailView:not([hidden])){--pv-c:#34d1bf;--pv-on:#05332e;--pv-bg:#34d1bf;--pv-fg:#05332e;--pv-head:#05332e;--pv-field:rgba(255,255,255,.55);--pv-field-fg:#05332e;--pv-err:#a3001a}
-:root[data-plakat="1"][data-plakat="1"][data-plakat="1"][data-plakat="1"][data-theme="dark"]:has(#mailView:not([hidden])){--pv-c:#cdb8ff;--pv-on:#1f1650;--pv-bg:#17173a;--pv-fg:#fff;--pv-head:#cdb8ff;--pv-field:rgba(255,255,255,.09);--pv-field-fg:#fff;--pv-err:#ff8a80}
-@media (prefers-color-scheme:dark){:root[data-plakat="1"][data-plakat="1"][data-plakat="1"][data-plakat="1"]:not([data-theme="light"]):has(#mailView:not([hidden])){--pv-c:#cdb8ff;--pv-on:#1f1650;--pv-bg:#17173a;--pv-fg:#fff;--pv-head:#cdb8ff;--pv-field:rgba(255,255,255,.09);--pv-field-fg:#fff;--pv-err:#ff8a80}}
+:root[data-plakat="1"][data-plakat="1"][data-plakat="1"][data-plakat="1"][data-scheme="dark"]:has(#mailView:not([hidden])){--pv-c:#cdb8ff;--pv-on:#1f1650;--pv-bg:#17173a;--pv-fg:#fff;--pv-head:#cdb8ff;--pv-field:rgba(255,255,255,.09);--pv-field-fg:#fff;--pv-err:#ff8a80}
 
 /* ===== Plakat: KUU leht (asendab "Hiljem"): kreemjas paber, päeva ruudud inimese värvi täppidega, kattuvuse "!" , püha, vaheaeg; kattuvuse hoiatus ka päeva ridades ===== */
-:root[data-theme="dark"] #plakatView .pk-month{background:#101014;color:#f3eee3}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #plakatView .pk-month{background:#101014;color:#f3eee3}}
+:root[data-scheme="dark"] #plakatView .pk-month{background:#101014;color:#f3eee3}
 #plakatView .pk-month{--mfg:#14130f;--mbg:#f3eee3;--band:rgba(20,19,15,.08);--mline:rgba(20,19,15,.22);--late:#d4351c;--pill:rgba(20,19,15,.1);--warnbg:#14130f;--warnfg:#ffd24a;color:#14130f}
 #plakatView .pk-month .pk-theme{color:inherit}
 #plakatView .pk-mh{display:flex;align-items:flex-end;justify-content:space-between;flex:none}
@@ -1511,8 +1471,7 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
  position:absolute;inset:0;z-index:6;display:flex;flex-direction:column;overflow-x:hidden;overflow-y:auto;scrollbar-width:none;transform:translateY(100%);transition:transform .4s cubic-bezier(.2,.9,.2,1);visibility:hidden;background:var(--ph-wb);color:var(--ph-ink);font-family:'Sora',sans-serif}
 #plakatView .pk-home::-webkit-scrollbar{display:none}
 #plakatView.week-open .pk-home{transform:none;visibility:visible}
-:root[data-theme="dark"] #plakatView .pk-home{--ph-ink:#f1eeff;--ph-wb:color-mix(in srgb,var(--dc) 15%,#0b0b14);--ph-tb:color-mix(in srgb,var(--dc) 22%,#0b0b14);--ph-kb:color-mix(in srgb,var(--dc) 11%,#0b0b14);--ph-pb:color-mix(in srgb,var(--dc) 8%,#0b0b14)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #plakatView .pk-home{--ph-ink:#f1eeff;--ph-wb:color-mix(in srgb,var(--dc) 15%,#0b0b14);--ph-tb:color-mix(in srgb,var(--dc) 22%,#0b0b14);--ph-kb:color-mix(in srgb,var(--dc) 11%,#0b0b14);--ph-pb:color-mix(in srgb,var(--dc) 8%,#0b0b14)}}
+:root[data-scheme="dark"] #plakatView .pk-home{--ph-ink:#f1eeff;--ph-wb:color-mix(in srgb,var(--dc) 15%,#0b0b14);--ph-tb:color-mix(in srgb,var(--dc) 22%,#0b0b14);--ph-kb:color-mix(in srgb,var(--dc) 11%,#0b0b14);--ph-pb:color-mix(in srgb,var(--dc) 8%,#0b0b14)}
 #plakatView .ph-mono{font:700 10.5px/1.2 'Space Mono',monospace;letter-spacing:.8px;text-transform:uppercase}
 /* fookuszoon */
 #plakatView .ph-zone{flex:0 0 auto;position:relative;z-index:1;height:calc(clamp(290px,44vh,350px) + env(safe-area-inset-top))}
@@ -1554,16 +1513,10 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 #plakatView .ph-pb{flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.4);overflow:hidden}
 #plakatView .ph-pb i{display:block;height:100%;background:currentColor;border-radius:2px}
 #plakatView .ph-free{font:600 13px/1.35 'Sora',sans-serif;opacity:.85;padding-top:6px}
-:root[data-theme="dark"] #plakatView .ph-a,:root[data-theme="dark"] #plakatView .ph-b{background:color-mix(in srgb,var(--c) 15%,#090910);color:#fff}
-:root[data-theme="dark"] #plakatView .ph-sn{color:var(--c)}
-:root[data-theme="dark"] #plakatView .ph-er,:root[data-theme="dark"] #plakatView [data-ink="dark"] .ph-er{border-top-color:rgba(255,255,255,.2)}
-:root[data-theme="dark"] #plakatView .ph-er.hi,:root[data-theme="dark"] #plakatView [data-ink="dark"] .ph-er.hi{background:rgba(255,255,255,.12)}
-@media (prefers-color-scheme:dark){
- :root:not([data-theme="light"]) #plakatView .ph-a,:root:not([data-theme="light"]) #plakatView .ph-b{background:color-mix(in srgb,var(--c) 15%,#090910);color:#fff}
- :root:not([data-theme="light"]) #plakatView .ph-sn{color:var(--c)}
- :root:not([data-theme="light"]) #plakatView .ph-er,:root:not([data-theme="light"]) #plakatView [data-ink="dark"] .ph-er{border-top-color:rgba(255,255,255,.2)}
- :root:not([data-theme="light"]) #plakatView .ph-er.hi,:root:not([data-theme="light"]) #plakatView [data-ink="dark"] .ph-er.hi{background:rgba(255,255,255,.12)}
-}
+:root[data-scheme="dark"] #plakatView .ph-a,:root[data-scheme="dark"] #plakatView .ph-b{background:color-mix(in srgb,var(--c) 15%,#090910);color:#fff}
+:root[data-scheme="dark"] #plakatView .ph-sn{color:var(--c)}
+:root[data-scheme="dark"] #plakatView .ph-er,:root[data-scheme="dark"] #plakatView [data-ink="dark"] .ph-er{border-top-color:rgba(255,255,255,.2)}
+:root[data-scheme="dark"] #plakatView .ph-er.hi,:root[data-scheme="dark"] #plakatView [data-ink="dark"] .ph-er.hi{background:rgba(255,255,255,.12)}
 /* slaabid */
 #plakatView .ph-slab{position:relative;border-radius:26px 26px 0 0;margin-top:-24px;box-shadow:0 -10px 24px rgba(0,0,0,.2);padding:12px var(--ph-px) 0;flex:none}
 #plakatView .ph-sb{height:130px;z-index:3;background:var(--ph-wb);color:var(--ph-ink);transition:background .45s}
@@ -1659,8 +1612,7 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 :root[data-plakat="1"] #searchScrim{background:rgba(10,10,20,.42);backdrop-filter:none}
 :root[data-plakat="1"] .search-overlay{padding:0}
 :root[data-plakat="1"] .search-sheet{background:var(--pk-c,#6b4dff);color:var(--pk-on,#fff);border:0;border-radius:0 0 26px 26px;backdrop-filter:none;box-shadow:0 14px 34px rgba(0,0,0,.28);padding:calc(14px + env(safe-area-inset-top)) max(16px,calc((100vw - 560px)/2)) 16px;max-height:min(84vh,700px);width:100%;max-width:none;font-family:'Sora',sans-serif;transition:background .3s}
-:root[data-plakat="1"][data-theme="dark"] .search-sheet{background:color-mix(in srgb,var(--pk-c,#6b4dff) 15%,#090910);color:#fff}
-@media (prefers-color-scheme:dark){:root[data-plakat="1"]:not([data-theme="light"]) .search-sheet{background:color-mix(in srgb,var(--pk-c,#6b4dff) 15%,#090910);color:#fff}}
+:root[data-plakat="1"][data-scheme="dark"] .search-sheet{background:color-mix(in srgb,var(--pk-c,#6b4dff) 15%,#090910);color:#fff}
 :root[data-plakat="1"] .search-field{height:52px;border-radius:18px;border:0;background:color-mix(in srgb,currentColor 16%,transparent);padding:0 4px 0 16px}
 :root[data-plakat="1"] .search-glass{color:inherit}
 :root[data-plakat="1"] .search-glass svg{width:20px;height:20px;stroke-width:2.2}
@@ -1678,8 +1630,7 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 @media (hover:hover){:root[data-plakat="1"] .search-row:hover{background:color-mix(in srgb,currentColor 9%,transparent)}}
 :root[data-plakat="1"] .search-empty{font:600 14px/1.4 'Sora',sans-serif;color:inherit;opacity:.8;padding:22px 2px;text-align:left}
 /* Kuu leht: oma toon (tume: indigo; hele: liiv + must, vt allpool), nooled pealkirja kõrval, kuu vahetus libistades. */
-:root[data-theme="dark"] #plakatView .pk-page.pk-month{--mfg:#ece8ff;--mbg:#171335;--band:rgba(169,155,255,.12);--mline:rgba(169,155,255,.22);--pill:rgba(169,155,255,.14);--mac:#8e7bff;--mac-on:#fff;background:color-mix(in srgb,#6b4dff 16%,#0b0b14);color:#ece8ff}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #plakatView .pk-page.pk-month{--mfg:#ece8ff;--mbg:#171335;--band:rgba(169,155,255,.12);--mline:rgba(169,155,255,.22);--pill:rgba(169,155,255,.14);--mac:#8e7bff;--mac-on:#fff;background:color-mix(in srgb,#6b4dff 16%,#0b0b14);color:#ece8ff}}
+:root[data-scheme="dark"] #plakatView .pk-page.pk-month{--mfg:#ece8ff;--mbg:#171335;--band:rgba(169,155,255,.12);--mline:rgba(169,155,255,.22);--pill:rgba(169,155,255,.14);--mac:#8e7bff;--mac-on:#fff;background:color-mix(in srgb,#6b4dff 16%,#0b0b14);color:#ece8ff}
 #plakatView .pk-month .pk-c.today{background:var(--mac);color:var(--mac-on)}
 #plakatView .pk-month .pk-c.today b{color:var(--mac-on)}
 #plakatView .pk-month .pk-c.sel{box-shadow:inset 0 0 0 2px var(--mac)}
@@ -1687,8 +1638,7 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 #plakatView .pk-month .pk-open{background:var(--mac);color:var(--mac-on)}
 #plakatView .pk-month .pk-dd i:not(.pk-tk){background:color-mix(in srgb,var(--mfg) 35%,transparent)}
 #plakatView .pk-month .pk-dd i.pk-eia{background:#ffd24a}#plakatView .pk-month .pk-dd i.pk-otto{background:#8cc7ff}#plakatView .pk-month .pk-dd i.pk-elle{background:#ffb0d6}
-:root[data-theme="dark"] #plakatView .pk-month .pk-dd i:not(.pk-tk){box-shadow:0 0 0 1px rgba(255,255,255,.22)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #plakatView .pk-month .pk-dd i:not(.pk-tk){box-shadow:0 0 0 1px rgba(255,255,255,.22)}}
+:root[data-scheme="dark"] #plakatView .pk-month .pk-dd i:not(.pk-tk){box-shadow:0 0 0 1px rgba(255,255,255,.22)}
 /* pealkiri + nooled */
 #plakatView .pk-mh{touch-action:pan-y;user-select:none}
 #plakatView .pk-mr{display:flex;flex-direction:column;align-items:flex-end;gap:10px;margin-bottom:2px}
@@ -1720,19 +1670,16 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 #plakatView .pk-num small .pk-sw{display:block;font:700 11px/1 'Sora',sans-serif;letter-spacing:3px;text-transform:uppercase}
 #plakatView .pk-num small .pk-sx{display:block;font:700 9.5px/1 'Space Mono',monospace;letter-spacing:.7px;text-transform:uppercase;opacity:.85;margin-top:6px}
 #plakatView .pk-page:not(.pk-month) .pk-num .pk-wx-b .pk-wxt{max-width:92px}
-:root[data-theme="dark"] #plakatView .pk-page:not(.pk-month) .pk-num small,:root[data-theme="dark"] #plakatView .pk-page:not(.pk-month) .pk-num .pk-wx-b{color:#fff}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #plakatView .pk-page:not(.pk-month) .pk-num small,:root:not([data-theme="light"]) #plakatView .pk-page:not(.pk-month) .pk-num .pk-wx-b{color:#fff}}
+:root[data-scheme="dark"] #plakatView .pk-page:not(.pk-month) .pk-num small,:root[data-scheme="dark"] #plakatView .pk-page:not(.pk-month) .pk-num .pk-wx-b{color:#fff}
 /* 4) Kattub: ilma taustata, kontrastne tekst (heledas päeva toon, tumedas kollane). */
 #plakatView .pk-warn,#plakatView .pk-month .pk-warn{display:inline;background:none;padding:0;min-height:0;border-radius:0;color:var(--on);font:800 11.5px/1.3 'Sora',sans-serif}
-:root[data-theme="dark"] #plakatView .pk-warn{background:none;color:#ffd24a}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #plakatView .pk-warn{background:none;color:#ffd24a}}
+:root[data-scheme="dark"] #plakatView .pk-warn{background:none;color:#ffd24a}
 #plakatView .pk-month .pk-warn{color:var(--late)}
 /* Päeva plakati ilmakiip = asukoha kiip (sama font, kõrgus, taust). */
 #plakatView .pk-li .wx,#plakatView .pk-li .wx.wx-b{margin:0;min-height:28px;padding:0 10px 0 8px;gap:5px;border-radius:99px;font:600 12px/1 'Sora',sans-serif;align-items:center;background:rgba(0,0,0,.18)!important}
 #plakatView .pk-li .wx svg{width:14px;height:14px;align-self:center;margin-top:0}
 #plakatView .pk-li .wx .tip{color:inherit!important;font:inherit;opacity:1}
-:root[data-theme="dark"] #plakatView .pk-li .wx,:root[data-theme="dark"] #plakatView .pk-li .wx.wx-b{background:rgba(255,255,255,.14)!important}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #plakatView .pk-li .wx,:root:not([data-theme="light"]) #plakatView .pk-li .wx.wx-b{background:rgba(255,255,255,.14)!important}}
+:root[data-scheme="dark"] #plakatView .pk-li .wx,:root[data-scheme="dark"] #plakatView .pk-li .wx.wx-b{background:rgba(255,255,255,.14)!important}
 #plakatView .pk-c.hol:after{content:'';position:absolute;left:50%;bottom:4px;width:14px;height:2px;background:var(--late);transform:translateX(-50%);border-radius:1px;display:none}
 #plakatView .pk-month .pk-c{justify-content:center;padding:0;gap:3px}
 #plakatView .pk-month .pk-li.mini:has(.pk-chk){grid-template-columns:52px 1fr}
@@ -1827,8 +1774,7 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 
 /* Plakat, Kuu leht, hele teema: liiv + must (taust #f1e6d0, tekst ja rõhk #2b2118, tänane päev musta ringina; Jüri valik 22.11; varem proovitud lilla ja helesinine).
    Hele: kas käsitsi valitud hele või süsteemi hele ilma käsitsi valikuta. Tume teema jääb samaks (indigo). */
-:root[data-theme="light"] #plakatView .pk-page.pk-month{--mfg:#2b2118;--mbg:#f1e6d0;--band:rgba(43,33,24,.09);--mline:rgba(43,33,24,.22);--pill:rgba(43,33,24,.10);--mac:#2b2118;--mac-on:#f1e6d0;background:#f1e6d0;color:#2b2118}
-@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) #plakatView .pk-page.pk-month{--mfg:#2b2118;--mbg:#f1e6d0;--band:rgba(43,33,24,.09);--mline:rgba(43,33,24,.22);--pill:rgba(43,33,24,.10);--mac:#2b2118;--mac-on:#f1e6d0;background:#f1e6d0;color:#2b2118}}
+:root[data-scheme="light"] #plakatView .pk-page.pk-month{--mfg:#2b2118;--mbg:#f1e6d0;--band:rgba(43,33,24,.09);--mline:rgba(43,33,24,.22);--pill:rgba(43,33,24,.10);--mac:#2b2118;--mac-on:#f1e6d0;background:#f1e6d0;color:#2b2118}
 :root:not([data-theme="dark"]) #plakatView .pk-month .pk-dd i:not(.pk-tk){box-shadow:0 0 0 1px rgba(43,33,24,.18)}
 
 /* Plakat, Kuu leht, parandused 22.11: (1) kui kuus pole vaheaja rida (.pk-st), jooksid nädalapäevad suure kuunime sisse: sama vahe (29 px) kui vaheaja reaga, nii et kalender ei hüppa kuude vahel;
@@ -1902,8 +1848,7 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 #plakatView .pk-month .pk-st{margin-bottom:14px}
 #plakatView .pk-month .pk-mh+.pk-dow{margin-top:35px}
 #plakatView .pk-month{--hol:#dc4d6a}
-:root[data-theme="dark"] #plakatView .pk-month{--mfg:#f3eee3;--mbg:#101014;--band:rgba(255,255,255,.08);--mline:rgba(255,255,255,.2);--late:#ff7a66;--pill:rgba(255,255,255,.12);--warnbg:#ffd24a;--warnfg:#17171c;--hol:#ff8fa3}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #plakatView .pk-month{--mfg:#f3eee3;--mbg:#101014;--band:rgba(255,255,255,.08);--mline:rgba(255,255,255,.2);--late:#ff7a66;--pill:rgba(255,255,255,.12);--warnbg:#ffd24a;--warnfg:#17171c;--hol:#ff8fa3}}
+:root[data-scheme="dark"] #plakatView .pk-month{--mfg:#f3eee3;--mbg:#101014;--band:rgba(255,255,255,.08);--mline:rgba(255,255,255,.2);--late:#ff7a66;--pill:rgba(255,255,255,.12);--warnbg:#ffd24a;--warnfg:#17171c;--hol:#ff8fa3}
 #plakatView .pk-month .pk-c.hol b,#plakatView .pk-month .pk-leg .pk-lh{color:var(--hol)}
 
 /* Plakat, Ülevaate Ülesanded plokk: "+N veel" rida viimase ülesande all (plakat-home.js phFitTasks). Jüri 23.11. */
@@ -1922,10 +1867,8 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 /* Plakat, tumeda teema ülevaatus 24.11: aktiivse "Sisesta info" nupu ümber oli tumedal taustal must vari + nõrk ring = porine laik.
    Tumedas: musta varju pole, ring heledam (valge 26 % → 8 %). */
 @keyframes pkReadyPulseD{0%,100%{box-shadow:0 0 0 4px color-mix(in srgb,var(--pv-fg) 26%,transparent)}50%{box-shadow:0 0 0 10px color-mix(in srgb,var(--pv-fg) 8%,transparent)}}
-:root[data-theme="dark"][data-plakat="1"] #inputView .actions #analyze.ready{box-shadow:0 0 0 6px color-mix(in srgb,var(--pv-fg) 20%,transparent);animation-name:pkReadyPulseD}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"])[data-plakat="1"] #inputView .actions #analyze.ready{box-shadow:0 0 0 6px color-mix(in srgb,var(--pv-fg) 20%,transparent);animation-name:pkReadyPulseD}}
-:root[data-theme="dark"][data-plakat="1"] #inputView .actions #analyze.ready:active{animation:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--pv-fg) 20%,transparent)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"])[data-plakat="1"] #inputView .actions #analyze.ready:active{animation:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--pv-fg) 20%,transparent)}}
+:root[data-scheme="dark"][data-plakat="1"] #inputView .actions #analyze.ready{box-shadow:0 0 0 6px color-mix(in srgb,var(--pv-fg) 20%,transparent);animation-name:pkReadyPulseD}
+:root[data-scheme="dark"][data-plakat="1"] #inputView .actions #analyze.ready:active{animation:none;box-shadow:0 0 0 3px color-mix(in srgb,var(--pv-fg) 20%,transparent)}
 
 /* Plakat, Ülevaatelt päevalehele (ph-leave): "See nädal", Ülesanded ja Kuu kaardid kukuvad alla (variant A, Jüri valik 24.11; plakat-home.js paneb
    <html data-phdrop="a">). Tagasitulek jäi endiseks (Ülevaade libiseb ühes tükis üles); eraldi kaartide tõus (ph-return) proovitud ja tagasi rullitud. */
