@@ -3834,24 +3834,42 @@ function logisticsSoon(item,now){
  const phase=eventPhase(item,now);if(phase==='now')return true;if(phase!=='')return false;
  const mins=nextUpMinutes(now,item.date+' '+item.time);return mins>=0&&mins<=120;
 }
-// "Välju kell …" (Jüri soov 26.11): sõiduaeg kodust ürituse kohta serverist (PereTravel.gs, Google Maps, kodu = Script Property PERE_HOME_ADDRESS).
+// "Välju kell …" (Jüri soov 26.11): sõiduaeg ürituse kohta serverist (PereTravel.gs, Google Maps). Lähtekoht = telefoni praegune asukoht
+// (luba küsitakse esimesel vajadusel; ümardatud ~1 km, asukoht 10 min mälus); kui luba pole / asukohta ei saa, kodu (Script Property PERE_HOME_ADDRESS).
 // Küsitakse alles 3 h enne algust; vastus jääb 6 h mällu ja localStorage'i (pere-travel). Väljumisaeg = algus − sõit − 5 min varu.
-const TRAVEL_TTL=6*3600*1000,travelCache=new Map();
+const TRAVEL_TTL=6*3600*1000,TRAVEL_POS_TTL=10*60*1000,travelCache=new Map();
+let travelPos,travelPosAt=0,travelPosPending=false;
 function travelLoad_(){try{const all=JSON.parse(localStorage.getItem('pere-travel')||'{}');Object.keys(all).forEach(k=>{if(Date.now()-all[k].at<TRAVEL_TTL&&!travelCache.has(k))travelCache.set(k,all[k]);});}catch(_){}}
 function travelSave_(){try{const all={};travelCache.forEach((v,k)=>{if(!v.pending&&Date.now()-v.at<TRAVEL_TTL)all[k]={minutes:v.minutes,at:v.at};});localStorage.setItem('pere-travel',JSON.stringify(all));}catch(_){}}
+function travelRefresh_(){try{renderNextUp();}catch(_){}try{if(typeof plakatHomePaint==='function')plakatHomePaint();}catch(_){}}
+// Telefoni asukoht: undefined = veel teadmata (küsitakse), {lat,lng} = ümardatud, false = pole lubatud / ei saadud (→ kodu).
+function travelPosition_(){
+ if(travelPos!==undefined&&Date.now()-travelPosAt<TRAVEL_POS_TTL)return travelPos;
+ if(travelPosPending)return undefined;
+ const geo=typeof navigator!=='undefined'&&navigator.geolocation;
+ if(!geo||typeof geo.getCurrentPosition!=='function'){travelPos=false;travelPosAt=Date.now();return travelPos;}
+ travelPosPending=true;
+ const done=value=>{travelPosPending=false;travelPos=value;travelPosAt=Date.now();travelRefresh_();};
+ try{geo.getCurrentPosition(p=>done({lat:Math.round(p.coords.latitude*100)/100,lng:Math.round(p.coords.longitude*100)/100}),()=>done(false),{enableHighAccuracy:false,maximumAge:TRAVEL_POS_TTL,timeout:8000});}
+ catch(_){done(false);}
+ return undefined;
+}
 function travelMinutes(location){
- const key=String(location||'').replace(/\s+/g,' ').trim().toLowerCase();if(!key)return null;
+ const loc=String(location||'').replace(/\s+/g,' ').trim().toLowerCase();if(!loc)return null;
+ const pos=travelPosition_();if(pos===undefined)return null;
+ const key=loc+'@'+(pos?pos.lat+','+pos.lng:'home');
  if(!travelCache.size)travelLoad_();
  const hit=travelCache.get(key);
  if(hit&&(hit.pending||Date.now()-hit.at<TRAVEL_TTL))return hit.pending?null:hit.minutes;
  try{
   if(typeof google==='undefined'||!google.script||!google.script.run)return null;
   travelCache.set(key,{pending:true,at:Date.now()});
+  const arg={location:String(location)};if(pos)arg.origin={lat:pos.lat,lng:pos.lng};
   google.script.run.withSuccessHandler(result=>{
    const minutes=result&&Number(result.minutes)>0?Math.round(Number(result.minutes)):null;
    travelCache.set(key,{minutes:minutes,at:Date.now()});travelSave_();
-   if(minutes){try{renderNextUp();}catch(_){}try{if(typeof plakatHomePaint==='function')plakatHomePaint();}catch(_){}}
-  }).withFailureHandler(()=>{travelCache.set(key,{minutes:null,at:Date.now()-TRAVEL_TTL+15*60*1000});}).pereTravel({location:String(location)});
+   if(minutes)travelRefresh_();
+  }).withFailureHandler(()=>{travelCache.set(key,{minutes:null,at:Date.now()-TRAVEL_TTL+15*60*1000});}).pereTravel(arg);
  }catch(_){}
  return null;
 }
