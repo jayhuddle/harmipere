@@ -994,6 +994,7 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 .next-up .nu-person{font-size:12px;font-weight:700;letter-spacing:.2px;padding:3px 10px;border-radius:999px;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.3)}
 .next-up .nu-meta{margin-top:6px;font-size:15px;font-weight:600;opacity:.96}
 .next-up .nu-place{margin-top:3px;font-size:13px;opacity:.88}
+.next-up .nu-leave{margin-top:6px;font-size:14px;font-weight:700}
 .next-up .nu-logi{margin-top:6px;font-size:13px;font-weight:700;line-height:1.35}
 .next-up .nu-bar{margin-top:12px;height:5px;border-radius:999px;background:rgba(255,255,255,.28);overflow:hidden}
 .next-up .nu-bar i{display:block;height:100%;border-radius:inherit;background:#fff;transition:width .6s ease}
@@ -3096,7 +3097,11 @@ function phRowNode(entry,day,today,now){
    const end=nextUpEnd(item),start=item.date+' '+item.time,total=Math.max(1,nextUpMinutes(start,end)),done=Math.min(total,Math.max(0,nextUpMinutes(start,now)));
    r2.append(phEl('span','','Käib praegu · lõpeb '+nextUpSpan(Math.max(0,nextUpMinutes(now,end)))+' pärast'));
    const bar=phEl('span','ph-pb'),fill=document.createElement('i');fill.style.width=Math.round(done/total*100)+'%';bar.append(fill);r2.append(bar);
-  }else if(state==='next')r2.append(phEl('span','','Kohe järgmine · algab '+nextUpSpan(Math.max(0,nextUpMinutes(now,item.date+' '+item.time)))+' pärast'));
+  }else if(state==='next'){
+   // Väljumisaeg samale reale (fookusplokk on fikseeritud kõrgusega, uus rida lükkaks loendi 'See nädal' alla).
+   const leave=leaveLine(item,now).split(' · ')[0];
+   r2.append(phEl('span','','Kohe järgmine · algab '+nextUpSpan(Math.max(0,nextUpMinutes(now,item.date+' '+item.time)))+' pärast'+(leave?' · '+leave:'')));
+  }
   else r2.append(phEl('span','','Homme esimene'));
   row.append(r2);
   if(logisticsSoon(item,now)){const info=eventLogistics(item);if(info)row.append(phEl('div','ph-r3',info));}
@@ -3829,6 +3834,35 @@ function logisticsSoon(item,now){
  const phase=eventPhase(item,now);if(phase==='now')return true;if(phase!=='')return false;
  const mins=nextUpMinutes(now,item.date+' '+item.time);return mins>=0&&mins<=120;
 }
+// "Välju kell …" (Jüri soov 26.11): sõiduaeg kodust ürituse kohta serverist (PereTravel.gs, Google Maps, kodu = Script Property PERE_HOME_ADDRESS).
+// Küsitakse alles 3 h enne algust; vastus jääb 6 h mällu ja localStorage'i (pere-travel). Väljumisaeg = algus − sõit − 5 min varu.
+const TRAVEL_TTL=6*3600*1000,travelCache=new Map();
+function travelLoad_(){try{const all=JSON.parse(localStorage.getItem('pere-travel')||'{}');Object.keys(all).forEach(k=>{if(Date.now()-all[k].at<TRAVEL_TTL&&!travelCache.has(k))travelCache.set(k,all[k]);});}catch(_){}}
+function travelSave_(){try{const all={};travelCache.forEach((v,k)=>{if(!v.pending&&Date.now()-v.at<TRAVEL_TTL)all[k]={minutes:v.minutes,at:v.at};});localStorage.setItem('pere-travel',JSON.stringify(all));}catch(_){}}
+function travelMinutes(location){
+ const key=String(location||'').replace(/\s+/g,' ').trim().toLowerCase();if(!key)return null;
+ if(!travelCache.size)travelLoad_();
+ const hit=travelCache.get(key);
+ if(hit&&(hit.pending||Date.now()-hit.at<TRAVEL_TTL))return hit.pending?null:hit.minutes;
+ try{
+  if(typeof google==='undefined'||!google.script||!google.script.run)return null;
+  travelCache.set(key,{pending:true,at:Date.now()});
+  google.script.run.withSuccessHandler(result=>{
+   const minutes=result&&Number(result.minutes)>0?Math.round(Number(result.minutes)):null;
+   travelCache.set(key,{minutes:minutes,at:Date.now()});travelSave_();
+   if(minutes){try{renderNextUp();}catch(_){}try{if(typeof plakatHomePaint==='function')plakatHomePaint();}catch(_){}}
+  }).withFailureHandler(()=>{travelCache.set(key,{minutes:null,at:Date.now()-TRAVEL_TTL+15*60*1000});}).pereTravel({location:String(location)});
+ }catch(_){}
+ return null;
+}
+function leaveLine(item,now){
+ if(!item||item.kind!=='event'||!item.time||!item.location||eventPhase(item,now)!=='')return '';
+ const mins=nextUpMinutes(now,item.date+' '+item.time);if(mins<0||mins>180)return '';
+ const travel=travelMinutes(item.location);if(!travel)return '';
+ const [h,m]=item.time.split(':').map(Number),at=((h*60+m-travel-5)%1440+1440)%1440;
+ const clock=Math.floor(at/60)+':'+String(at%60).padStart(2,'0');
+ return (mins-travel-5<=0?'Välju kohe':'Välju '+clock)+' · sõit '+travel+' min';
+}
 function renderNextUp(){
  try{
   const week=typeof $==='function'&&$('weekSection');
@@ -3855,6 +3889,7 @@ function renderNextUp(){
   if(item.person)savedText(title,'span',shortPerson(item.person),'nu-person');box.append(title);
   savedText(box,'div',item.time+(item.endTime?'–'+item.endTime:'')+' · '+when,'nu-meta');
   if(item.location)savedText(box,'div',item.location,'nu-place');
+  {const leave=leaveLine(item,now);if(leave)savedText(box,'div',leave,'nu-leave');}
   if(logisticsSoon(item,now)){const info=eventLogistics(item);if(info)savedText(box,'div',info,'nu-logi');}
   if(pick.phase==='now'){const total=Math.max(1,nextUpMinutes(start,end)),done=Math.min(total,Math.max(0,nextUpMinutes(start,now)));
    const bar=document.createElement('div');bar.className='nu-bar';const fill=document.createElement('i');fill.style.width=Math.round(done/total*100)+'%';bar.append(fill);box.append(bar);}
