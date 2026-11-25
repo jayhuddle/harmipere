@@ -994,6 +994,7 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 .next-up .nu-person{font-size:12px;font-weight:700;letter-spacing:.2px;padding:3px 10px;border-radius:999px;background:rgba(255,255,255,.22);border:1px solid rgba(255,255,255,.3)}
 .next-up .nu-meta{margin-top:6px;font-size:15px;font-weight:600;opacity:.96}
 .next-up .nu-place{margin-top:3px;font-size:13px;opacity:.88}
+.next-up .nu-logi{margin-top:6px;font-size:13px;font-weight:700;line-height:1.35}
 .next-up .nu-bar{margin-top:12px;height:5px;border-radius:999px;background:rgba(255,255,255,.28);overflow:hidden}
 .next-up .nu-bar i{display:block;height:100%;border-radius:inherit;background:#fff;transition:width .6s ease}
 @keyframes nu-pulse{70%{box-shadow:0 0 0 9px rgba(255,255,255,0)}100%{box-shadow:0 0 0 0 rgba(255,255,255,0)}}
@@ -1510,6 +1511,7 @@ textarea::placeholder,input::placeholder{color:color-mix(in srgb,var(--muted) 88
 #plakatView [data-ink="dark"] .ph-er.hi{background:rgba(20,19,15,.12)}
 #plakatView .ph-r2{display:flex;align-items:center;gap:10px;margin-top:6px;font:700 9px/1 'Space Mono',monospace;letter-spacing:.6px;text-transform:uppercase}
 #plakatView .ph-r2 span:first-child{flex:none}
+#plakatView .ph-r3{margin-top:6px;font:700 12.5px/1.35 'Sora',sans-serif}
 #plakatView .ph-pb{flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.4);overflow:hidden}
 #plakatView .ph-pb i{display:block;height:100%;background:currentColor;border-radius:2px}
 #plakatView .ph-free{font:600 13px/1.35 'Sora',sans-serif;opacity:.85;padding-top:6px}
@@ -3097,6 +3099,7 @@ function phRowNode(entry,day,today,now){
   }else if(state==='next')r2.append(phEl('span','','Kohe järgmine · algab '+nextUpSpan(Math.max(0,nextUpMinutes(now,item.date+' '+item.time)))+' pärast'));
   else r2.append(phEl('span','','Homme esimene'));
   row.append(r2);
+  if(logisticsSoon(item,now)){const info=eventLogistics(item);if(info)row.append(phEl('div','ph-r3',info));}
  }
  // Puudutus viib selle päeva plakatile ja vilgutab kirjet (nagu klassikalises vaates); muutmine on päeva plakatil.
  row.onclick=event=>{event.stopPropagation();plakatHomeOpenItem(item,day,today,row);};
@@ -3701,7 +3704,7 @@ function editorCard(item,card){
 }
 // === JAGA ===
 // "Jaga üritust" (pliiatsimenüüs): valmis lühike tekst (pealkiri, aeg, koht, kaardilink) telefoni jagamismenüüsse (WhatsApp, SMS jne);
-// kui jagamist ei toetata, kopeeritakse tekst lõikelauale. Jagatakse salvestatud andmeid (mitte pooleli muudatusi); märkusi ei jagata.
+// kui jagamist ei toetata, kopeeritakse tekst lõikelauale. Jagatakse salvestatud andmeid (mitte pooleli muudatusi); märkustest ainult "Kaasa:" rida.
 function eventShareText(item){
  const date=item.date,end=item.endDate&&item.endDate>date?item.endDate:'';
  let when;
@@ -3713,6 +3716,8 @@ function eventShareText(item){
   const own=String(item.notes||'').match(/https?:\/\/\S*(?:maps|goo\.gl)\S*/i);
   lines.push('Kaart: '+(own?own[0]:'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(item.location)));
  }
+ const bring=String(item.notes||'').split('\n').map(line=>line.trim()).find(line=>/^Kaasa:/i.test(line));
+ if(bring)lines.push(bring);
  return lines.join('\n');
 }
 async function shareEvent(item){
@@ -3812,6 +3817,18 @@ function nextUpPick(items,now){
  if(Number(now.slice(11,13))>=17){const tm=timed.filter(item=>item.date===tomorrow).sort((a,b)=>a.time.localeCompare(b.time))[0];if(tm)return {item:tm,phase:'tomorrow'};}
  return null;
 }
+// Kohale jõudmise info (Jüri soov 26.11): märkuste read uksekoodi, ruumi, korruse, sissepääsu, parkimise, kohtumispunkti ja "Kaasa:" kohta ühe reana.
+// Näidatakse "Kohe järgmine" kaardil ja Plakati fookusplokis alles siis, kui algus on 2 h kaugusel või üritus juba käib (enne on see müra).
+const LOGISTICS_RE=/^\s*(kaasa|uksekood|ukse kood|fonokood|kood|ruum|klass|kabinet|korrus|sissepääs|sissekäik|värav|parkimine|parkla|kohtumispunkt|kogunemine)\b/i;
+function eventLogistics(item){
+ const lines=String(item&&item.notes||'').split('\n').map(line=>line.trim()).filter(line=>line&&!/https?:\/\//i.test(line)&&LOGISTICS_RE.test(line));
+ const text=lines.join(' · ');return text.length>140?text.slice(0,139)+'…':text;
+}
+function logisticsSoon(item,now){
+ if(!item||item.kind!=='event'||!item.time||!item.date)return false;
+ const phase=eventPhase(item,now);if(phase==='now')return true;if(phase!=='')return false;
+ const mins=nextUpMinutes(now,item.date+' '+item.time);return mins>=0&&mins<=120;
+}
 function renderNextUp(){
  try{
   const week=typeof $==='function'&&$('weekSection');
@@ -3838,6 +3855,7 @@ function renderNextUp(){
   if(item.person)savedText(title,'span',shortPerson(item.person),'nu-person');box.append(title);
   savedText(box,'div',item.time+(item.endTime?'–'+item.endTime:'')+' · '+when,'nu-meta');
   if(item.location)savedText(box,'div',item.location,'nu-place');
+  if(logisticsSoon(item,now)){const info=eventLogistics(item);if(info)savedText(box,'div',info,'nu-logi');}
   if(pick.phase==='now'){const total=Math.max(1,nextUpMinutes(start,end)),done=Math.min(total,Math.max(0,nextUpMinutes(start,now)));
    const bar=document.createElement('div');bar.className='nu-bar';const fill=document.createElement('i');fill.style.width=Math.round(done/total*100)+'%';bar.append(fill);box.append(bar);}
  }catch(_){}
