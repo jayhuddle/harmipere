@@ -36,6 +36,11 @@ self.addEventListener('fetch',event=>{
  }
  if(request.method!=='GET'||url.origin!==self.location.origin)return;
  // cache:'no-cache' sunnib serverist üle küsima (GitHub Pages lubab muidu 10 min vana koopiat).
- event.respondWith(fetch(request,{cache:'no-cache'}).then(response=>{if(response.ok){const copy=response.clone();caches.open(CACHE).then(cache=>cache.put(request,copy));}return response;})
-  .catch(()=>caches.match(request).then(hit=>hit||caches.match('index.html'))));
+ // Skripti (config.js) asemel tulnud HTML (nt WiFi sisselogimisleht) ei lähe vahemällu ega lehele: siis vahemälu koopia.
+ // Võrguta: vahemälust; index.html ainult lehe enda avamisel, mitte config.js vms asemel (muidu "Äpi ühendus pole seadistatud", Jüri 27.11).
+ event.respondWith(fetch(request,{cache:'no-cache'}).then(response=>{
+  const wrong=request.destination==='script'&&!/javascript/.test(response.headers.get('content-type')||'');
+  if(response.ok&&!wrong){const copy=response.clone();caches.open(CACHE).then(cache=>cache.put(request,copy));}
+  return wrong?caches.match(request).then(hit=>hit||response):response;})
+  .catch(()=>caches.match(request).then(hit=>hit||(request.mode==='navigate'?caches.match('index.html'):Response.error()))));
 });

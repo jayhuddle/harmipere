@@ -2033,6 +2033,7 @@ body:after{content:'';position:absolute;top:0;left:0;right:0;height:180px;z-inde
 <div id="calOverlay" class="cal-overlay" hidden><div id="calScrim" class="cal-scrim"></div><div id="calSheet" class="cal-sheet" role="dialog" aria-modal="true" aria-label="Kuukalender"></div></div>
 </main>
 <script src="config.js"></script>
+<script>window.PERE_CONFIG=window.PERE_CONFIG||{"api":"https://script.google.com/macros/s/AKfycbxC5DXLYNRiR1uCs2kxgJYUm2-7vIy2fWAEj5dECZ_xHW8Yo0t6j9P_3-yofeGritTu2w/exec","clientId":"44535757853-tjadih38pmriudslknhr7lumcr2fkj5j.apps.googleusercontent.com","firebase":{"config":{"apiKey":"AIzaSyAj4nsjLAwhwZm6eNvppSX7hrPRDkfWWDg","authDomain":"harmipere-96092.firebaseapp.com","projectId":"harmipere-96092","storageBucket":"harmipere-96092.firebasestorage.app","messagingSenderId":"912096544570","appId":"1:912096544570:web:e65920076a5b0442973203"},"vapidKey":"BKF0oyK8GeQR3_jy5BOYTwacwAXEU3dFH6P_2j62GUk8EUx-eEHsr6DaP3DCVrwI_WD8gaj2mH1SARh1aDvFL8M"}};</script>
 <script>
 (function(){
  const config=window.PERE_CONFIG||{},KEY='pere-session',queue=[];
@@ -3547,7 +3548,7 @@ document.addEventListener('keydown',event=>{if(event.key==='Escape'&&activeCance
 // märksõnade järgi (AI-d pole vaja); vaikimisi kalender. Järjekord on oluline: esimene sobiv võidab. Ikoonid: Lucide (ISC), joon 2px.
 // Kokkulepped: iga kontsert (ka laulustuudio, mudilaskoor, muusikakool) = noodid; lasteaia/kooli pidupäevad (isadepäeva hommikupuder) ja
 // kooli asjad (sh mudilaskoori proov) = seljakott; trenn ja kõik huviringid (sh ETV Laulustuudio, muusikakool) = karikas;
-// reis ja matk = mägi; pidupäev kodus ja külaskäik = süda.
+// reis, matk ja spa (enne trenni, sest märkustes on tihti "ujumisriided") = mägi; pidupäev kodus ja külaskäik = süda.
 const EVENT_ICON_BODIES={
  music:'<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>',
  backpack:'<path d="M4 10a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/><path d="M8 10h8"/><path d="M8 18h8"/><path d="M8 22v-6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v6"/><path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/>',
@@ -3568,6 +3569,7 @@ const EVENT_ICONS=[
  {name:'cake',label:'Sünnipäev',re:/sünnipäev|sunnipaev|juubel|\bpidu\b|peod?\b/},
  {name:'stethoscope',label:'Tervis',re:/arst|kliinik|haigla|vaktsiin|analüüs|ortodont|füsio|silmakontroll|polikliinik/},
  {name:'backpack',label:'Kool / lasteaed',re:/(?<!muusika|kunsti|spordi|tantsu|laulu|male|ujumis|keele)kool|lasteaed|lasteaia|lastevanem|õpilas|õpetaja|klassijuhataja|arenguvestlus|hoolekogu|õppetund|klassi|tunniplaan|eksam|kontrolltöö|rühma|mudilaskoor/},
+ {name:'mountain',label:'Spa / puhkus',re:/\bspaa?\b|veekeskus|veepark|\bsaun/},
  {name:'trophy',label:'Trenn / huviring',re:/trenn|treening|jalgpall|korvpall|võrkpall|käsipall|tennis|ujumi|ujula|võistlus|turniir|\bsport|jooks|suusa|uisu|hoki|judo|karate|ratsu|staadion|spordi|huviring|\bring\b|stuudio|muusikakool|klaveri?tund|pillitund|laulutund|\bkoor|kunst|joonistam|käsitöö|robootika|\bmale\b|maletund|tants|ballett|näitering/},
  {name:'ticket',label:'Etendus',re:/teater|teatri|etendus|\bkino|näitus|muuseum|tsirkus|lavastus|film/},
  {name:'mountain',label:'Reis / matk',re:/\breis|lend\b|lennujaam|puhkus|matk|väljasõit|ekskursioon|laager|loodus|piknik|õppekäik/},
